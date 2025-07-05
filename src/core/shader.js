@@ -94,3 +94,7 @@ class Shader
         }
     }
 }
+
+export {
+    Shader
+};

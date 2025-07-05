@@ -1,15 +1,17 @@
 
 import { Face } from '../face.js';
+import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
 /**
- * A minimal yet extensible Geometry class that stores vertices and faces.
- * Supports automatic normal calculation
+ * A minimal yet extensible Geometry class that stores vertices, faces and
+ * uv-coordinates. Supports automatic normal calculation
  */
 class Geometry
 {
     #vertices = [];
     #faces = [];
+    #uvs = [];
     #vertexNormals = [];
     #faceNormals = [];
 
@@ -25,6 +27,13 @@ class Geometry
      */
     getFaces() {
         return Array.from(this.#faces);
+    }
+
+    /**
+     * Gets a copy of all uv-coordinates.
+     */
+    getUvs() {
+        return Array.from(this.#uvs);
     }
 
     /**
@@ -53,6 +62,13 @@ class Geometry
      */
     getFaceCount() {
         return this.#faces.length;
+    }
+
+    /**
+     * Gets the number of UV coordinates in the geometry.
+     */
+    getUvCount() {
+        return this.#uvs.length;
     }
 
     /**
@@ -110,6 +126,18 @@ class Geometry
         this.#validateFaceIndices(face);
 
         this.#faces.push(face.clone());
+    }
+
+    /**
+     * Adds a uv coordinate to the geometry.
+     */
+    addUvCoordinate(uv)
+    {
+        if (!(uv instanceof Uv)) {
+            throw new TypeError('Expected a Uv instance.');
+        }
+
+        this.#uvs.push(uv.clone());
     }
 
     /**
@@ -173,7 +201,7 @@ class Geometry
      */
     triangulate(method = Geometry.FAN)
     {
-        this.#validateTriangulationMethod();
+        this.#validateTriangulationMethod(method);
 
         const triangulatedFaces = [];
 
@@ -235,6 +263,25 @@ class Geometry
     }
 
     /**
+     * Converts UV coordinates to a flat Float32Array for GPU texture buffer.
+     * Returns an array in the format: [u1, v1, u2, v2, u3, v3, ...]
+     */
+    flattenUvs()
+    {
+        const flatUvs = new Float32Array(this.#uvs.length * 2);
+
+        for (let i = 0; i < this.#uvs.length; i++) {
+            const uv = this.#uvs[i];
+            const offset = i * 2;
+            
+            flatUvs[offset] = uv.u;
+            flatUvs[offset + 1] = uv.v;
+        }
+
+        return flatUvs;
+    }
+
+    /**
      * Converts vertex normals to a flat Float32Array for GPU.
      * Returns the array in the format: [nx1, ny1, nz1, nx2, ny2, nz2, ...]
      * If no vertex normals exist, calculates them first.
@@ -289,6 +336,80 @@ class Geometry
     }
 
     /**
+     * Creates combined vertex data of positions and UVs (without normals).
+     * Format: [x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, ...]
+     * Note: Requires UV coordinates to be present and match vertex count.
+     */
+    flattenCombinedVertexDataWithUvsOnly()
+    {
+        if (this.#uvs.length !== this.#vertices.length) {
+            throw new Error(
+                `UV coordinate count must match vertex count.`
+            );
+        }
+
+        const combinedData = new Float32Array(this.#vertices.length * 5);
+
+        for (let i = 0; i < this.#vertices.length; i++)
+        {
+            const vertex = this.#vertices[i];
+            const uv = this.#uvs[i];
+            const offset = i * 5;
+
+            combinedData[offset] = vertex.x;
+            combinedData[offset + 1] = vertex.y;
+            combinedData[offset + 2] = vertex.z;
+
+            combinedData[offset + 3] = uv.u;
+            combinedData[offset + 4] = uv.v;
+        }
+
+        return combinedData;
+    }
+
+    /**
+     * Creates combined vertex data of positions, normals and uvs.
+     * Format: [x1, y1, z1, nx1, ny1, nz1, u1, v1, x2, y2, z2, nx2, ny2,
+     * nz2, u2, v2, ...]
+     */
+    flattenCombinedVertexDataWithUvs()
+    {
+        if (this.#vertexNormals.length === 0) {
+            this.calculateVertexNormals();
+        }
+
+        if (this.#uvs.length !== this.#vertices.length) {
+            throw new Error(
+                `UV coordinate count must match vertex count.`
+            );
+        }
+
+        const combinedData = new Float32Array(this.#vertices.length * 8);
+
+        for (let i = 0; i < this.#vertices.length; i++)
+        {
+            const vertex = this.#vertices[i];
+            const normal = this.#vertexNormals[i];
+            const uv = this.#uvs[i];
+
+            const offset = i * 8;
+
+            combinedData[offset] = vertex.x;
+            combinedData[offset + 1] = vertex.y;
+            combinedData[offset + 2] = vertex.z;
+            
+            combinedData[offset + 3] = normal.x;
+            combinedData[offset + 4] = normal.y;
+            combinedData[offset + 5] = normal.z;
+
+            combinedData[offset + 6] = uv.u;
+            combinedData[offset + 7] = uv.v;
+        }
+
+        return combinedData;
+    }
+
+    /**
      * Calculates the face normal.
      */
     #calculateFaceNormal(face)
@@ -300,7 +421,7 @@ class Geometry
         const vertex3 = this.#vertices[indices[2]];
 
         const edge1 = vertex2.subtractOther(vertex1);
-        const edge2 = vertex2.subtractOther(vertex3);
+        const edge2 = vertex3.subtractOther(vertex1);
 
         return Vector3.normalize(edge1.crossOther(edge2));
     }
