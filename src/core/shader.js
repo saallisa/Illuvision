@@ -1,4 +1,6 @@
 
+import { Engine } from "../engine.js";
+
 /**
  * Encapsulates vertex and fragment shader code and handles compilation when
  * device is available.
@@ -13,6 +15,9 @@ class Shader
 
     constructor(vertexSource, fragmentSource)
     {
+        Shader.#validateShaderSource(vertexSource, 'Vertex');
+        Shader.#validateShaderSource(fragmentSource, 'Fragment');
+
         this.#vertexSource = vertexSource;
         this.#fragmentSource = fragmentSource;
     }
@@ -26,6 +31,8 @@ class Shader
         if (this.#compiled) {
             return;
         }
+
+        Engine.validateDevice(device);
 
         this.#vertexModule = device.createShaderModule({
             code: this.#vertexSource
@@ -67,5 +74,23 @@ class Shader
         }
 
         return this.#fragmentModule;
+    }
+
+    /**
+     * Validates that the shader source code is valid.
+     */
+    static #validateShaderSource(source, shaderType)
+    {
+        if (typeof source !== 'string') {
+            throw new TypeError(
+                `${shaderType} shader source must be a string.`
+            );
+        }
+
+        if (source.trim().length === 0) {
+            throw new Error(
+                `${shaderType} shader source cannot be empty.`
+            );
+        }
     }
 }

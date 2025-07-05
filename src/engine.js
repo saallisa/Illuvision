@@ -158,6 +158,50 @@ class Engine
             );
         }
     }
+
+    /**
+     * Validates that the provided device is a valid WebGPU device.
+     */
+    static validateDevice(device)
+    {
+        // Check if device exists
+        if (!device) {
+            throw new TypeError(
+                'WebGPU device is required but was not provided.'
+            );
+        }
+
+        const requiredMethods = [
+            'createShaderModule',
+            'createBuffer',
+            'createRenderPipeline',
+            'createCommandEncoder'
+        ];
+
+        // Check if device has the required WebGPU methods
+        for (const method of requiredMethods)
+        {
+            if (typeof device[method] !== 'function') {
+                throw new TypeError(
+                    `Invalid WebGPU device: missing ${method} method.`
+                );
+            }
+        }
+
+        // Check for queue property
+        if (!device.queue) {
+            throw new TypeError(
+                'Invalid WebGPU device: missing queue property.'
+            );
+        }
+
+        // Check if device has been destroyed
+        if (device.destroyed === true) {
+            throw new Error(
+                'WebGPU device has been destroyed and cannot be used.'
+            );
+        }
+    }
 }
 
 export {
