@@ -6,6 +6,7 @@ import { Vector3 } from '../vector3.js';
 /**
  * A simple triangle geometry class that creates a triangle from three vertices.
  * Extends the base Geometry class to provide triangle-specific functionality.
+ * First parameter is bottom-left, second bottom-right and last top-center.
  */
 class Triangle extends Geometry
 {
@@ -23,6 +24,10 @@ class Triangle extends Geometry
         
         const triangleFace = new Face([index1, index2, index3]);
         this.addFace(triangleFace);
+
+        this.addUvCoordinate(new Uv(0, 0)); // Bottom-left
+        this.addUvCoordinate(new Uv(1, 0)); // Bottom-right  
+        this.addUvCoordinate(new Uv(0.5, 1)); // Top-center
     }
 
     /**
