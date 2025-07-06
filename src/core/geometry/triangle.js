@@ -1,6 +1,7 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
+import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
 /**

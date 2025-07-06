@@ -1,6 +1,7 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
+import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
 /**
@@ -33,11 +34,15 @@ class Plane extends Geometry
     }
 
     /**
-     * Creates a segmented plane geometry with vertices and faces.
+     * Creates a segmented plane geometry with vertices, uvs and faces.
      */
     #createPlane(width, height, widthSegments, heightSegments)
     {
         const vertexIndices = this.#createPlaneVertices(
+            width, height, widthSegments, heightSegments
+        );
+
+        this.#createPlaneUvs(
             width, height, widthSegments, heightSegments
         );
 
@@ -78,6 +83,30 @@ class Plane extends Geometry
         }
 
         return vertexIndices;
+    }
+
+    /**
+     * Create UV coordinates for the plane vertices.
+     * UV coordinates are calculated to map the entire texture across the plane.
+     */
+    #createPlaneUvs(width, height, widthSegments, heightSegments)
+    {
+        // Calculate UV step sizes
+        const uStep = 1.0 / widthSegments;
+        const vStep = 1.0 / heightSegments;
+
+        // Create UV coordinates in the same order as vertices
+        for (let row = 0; row <= heightSegments; row++)
+        {
+            for (let column = 0; column <= widthSegments; column++)
+            {
+                const u = column * uStep;
+                const v = row * vStep;
+                
+                const uv = new Uv(u, v);
+                this.addUvCoordinate(uv);
+            }
+        }
     }
 
     /**
