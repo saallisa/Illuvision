@@ -92,7 +92,8 @@ class Loader
             if (error instanceof TypeError) {
                 throw new Error(
                     'Network error loading file: '
-                    + `${filePath}. ${error.message}`);
+                    + `${filePath}. ${error.message}`
+                );
             }
 
             throw error;
