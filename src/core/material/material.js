@@ -1,5 +1,6 @@
 
 import { Color } from '../color.js';
+import { Engine } from '../../engine.js';
 import { Shader } from '../shader.js';
 
 /**
@@ -11,6 +12,9 @@ class Material
     #shader = null;
     #color = null;
     #uniforms = new Map();
+
+    #uniformBuffer = null;
+    #compiled = false;
 
     constructor(name = 'Material')
     {
@@ -119,6 +123,68 @@ class Material
      */
     clearUniforms() {
         this.#uniforms.clear();
+    }
+
+    /**
+     * Returns the uniform data as a Float32Array so it can be fed into a
+     * WebGPU uniform buffer.
+     */
+    flattenUniforms()
+    {
+        const flatUniforms = [];
+
+        for (const value of this.#uniforms) {
+            if (Array.isArray(value)) {
+                flatUniforms.push(...value);
+            } else {
+                flatUniforms.push(value);
+            }
+        }
+
+        return new Float32Array(flatUniforms);
+    }
+
+    /**
+     * Compiles the material by creating the WebGPU buffers.
+     */
+    compile(device)
+    {
+        if (this.#compiled) {
+            return;
+        }
+
+        Engine.validateDevice(device);
+
+        this.#createUniformBuffer(device);
+        this.#compiled = true;
+    }
+
+    /**
+     * Destroys WebGPU buffers associated with this material.
+     */
+    destroy()
+    {
+        if (this.#uniformBuffer) {
+            this.#uniformBuffer.destroy();
+            this.#uniformBuffer = null;
+        }
+
+        this.#compiled = false;
+    }
+
+    /**
+     * Creates a uniform buffer for the current uniforms of the material.
+     */
+    #createUniformBuffer(device)
+    {
+        const flatUniforms = this.flattenUniforms();
+
+        this.#uniformBuffer = device.createBuffer({
+            size: flatUniforms.byteLength,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+        });
+
+        device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
     }
 
     /**
