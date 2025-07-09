@@ -98,6 +98,13 @@ class Vector3
     }
 
     /**
+     * Dot this vector with another vector and return the result.
+     */
+    dotOther(other) {
+        return Vector3.dot(this, other);
+    }
+
+    /**
      * Add two vectors without modifying them.
      */
     static add(vectorA, vectorB)
@@ -140,6 +147,21 @@ class Vector3
         const z = vectorA.x * vectorB.y - vectorA.y * vectorB.x;
 
         return new Vector3(x, y, z);
+    }
+
+    /**
+     * Calculate the dot product of two vectors.
+     */
+    static dot(vectorA, vectorB)
+    {
+        Vector3.#validateInstance(vectorA);
+        Vector3.#validateInstance(vectorB);
+
+        const x = vectorA.x * vectorB.x;
+        const y = vectorA.y * vectorB.y;
+        const z = vectorA.z * vectorB.z;
+
+        return x + y + z;
     }
 
     /**
