@@ -94,6 +94,7 @@ class Material
             throw new TypeError('Uniform name must be a non-empty string.');
         }
 
+        Material.#validateUniformValue(value);
         this.#uniforms.set(name, value);
     }
 
@@ -251,5 +252,44 @@ class Material
         if (typeof name !== 'string' || name.trim().length === 0) {
             throw new TypeError('Material name must be a non-empty string');
         }
+    }
+
+    /**
+     * Validates a uniform value to ensure it is only a finite number or an
+     * array of finite numbers.
+     */
+    static #validateUniformValue(value)
+    {
+        if (value === null || value === undefined) {
+            throw new TypeError('Uniform value may not be empty!');
+        }
+
+        if (typeof value === 'number') {
+            if (!isFinite(value)) {
+                throw new TypeError('Uniform number value must be finite!');
+            }
+        }
+
+        if (Array.isArray(value)) {
+            for (const element of value.values()) {
+                if (element === null || element === undefined) {
+                    throw new TypeError(
+                        'Uniform array value may not contain empty values!'
+                    );
+                }
+
+                if (typeof element === 'number') {
+                    if (!isFinite(element)) {
+                        throw new TypeError(
+                            'Uniform array value must be a finite number!'
+                        );
+                    }
+                }
+            }
+        }
+
+        throw new TypeError(
+            'Uniform value must be a finite number or array!'
+        );
     }
 }
