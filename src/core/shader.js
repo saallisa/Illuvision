@@ -77,6 +77,17 @@ class Shader
     }
 
     /**
+     * Destroys the shader modules and resets the compiled state to false.
+     */
+    destroy()
+    {
+        this.#vertexModule = null;
+        this.#fragmentModule = null;
+
+        this.#compiled = false;
+    }
+
+    /**
      * Validates that the shader source code is valid.
      */
     static #validateShaderSource(source, shaderType)
