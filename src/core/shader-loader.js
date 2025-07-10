@@ -1,6 +1,6 @@
 
-import { Loader } from './core/loader.js';
-import { Shader } from './core/shader.js';
+import { Loader } from './loader.js';
+import { Shader } from './shader.js';
 
 /**
  * Loads WGSL vertex and fragment shader files for WebGPU and creates a Shader
