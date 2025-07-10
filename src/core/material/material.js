@@ -126,6 +126,43 @@ class Material
     }
 
     /**
+     * Retrieve the uniform buffer.
+     */
+    getUniformBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Material must be compiled before accessing uniform buffer!'
+            );
+        }
+
+        return this.#uniformBuffer;
+    }
+
+    /**
+     * Updates the uniform buffer with current uniform values.
+     */
+    updateUniformBuffer(device)
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Material must be compiled before updating uniform buffer!'
+            );
+        }
+
+        Engine.validateDevice(device);
+
+        const flatUniforms = this.flattenUniforms();
+
+        if (flatUniforms.byteLength > this.#uniformBuffer.size) {
+            this.#uniformBuffer.destroy();
+            this.#createUniformBuffer(device);
+        } else {
+            device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
+        }
+    }
+
+    /**
      * Returns the uniform data as a Float32Array so it can be fed into a
      * WebGPU uniform buffer.
      */
@@ -133,7 +170,7 @@ class Material
     {
         const flatUniforms = [];
 
-        for (const value of this.#uniforms) {
+        for (const value of this.#uniforms.values()) {
             if (Array.isArray(value)) {
                 flatUniforms.push(...value);
             } else {
@@ -145,7 +182,7 @@ class Material
     }
 
     /**
-     * Compiles the material by creating the WebGPU buffers.
+     * Compiles the material by creating the WebGPU shader and buffers.
      */
     compile(device)
     {
@@ -153,20 +190,36 @@ class Material
             return;
         }
 
+        if (!this.#shader) {
+            throw new Error('Need to set a shader before compilation!');
+        }
+
         Engine.validateDevice(device);
 
+        this.#shader.compile(device);
         this.#createUniformBuffer(device);
         this.#compiled = true;
     }
 
     /**
-     * Destroys WebGPU buffers associated with this material.
+     * Returns if the material is compiled.
+     */
+    isCompiled() {
+        return this.#compiled;
+    }
+
+    /**
+     * Destroys WebGPU shader and buffers associated with this material.
      */
     destroy()
     {
         if (this.#uniformBuffer) {
             this.#uniformBuffer.destroy();
             this.#uniformBuffer = null;
+        }
+
+        if (this.#shader) {
+            this.#shader.destroy();
         }
 
         this.#compiled = false;
@@ -178,13 +231,16 @@ class Material
     #createUniformBuffer(device)
     {
         const flatUniforms = this.flattenUniforms();
+        const bufferSize = Math.max(flatUniforms.byteLength, 16);
 
         this.#uniformBuffer = device.createBuffer({
-            size: flatUniforms.byteLength,
+            size: bufferSize,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
         });
 
-        device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
+        if (flatUniforms.byteLength > 0) {
+            device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
+        }
     }
 
     /**
