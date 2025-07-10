@@ -45,9 +45,9 @@ class Vector3
     {
         Vector3.#validateInstance(other);
 
-        newX = this.y * other.z - this.z * other.y;
-        newY = this.z * other.x - this.x * other.z;
-        newZ = this.x * other.y - this.y * other.x;
+        const newX = this.y * other.z - this.z * other.y;
+        const newY = this.z * other.x - this.x * other.z;
+        const newZ = this.x * other.y - this.y * other.x;
 
         this.x = newX;
         this.y = newY;
