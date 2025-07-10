@@ -293,3 +293,7 @@ class Material
         );
     }
 }
+
+export {
+    Material
+};

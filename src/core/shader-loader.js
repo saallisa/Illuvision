@@ -23,3 +23,7 @@ class ShaderLoader
         return new Shader(vertexSource, fragmentSource);
     }
 }
+
+export {
+    ShaderLoader
+};
