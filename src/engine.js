@@ -93,6 +93,18 @@ class Engine
     }
 
     /**
+     * Returns the preferred canvas format.
+     */
+    getFormat()
+    {
+        if (!this.#initialized) {
+            throw new Error('Engine must be initialized!');
+        }
+
+        return this.#format;
+    }
+
+    /**
      * Creates a new HTML canvas element with the specified dimensions.
      */
     #createCanvas()
