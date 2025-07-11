@@ -509,6 +509,9 @@ class Geometry
      */
     #triangulateEarclipping(face)
     {
+        // Throw an error until feature is implemented
+        throw new Error('Ear clipping triangulation not yet implemented');
+        
         // Add code here
         // Try not to lose your mind while doing it, please
     }

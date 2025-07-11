@@ -5,7 +5,7 @@
  */
 class Color
 {
-    constructor(red, green, blue, alpha)
+    constructor(red = 0, green = 0, blue = 0, alpha = 1)
     {
         Color.#validateComponents(red, green, blue, alpha);
 
