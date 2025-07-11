@@ -12,6 +12,7 @@ class Material
     #shader = null;
     #color = null;
     #uniforms = new Map();
+    #uniformLayout = new Map();
 
     #uniformBuffer = null;
     #compiled = false;
@@ -25,8 +26,7 @@ class Material
         Material.#validateName(name);
         this.#name = name;
 
-        this.#color = Color.WHITE.clone();
-        this.setUniform('color', this.#color.toArray());
+        this.setColor(Color.WHITE.clone());
     }
 
     /**
@@ -63,7 +63,7 @@ class Material
         }
 
         this.#color = color.clone();
-        this.setUniform('color', this.#color.toArray());
+        this.setUniform('color', this.#color.toArray(), 'vec4<f32>');
     }
 
     /**
@@ -88,14 +88,17 @@ class Material
     /**
      * Sets a uniform value for the material.
      */
-    setUniform(name, value)
+    setUniform(name, value, type)
     {
         if (typeof name !== 'string' || name.trim().length === 0) {
             throw new TypeError('Uniform name must be a non-empty string.');
         }
 
         Material.#validateUniformValue(value);
+        Material.#validateUniformType(type);
+
         this.#uniforms.set(name, value);
+        this.#uniformLayout.set(name, type);
     }
 
     /**
@@ -113,10 +116,19 @@ class Material
     }
 
     /**
+     * Gets a copy of the uniform layout map.
+     */
+    getUniformLayout() {
+        return new Map(this.#uniformLayout);
+    }
+
+    /**
      * Removes a uniform by name.
      */
-    removeUniform(name) {
-        return this.#uniforms.delete(name);
+    removeUniform(name)
+    {
+        this.#uniforms.delete(name);
+        this.#uniformLayout.delete(name);
     }
 
     /**
@@ -124,6 +136,7 @@ class Material
      */
     clearUniforms() {
         this.#uniforms.clear();
+        this.#uniformLayout.clear();
     }
 
     /**
@@ -268,6 +281,7 @@ class Material
             if (!isFinite(value)) {
                 throw new TypeError('Uniform number value must be finite!');
             }
+            return;
         }
 
         if (Array.isArray(value)) {
@@ -286,11 +300,45 @@ class Material
                     }
                 }
             }
+            return;
         }
 
         throw new TypeError(
             'Uniform value must be a finite number or array!'
         );
+    }
+
+    /**
+     * Validates that a uniform type is a valid WGSL type.
+     */
+    static #validateUniformType(type)
+    {
+        const validTypes = [
+            // Scalar types
+            'f32', 'i32', 'u32', 'bool',
+
+            // Vector types
+            'vec2<f32>', 'vec2<i32>', 'vec2<u32>', 'vec2<bool>',
+            'vec3<f32>', 'vec3<i32>', 'vec3<u32>', 'vec3<bool>',
+            'vec4<f32>', 'vec4<i32>', 'vec4<u32>', 'vec4<bool>',
+
+            // Matrix types
+            'mat2x2<f32>', 'mat2x3<f32>', 'mat2x4<f32>',
+            'mat3x2<f32>', 'mat3x3<f32>', 'mat3x4<f32>',
+            'mat4x2<f32>', 'mat4x3<f32>', 'mat4x4<f32>',
+
+            // Common shorthand aliases
+            'float', 'int', 'uint',
+            'vec2', 'vec3', 'vec4',
+            'mat2', 'mat3', 'mat4',
+            'mat2x2', 'mat3x3', 'mat4x4'
+        ];
+
+        if (!validTypes.includes(type)) {
+            throw new TypeError(
+                `Invalid uniform type '${type}'. Must be a valid WGSL type.`
+            );
+        }
     }
 }
 
