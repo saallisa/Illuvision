@@ -1,4 +1,5 @@
 
+import { Color } from '../color.js';
 import { Face } from '../face.js';
 import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
@@ -14,6 +15,7 @@ class Geometry
     #uvs = [];
     #vertexNormals = [];
     #faceNormals = [];
+    #vertexColors = [];
 
     /**
      * Gets a copy of all vertices.
@@ -48,6 +50,13 @@ class Geometry
      */
     getFaceNormals() {
         return Array.from(this.#faceNormals);
+    }
+
+    /**
+     * Gets a copy of all vertex colors.
+     */
+    getVertexColors() {
+        return Array.from(this.#vertexColors);
     }
 
     /**
@@ -138,6 +147,18 @@ class Geometry
         }
 
         this.#uvs.push(uv.clone());
+    }
+
+    /**
+     * Adds a vertex color to the geometry.
+     */
+    addVertexColor(vertexColor)
+    {
+        if (!(vertexColor instanceof Color)) {
+            throw new TypeError('Vertex color must be a Color instance.');
+        }
+
+        this.#vertexColors.push(vertexColor.clone());
     }
 
     /**
@@ -304,6 +325,27 @@ class Geometry
         }
 
         return flatNormals;
+    }
+
+    /**
+     * Converts vertex colors to a flat Float32Array for GPU.
+     * Returns the array in the format: [r1, g1, b1, a1, r2, g2, b2, a2, ...]
+     */
+    flattenVertexColors()
+    {
+        const flatColors = new Float32Array(this.#vertexColors.length * 4);
+
+        for (let i = 0; i < this.#vertexColors.length; i++) {
+            const color = this.#vertexColors[i];
+            const offset = i * 4;
+            
+            flatColors[offset] = color.red;
+            flatColors[offset + 1] = color.green;
+            flatColors[offset + 2] = color.blue;
+            flatColors[offset + 3] = color.alpha;
+        }
+
+        return flatColors;
     }
 
     /**
