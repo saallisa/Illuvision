@@ -197,8 +197,8 @@ class Geometry
         }
 
         // Normalize all vertex normals
-        for (let i = 0; i < this.#vertexNormals.length; i++) {
-            this.#vertexNormals[i].normalize();
+        for (const normal of this.#vertexNormals) {
+            normal.normalize();
         }
     }
 
@@ -242,213 +242,18 @@ class Geometry
     }
 
     /**
-     * Converts vertices to a flat Float32Array for GPU vertex buffer.
-     * Returns an array in the format: [x1, y1, z1, x2, y2, z2, ...]
+     * Flattens geometry data into an interleaved vertex buffer based on
+     * the specified layout.
      */
-    flattenVertices()
+    flattenGeometry(layout)
     {
-        const flatVertices = new Float32Array(this.#vertices.length * 3);
+        this.#validateBufferLayout(layout);
 
-        for (let i = 0; i < this.#vertices.length; i++)
-        {
-            const vertex = this.#vertices[i];
-            const offset = i * 3;
+        const componentInfo = this.#buildComponentInfo(layout);
+        const stride = this.#calculateStride(componentInfo);
 
-            flatVertices[offset] = vertex.x;
-            flatVertices[offset + 1] = vertex.y;
-            flatVertices[offset + 2] = vertex.z;
-        }
-
-        return flatVertices;
-    }
-
-    /**
-     * Converts faces to a flat index array for GPU element buffer.
-     * Returns an Uint16Array or Uint32Array depending on vertex count.
-     */
-    flattenIndices()
-    {
-        const indices = [];
-
-        for (const face of this.#faces) {
-            const faceIndices = face.getIndices();
-            indices.push(...faceIndices);
-        }
-
-        // Use Uint16Array for smaller geometries, Uint32Array for larger ones
-        if (this.#vertices.length <= 65535) {
-            return new Uint16Array(indices);
-        }
-
-        return new Uint32Array(indices);
-    }
-
-    /**
-     * Converts UV coordinates to a flat Float32Array for GPU texture buffer.
-     * Returns an array in the format: [u1, v1, u2, v2, u3, v3, ...]
-     */
-    flattenUvs()
-    {
-        const flatUvs = new Float32Array(this.#uvs.length * 2);
-
-        for (let i = 0; i < this.#uvs.length; i++) {
-            const uv = this.#uvs[i];
-            const offset = i * 2;
-            
-            flatUvs[offset] = uv.u;
-            flatUvs[offset + 1] = uv.v;
-        }
-
-        return flatUvs;
-    }
-
-    /**
-     * Converts vertex normals to a flat Float32Array for GPU.
-     * Returns the array in the format: [nx1, ny1, nz1, nx2, ny2, nz2, ...]
-     * If no vertex normals exist, calculates them first.
-     */
-    flattenVertexNormals()
-    {
-        if (this.#vertexNormals.length === 0) {
-            this.calculateVertexNormals();
-        }
-
-        const flatNormals = new Float32Array(this.#vertexNormals.length * 3);
-
-        for (let i = 0; i < this.#vertexNormals.length; i++) {
-            const normal = this.#vertexNormals[i];
-            const offset = i * 3;
-            
-            flatNormals[offset] = normal.x;
-            flatNormals[offset + 1] = normal.y;
-            flatNormals[offset + 2] = normal.z;
-        }
-
-        return flatNormals;
-    }
-
-    /**
-     * Converts vertex colors to a flat Float32Array for GPU.
-     * Returns the array in the format: [r1, g1, b1, a1, r2, g2, b2, a2, ...]
-     */
-    flattenVertexColors()
-    {
-        const flatColors = new Float32Array(this.#vertexColors.length * 4);
-
-        for (let i = 0; i < this.#vertexColors.length; i++) {
-            const color = this.#vertexColors[i];
-            const offset = i * 4;
-            
-            flatColors[offset] = color.red;
-            flatColors[offset + 1] = color.green;
-            flatColors[offset + 2] = color.blue;
-            flatColors[offset + 3] = color.alpha;
-        }
-
-        return flatColors;
-    }
-
-    /**
-     * Creates combined vertex data of positions and normals.
-     * Format: [x1, y1, z1, nx1, ny1, nz1, x2, y2, z2, nx2, ny2, nz2, ...]
-     */
-    flattenCombinedVertexData()
-    {
-        if (this.#vertexNormals.length === 0) {
-            this.calculateVertexNormals();
-        }
-
-        const combinedData = new Float32Array(this.#vertices.length * 6);
-
-        for (let i = 0; i < this.#vertices.length; i++) {
-            const vertex = this.#vertices[i];
-            const normal = this.#vertexNormals[i];
-            const offset = i * 6;
-
-            combinedData[offset] = vertex.x;
-            combinedData[offset + 1] = vertex.y;
-            combinedData[offset + 2] = vertex.z;
-            
-            combinedData[offset + 3] = normal.x;
-            combinedData[offset + 4] = normal.y;
-            combinedData[offset + 5] = normal.z;
-        }
-
-        return combinedData;
-    }
-
-    /**
-     * Creates combined vertex data of positions and UVs (without normals).
-     * Format: [x1, y1, z1, u1, v1, x2, y2, z2, u2, v2, ...]
-     * Note: Requires UV coordinates to be present and match vertex count.
-     */
-    flattenCombinedVertexDataWithUvsOnly()
-    {
-        if (this.#uvs.length !== this.#vertices.length) {
-            throw new Error(
-                `UV coordinate count must match vertex count.`
-            );
-        }
-
-        const combinedData = new Float32Array(this.#vertices.length * 5);
-
-        for (let i = 0; i < this.#vertices.length; i++)
-        {
-            const vertex = this.#vertices[i];
-            const uv = this.#uvs[i];
-            const offset = i * 5;
-
-            combinedData[offset] = vertex.x;
-            combinedData[offset + 1] = vertex.y;
-            combinedData[offset + 2] = vertex.z;
-
-            combinedData[offset + 3] = uv.u;
-            combinedData[offset + 4] = uv.v;
-        }
-
-        return combinedData;
-    }
-
-    /**
-     * Creates combined vertex data of positions, normals and uvs.
-     * Format: [x1, y1, z1, nx1, ny1, nz1, u1, v1, x2, y2, z2, nx2, ny2,
-     * nz2, u2, v2, ...]
-     */
-    flattenCombinedVertexDataWithUvs()
-    {
-        if (this.#vertexNormals.length === 0) {
-            this.calculateVertexNormals();
-        }
-
-        if (this.#uvs.length !== this.#vertices.length) {
-            throw new Error(
-                `UV coordinate count must match vertex count.`
-            );
-        }
-
-        const combinedData = new Float32Array(this.#vertices.length * 8);
-
-        for (let i = 0; i < this.#vertices.length; i++)
-        {
-            const vertex = this.#vertices[i];
-            const normal = this.#vertexNormals[i];
-            const uv = this.#uvs[i];
-
-            const offset = i * 8;
-
-            combinedData[offset] = vertex.x;
-            combinedData[offset + 1] = vertex.y;
-            combinedData[offset + 2] = vertex.z;
-            
-            combinedData[offset + 3] = normal.x;
-            combinedData[offset + 4] = normal.y;
-            combinedData[offset + 5] = normal.z;
-
-            combinedData[offset + 6] = uv.u;
-            combinedData[offset + 7] = uv.v;
-        }
-
-        return combinedData;
+        this.#prepareGeometryData(layout);
+        return this.#writeGeometryData(componentInfo, stride);
     }
 
     /**
@@ -558,6 +363,216 @@ class Geometry
         // Try not to lose your mind while doing it, please
     }
 
+    /**
+     * Validates the vertex buffer layout.
+     */
+    #validateBufferLayout(layout)
+    {
+        if (!Array.isArray(layout) || layout.length === 0) {
+            throw new TypeError(
+                'Layout must be a non-empty array of layout components.'
+            );
+        }
+
+        const uniqueComponents = new Set(layout);
+
+        if (uniqueComponents.size !== layout.length) {
+            throw new Error('Layout contains duplicate components');
+        }
+    }
+
+    /**
+     * Builds component information including size and offset for each
+     * layout component.
+     */
+    #buildComponentInfo(layout)
+    {
+        const info = new Map();
+        let stride = 0;
+
+        for (const component of layout) {
+            const size = this.#getComponentSize(component);
+            info.set(component, {
+                size: size,
+                offset: stride
+            });
+            stride += size;
+        }
+        
+        return info;
+    }
+
+    /**
+     * Gets the size (number of floats) for a specific component type.
+     */
+    #getComponentSize(component)
+    {
+        switch (component) {
+            case Geometry.VERTEX:
+            case Geometry.NORMAL:
+                return 3;
+            case Geometry.UV:
+                return 2;
+            case Geometry.COLOR:
+                return 4;
+            default:
+                throw new Error(`Unknown layout component: ${component}`);
+        }
+    }
+
+    /**
+     * Calculates the total stride from component information.
+     */
+    #calculateStride(info)
+    {
+        let stride = 0;
+
+        for (const componentInfo of info.values()) {
+            stride += componentInfo.size;
+        }
+
+        return stride;
+    }
+
+    /**
+     * Prepares geometry data by ensuring required data is available and valid.
+     */
+    #prepareGeometryData(layout)
+    {
+        for (const component of layout) {
+            switch (component) {
+                case Geometry.NORMAL: 
+                    this.#ensureNormalsExist();
+                    break;
+                case Geometry.UV:
+                    this.#validateUvCount();
+                    break;
+                case Geometry.COLOR:
+                    this.#validateColorCount();
+            }
+        }
+    }
+
+    /**
+     * Ensures vertex normals exist by calculating them if necessary.
+     */
+    #ensureNormalsExist()
+    {
+        if (this.#vertexNormals.length === 0) {
+            this.calculateVertexNormals();
+        }
+    }
+
+    /**
+     * Validates that UV coordinates match vertex count.
+     */
+    #validateUvCount()
+    {
+        if (this.#uvs.length !== this.#vertices.length) {
+            throw new Error('UV coordinate count must match vertex count.');
+        }
+    }
+
+    /**
+     * Validates that vertex colors match vertex count.
+     */
+    #validateColorCount()
+    {
+        if (this.#vertexColors.length !== this.#vertices.length) {
+            throw new Error('Vertex color count must match vertex count.');
+        }
+    }
+
+    /**
+     * Write interleaved buffer data.
+     */
+    #writeGeometryData(componentInfo, stride)
+    {
+        const bufferSize = this.#vertices.length * stride;
+        const buffer = new Float32Array(bufferSize);
+        
+        for (let index = 0; index < this.#vertices.length; index++) {
+            this.#writeGeometryBuffer(buffer, index, stride, componentInfo);
+        }
+        
+        return buffer;
+    }
+
+    /**
+     * Fills buffer data for a single vertex.
+    */
+    #writeGeometryBuffer(buffer, index, stride, componentInfo)
+    {
+        const baseOffset = index * stride;
+        
+        for (const [component, info] of componentInfo) {
+            const offset = baseOffset + info.offset;
+            
+            switch (component) {
+                case Geometry.VERTEX:
+                    this.#writeVertexData(buffer, offset, index);
+                    break;
+                case Geometry.NORMAL:
+                    this.#writeNormalData(buffer, offset, index);
+                    break;
+                case Geometry.UV:
+                    this.#writeUvData(buffer, offset, index);
+                    break;
+                case Geometry.COLOR:
+                    this.#writeColorData(buffer, offset, index);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Writes vertex position data to buffer.
+     */
+    #writeVertexData(buffer, offset, vertexIndex)
+    {
+        const vertex = this.#vertices[vertexIndex];
+
+        buffer[offset] = vertex.x;
+        buffer[offset + 1] = vertex.y;
+        buffer[offset + 2] = vertex.z;
+    }
+
+    /**
+     * Writes normal data to buffer.
+     */
+    #writeNormalData(buffer, offset, vertexIndex)
+    {
+        const normal = this.#vertexNormals[vertexIndex];
+
+        buffer[offset] = normal.x;
+        buffer[offset + 1] = normal.y;
+        buffer[offset + 2] = normal.z;
+    }
+
+    /**
+     * Writes UV coordinate data to buffer.
+     */
+    #writeUvData(buffer, offset, vertexIndex)
+    {
+        const uv = this.#uvs[vertexIndex];
+
+        buffer[offset] = uv.u;
+        buffer[offset + 1] = uv.v;
+    }
+
+    /**
+     * Writes color data to buffer.
+     */
+    #writeColorData(buffer, offset, vertexIndex)
+    {
+        const color = this.#vertexColors[vertexIndex];
+
+        buffer[offset] = color.red;
+        buffer[offset + 1] = color.green;
+        buffer[offset + 2] = color.blue;
+        buffer[offset + 3] = color.alpha;
+    }
+
     // Some fake constants containing valid triangulation methods.
 
     static get FAN() {
@@ -566,6 +581,24 @@ class Geometry
 
     static get EARCLIPPING() {
         return 'earclipping';
+    }
+
+    // Some more fake constants for interleaved geometry flattening.
+
+    static get VERTEX() {
+        return 'vertex';
+    }
+
+    static get NORMAL() {
+        return 'normal';
+    }
+
+    static get UV() {
+        return 'uv';
+    }
+
+    static get COLOR() {
+        return 'color';
     }
 }
 
