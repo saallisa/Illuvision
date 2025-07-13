@@ -107,7 +107,7 @@ class Color
     }
 
     static get PURPLE() {
-        return new Color(0.5, 0, 0.5);
+        return new Color(0.5, 0, 0.5, 1);
     }
 }
 

@@ -100,3 +100,7 @@ class Loader
         }
     }
 }
+
+export {
+    Loader
+};
