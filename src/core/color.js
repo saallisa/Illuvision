@@ -70,7 +70,15 @@ class Color
         return new Color(1, 0, 0, 1);
     }
 
+    static get MAROON() {
+        return new Color(0.5, 0, 0, 1);
+    }
+
     static get GREEN() {
+        return new Color(0, 0.5, 0, 1);
+    }
+
+    static get LIME() {
         return new Color(0, 1, 0, 1);
     }
 
@@ -88,6 +96,18 @@ class Color
 
     static get GREY() {
         return new Color(0.5, 0.5, 0.5, 1);
+    }
+
+    static get YELLOW() {
+        return new Color(1, 1, 0, 1);
+    }
+
+    static get MAGENTA() {
+        return new Color(1, 0, 1, 1);
+    }
+
+    static get PURPLE() {
+        return new Color(0.5, 0, 0.5);
     }
 }
 
