@@ -36,6 +36,20 @@ class Color
     }
 
     /**
+     * Converts a hex color string to gpu compatible float values.
+     */
+    static fromHex(hex)
+    {
+        Color.#validateHexCode(hex);
+
+        const r = parseInt(hex.slice(0, 2), 16) / 255;
+        const g = parseInt(hex.slice(2, 4), 16) / 255;
+        const b = parseInt(hex.slice(4, 6), 16) / 255;
+
+        return new Color(r, g, b, 1);
+    }
+
+    /**
      * Validates that a single color component is in the range 0-1.
      */
     static #validateComponent(value, componentName)
@@ -62,6 +76,26 @@ class Color
         Color.#validateComponent(green, 'green');
         Color.#validateComponent(blue, 'blue');
         Color.#validateComponent(alpha, 'alpha');
+    }
+
+    /**
+     * Validates that a hex color string is valid.
+     */
+    static #validateHexCode(hex)
+    {
+        if (hex === null || hex === undefined) {
+            throw new Error('Hex code may not be empty.');
+        }
+
+        if (typeof hex !== 'string' || hex.trim().length !== 6) {
+            throw new TypeError(
+                'Hex code must be provided as a string.'
+            );
+        }
+
+        if (hex.match(/^[A-Fa-f0-9]{6}$/) === null) {
+            throw new Error('Invalid hex color code.');
+        }
     }
 
     // Some quick factory methods for creating base colors.
