@@ -1,6 +1,7 @@
 
 import { Color } from '../color.js';
 import { Face } from '../face.js';
+import { GeometryBuffer } from '../buffer/geometry-buffer.js';
 import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
@@ -243,17 +244,81 @@ class Geometry
 
     /**
      * Flattens geometry data into an interleaved vertex buffer based on
-     * the specified layout.
+     * the specified layout and returns a GeometryBuffer instance.
      */
-    flattenGeometry(layout)
+    createBuffer(layout)
     {
-        this.#validateBufferLayout(layout);
+        Geometry.validateBufferLayout(layout);
 
         const componentInfo = this.#buildComponentInfo(layout);
         const stride = this.#calculateStride(componentInfo);
+        const offsets = this.#calculateByteOffsets(componentInfo);
 
         this.#prepareGeometryData(layout);
-        return this.#writeGeometryData(componentInfo, stride);
+        const buffer = this.#writeGeometryData(componentInfo, stride);
+
+        return new GeometryBuffer(
+            buffer,
+            Array.from(layout),
+            stride,
+            offsets,
+            this.#vertices.length
+        );
+    }
+
+    /**
+     * Validates a component.
+     */
+    static validateComponent(component)
+    {
+        const validComponents = [
+            Geometry.VERTEX,
+            Geometry.NORMAL,
+            Geometry.UV,
+            Geometry.COLOR
+        ];
+
+        if (!validComponents.includes(component)) {
+            throw new Error(
+                `Invalid geometry component: ${component}.`
+            );
+        }
+    }
+
+    /**
+     * Gets the size (number of floats) for a specific component type.
+     */
+    static getComponentSize(component)
+    {
+        switch (component) {
+            case Geometry.VERTEX:
+            case Geometry.NORMAL:
+                return 3;
+            case Geometry.UV:
+                return 2;
+            case Geometry.COLOR:
+                return 4;
+            default:
+                throw new Error(`Unknown layout component: ${component}`);
+        }
+    }
+    
+    /**
+     * Validates the vertex buffer layout.
+     */
+    static validateBufferLayout(layout)
+    {
+        if (!Array.isArray(layout) || layout.length === 0) {
+            throw new TypeError(
+                'Layout must be a non-empty array of layout components.'
+            );
+        }
+
+        const uniqueComponents = new Set(layout);
+
+        if (uniqueComponents.size !== layout.length) {
+            throw new Error('Layout contains duplicate components');
+        }
     }
 
     /**
@@ -364,24 +429,6 @@ class Geometry
     }
 
     /**
-     * Validates the vertex buffer layout.
-     */
-    #validateBufferLayout(layout)
-    {
-        if (!Array.isArray(layout) || layout.length === 0) {
-            throw new TypeError(
-                'Layout must be a non-empty array of layout components.'
-            );
-        }
-
-        const uniqueComponents = new Set(layout);
-
-        if (uniqueComponents.size !== layout.length) {
-            throw new Error('Layout contains duplicate components');
-        }
-    }
-
-    /**
      * Builds component information including size and offset for each
      * layout component.
      */
@@ -391,7 +438,7 @@ class Geometry
         let stride = 0;
 
         for (const component of layout) {
-            const size = this.#getComponentSize(component);
+            const size = Geometry.getComponentSize(component);
             info.set(component, {
                 size: size,
                 offset: stride
@@ -400,24 +447,6 @@ class Geometry
         }
         
         return info;
-    }
-
-    /**
-     * Gets the size (number of floats) for a specific component type.
-     */
-    #getComponentSize(component)
-    {
-        switch (component) {
-            case Geometry.VERTEX:
-            case Geometry.NORMAL:
-                return 3;
-            case Geometry.UV:
-                return 2;
-            case Geometry.COLOR:
-                return 4;
-            default:
-                throw new Error(`Unknown layout component: ${component}`);
-        }
     }
 
     /**
@@ -432,6 +461,22 @@ class Geometry
         }
 
         return stride;
+    }
+
+    /**
+     * Calculates byte offsets for each component.
+     */
+    #calculateByteOffsets(componentInfo)
+    {
+        const offsets = {};
+        let byteOffset = 0;
+        
+        for (const [component, info] of componentInfo) {
+            offsets[component] = byteOffset;
+            byteOffset += info.size * 4;
+        }
+        
+        return offsets;
     }
 
     /**
