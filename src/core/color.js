@@ -25,7 +25,7 @@ class Color
 
         this.red += (color.red - this.red) * t;
 		this.green += (color.green - this.green) * t;
-		this.blue += this.blue + (color.blue - this.blue) * t;
+		this.blue += (color.blue - this.blue) * t;
     }
 
     /**
