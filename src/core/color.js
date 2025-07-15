@@ -16,6 +16,35 @@ class Color
     }
 
     /**
+     * Linear interpolation from this color towards another color.
+     */
+    lerpSelf(color, t)
+    {
+        Color.#validateColorInstance(color, 'color');
+        Color.#validateComponent(t, 'interpolation factor');
+
+        this.red += (color.red - this.red) * t;
+		this.green += (color.green - this.green) * t;
+		this.blue += this.blue + (color.blue - this.blue) * t;
+    }
+
+    /**
+     * Linear interpolation from this color towards another color.
+     * Returns a new Color instance without modifying the original.
+     */
+    lerp(color, t)
+    {
+        Color.#validateColorInstance(color, 'color');
+        Color.#validateComponent(t, 'interpolation factor');
+
+        const red = this.red + (color.red - this.red) * t;
+		const green = this.green + (color.green - this.green) * t;
+		const blue = this.blue + (color.blue - this.blue) * t;
+
+		return new Color(red, green, blue, this.alpha);
+    }
+
+    /**
      * Create an exact copy of this color.
      */
     clone() {
@@ -33,6 +62,18 @@ class Color
             this.blue,
             this.alpha
         ];
+    }
+
+    /**
+     * Linear interpolation from one color towards another color.
+     * Returns a new Color instance without modifying the originals.
+     */
+    static lerp(color, other, t)
+    {
+        Color.#validateColorInstance(color, 'color');
+        Color.#validateColorInstance(other, 'other');
+
+        return color.lerp(other, t);
     }
 
     /**
@@ -76,6 +117,18 @@ class Color
         Color.#validateComponent(green, 'green');
         Color.#validateComponent(blue, 'blue');
         Color.#validateComponent(alpha, 'alpha');
+    }
+
+    /**
+     * Validates that a value is a color instance.
+     */
+    static #validateColorInstance(value, name)
+    {
+        if (!(value instanceof Color)) {
+            throw new TypeError(
+                `${name} must be an instance of Color class.`
+            );
+        }
     }
 
     /**
