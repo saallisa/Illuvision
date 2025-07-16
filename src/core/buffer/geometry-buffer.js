@@ -1,4 +1,5 @@
 
+import { Engine } from '../../engine.js';
 import { Geometry } from '../geometry/geometry.js';
 
 /**
@@ -11,6 +12,11 @@ class GeometryBuffer
     #stride;
     #offsets;
     #vertexCount;
+
+    #device = null;
+    #compiled = false;
+    #gpuBuffer = null;
+    #gpuBufferLayout = null;
 
     constructor(buffer, layout, stride, offsets, vertexCount)
     {
@@ -70,6 +76,131 @@ class GeometryBuffer
      */
     getBufferSize() {
         return this.#buffer.byteLength;
+    }
+
+    /**
+     * Gets the gpu buffer.
+     */
+    getVertexBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Geometry must be compiled before accessing vertex buffer!'
+            );
+        }
+
+        return this.#gpuBuffer;
+    }
+
+    /**
+     * Gets the gpu buffer layout.
+     */
+    getVertexBufferLayout()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Geometry must be compiled before accessing buffer layout!'
+            );
+        }
+
+        return this.#gpuBufferLayout;
+    }
+
+    /**
+     * Compiles the geometry buffer into a WebGPU vertex buffer.
+     * This creates a GPU buffer and uploads the vertex data.
+     */
+    compile(device)
+    {
+        if (this.#compiled) {
+            return;
+        }
+
+        Engine.validateDevice(device);
+        this.#device = device;
+
+        this.#createVertexBuffer();
+        this.#generateVertexBufferLayout();
+
+        this.#compiled = true;
+    }
+
+    /**
+     * Destroy the vertex buffer associated with this geometry.
+     */
+    destroy()
+    {
+        if (this.#gpuBuffer) {
+            this.#gpuBuffer.destroy();
+            this.#gpuBuffer = null;
+        }
+
+        this.#gpuBufferLayout = null;
+        this.#compiled = false;
+    }
+
+    /**
+     * Compiles the WebGPU vertex buffer.
+     */
+    #createVertexBuffer()
+    {
+        this.#gpuBuffer = this.#device.createBuffer({
+            size: this.#buffer.byteLength,
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
+            mappedAtCreation: true
+        });
+
+        const mappedBuffer = this.#gpuBuffer.getMappedRange();
+        new Float32Array(mappedBuffer).set(this.#buffer);
+        this.#gpuBuffer.unmap();
+    }
+
+    /**
+     * Generates vertex buffer layout descriptors for WebGPU
+     * render pipeline. This creates the vertex buffer layout
+     * needed for shader input.
+     */
+    #generateVertexBufferLayout()
+    {
+        const attributes = [];
+        let shaderLocation = 0;
+
+        for (const component of this.#layout) {
+            const format = GeometryBuffer.#getWebGPUFormat(component);
+            const offset = this.#offsets[component];
+
+            attributes.push({
+                format: format,
+                offset: offset,
+                shaderLocation: shaderLocation
+            });
+
+            shaderLocation++;
+        }
+
+        this.#gpuBufferLayout = {
+            arrayStride: this.#stride * 4,
+            stepMode: 'vertex',
+            attributes: attributes
+        };
+    }
+
+    /**
+     * Gets the appropriate WebGPU format for a geometry component.
+     */
+    static #getWebGPUFormat(component)
+    {
+        switch (component) {
+            case Geometry.VERTEX:
+            case Geometry.NORMAL:
+                return 'float32x3';
+            case Geometry.UV:
+                return 'float32x2';
+            case Geometry.COLOR:
+                return 'float32x4';
+            default:
+                throw new Error(`Unknown component type: ${component}`);
+        }
     }
 }
 
