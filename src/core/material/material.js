@@ -11,6 +11,7 @@ class Material
     #name = null;
     #shader = null;
     #color = null;
+    #vertexColors = false;
     #uniforms = new Map();
     #uniformLayout = new Map();
 
@@ -64,6 +65,26 @@ class Material
 
         this.#color = color.clone();
         this.setUniform('color', this.#color.toArray(), 'vec4<f32>');
+    }
+
+    /**
+     * Configures the material to use vertex colors instead of uniform colors.
+     */
+    setUseVertexColor(config)
+    {
+        if (typeof config !== 'boolean') {
+            throw new TypeError('Value must be of type boolean.');
+        }
+
+        this.#vertexColors = config;
+    }
+
+    /**
+     * Returns whether a material should use a uniform color value or the vertex
+     * color values.
+     */
+    getUseVertexColor() {
+        return this.#vertexColors;
     }
 
     /**
