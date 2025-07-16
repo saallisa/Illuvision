@@ -257,13 +257,24 @@ class Geometry
         this.#prepareGeometryData(layout);
         const buffer = this.#writeGeometryData(componentInfo, stride);
 
-        return new GeometryBuffer(
+        const geometryBuffer = new GeometryBuffer(
             buffer,
             Array.from(layout),
             stride,
             offsets,
             this.#vertices.length
         );
+
+        if (this.getFaceCount() > 0) {
+            const indexData = this.#createIndexData();
+
+            geometryBuffer.addIndices(
+                indexData.buffer,
+                indexData.count
+            );
+        }
+
+        return geometryBuffer;
     }
 
     /**
@@ -426,6 +437,38 @@ class Geometry
         
         // Add code here
         // Try not to lose your mind while doing it, please
+    }
+
+    /**
+     * Creates index buffer data from faces.
+     */
+    #createIndexData()
+    {
+        // Count total number of indices needed
+        let totalIndices = 0;
+
+        for (const face of this.#faces) {
+            totalIndices += face.getIndices().length;
+        }
+
+        // Create the index buffer
+        const indexBuffer = new Uint16Array(totalIndices);
+        let bufferIndex = 0;
+
+        // Fill the index buffer with face indices
+        for (const face of this.#faces) {
+            const indices = face.getIndices();
+            
+            for (const index of indices) {
+                indexBuffer[bufferIndex] = index;
+                bufferIndex++;
+            }
+        }
+
+        return {
+            buffer: indexBuffer,
+            count: totalIndices
+        };
     }
 
     /**

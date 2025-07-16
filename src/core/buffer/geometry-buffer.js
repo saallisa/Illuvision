@@ -12,11 +12,14 @@ class GeometryBuffer
     #stride;
     #offsets;
     #vertexCount;
+    #indexBuffer = null;
+    #indexCount = null;
 
     #device = null;
     #compiled = false;
     #gpuBuffer = null;
     #gpuBufferLayout = null;
+    #gpuIndexBuffer = null;
 
     constructor(buffer, layout, stride, offsets, vertexCount)
     {
@@ -72,6 +75,20 @@ class GeometryBuffer
     }
 
     /**
+     * Gets the Uint16Array buffer containing face indices.
+     */
+    getIndexBuffer() {
+        return this.#indexBuffer;
+    }
+
+    /**
+     * Gets the number of faces in the buffer.
+     */
+    getIndexCount() {
+        return this.#indexCount;
+    }
+
+    /**
      * Gets the total size of the buffer in bytes.
      */
     getBufferSize() {
@@ -81,7 +98,7 @@ class GeometryBuffer
     /**
      * Gets the gpu buffer.
      */
-    getVertexBuffer()
+    getGpuVertexBuffer()
     {
         if (!this.#compiled) {
             throw new Error(
@@ -107,6 +124,29 @@ class GeometryBuffer
     }
 
     /**
+     * Gets the gpu index buffer.
+     */
+    getGpuIndexBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Geometry must be compiled before accessing index buffer!'
+            );
+        }
+
+        return this.#gpuIndexBuffer;
+    }
+
+    /**
+     * Adds indices and index count to this Geometry buffer.
+     */
+    addIndices(indices, indexCount)
+    {
+        this.#indexBuffer = indices;
+        this.#indexCount = indexCount;
+    }
+
+    /**
      * Compiles the geometry buffer into a WebGPU vertex buffer.
      * This creates a GPU buffer and uploads the vertex data.
      */
@@ -122,6 +162,10 @@ class GeometryBuffer
         this.#createVertexBuffer();
         this.#generateVertexBufferLayout();
 
+        if (this.#indexBuffer) {
+            this.#createIndexBuffer();
+        }
+
         this.#compiled = true;
     }
 
@@ -133,6 +177,11 @@ class GeometryBuffer
         if (this.#gpuBuffer) {
             this.#gpuBuffer.destroy();
             this.#gpuBuffer = null;
+        }
+
+        if (this.#gpuIndexBuffer) {
+            this.#gpuIndexBuffer.destroy();
+            this.#gpuIndexBuffer = null;
         }
 
         this.#gpuBufferLayout = null;
@@ -183,6 +232,22 @@ class GeometryBuffer
             stepMode: 'vertex',
             attributes: attributes
         };
+    }
+
+    /**
+     * Compiles the WebGPU index buffer.
+     */
+    #createIndexBuffer()
+    {
+        this.#gpuIndexBuffer = this.#device.createBuffer({
+            size: this.#indexBuffer.byteLength,
+            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
+            mappedAtCreation: true
+        });
+
+        const mappedBuffer = this.#gpuIndexBuffer.getMappedRange();
+        new Uint16Array(mappedBuffer).set(this.#indexBuffer);
+        this.#gpuIndexBuffer.unmap();
     }
 
     /**
