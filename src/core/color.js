@@ -29,6 +29,22 @@ class Color
     }
 
     /**
+     * Fade the color towards black by a specified amount.
+     * Modifies the original color instance.
+     */
+    darkenSelf(amount) {
+        return this.lerpSelf(Color.BLACK, amount);
+    }
+
+    /**
+     * Fade the color towards white by a specified amount.
+     * Modifies the original color instance.
+     */
+    lightenSelf(amount) {
+        return this.lerpSelf(Color.WHITE, amount);
+    }
+
+    /**
      * Linear interpolation from this color towards another color.
      * Returns a new Color instance without modifying the original.
      */
@@ -42,6 +58,22 @@ class Color
 		const blue = this.blue + (color.blue - this.blue) * t;
 
 		return new Color(red, green, blue, this.alpha);
+    }
+
+    /**
+     * Darken the color towards black by a specified amount.
+     * Returns a new Color instance without modifying the original.
+     */
+    darken(amount) {
+        return this.lerp(Color.BLACK, amount);
+    }
+
+    /**
+     * Lighten the color towards white by a specified amount.
+     * Returns a new Color instance without modifying the original.
+     */
+    lighten(amount) {
+        return this.lerp(Color.WHITE, amount);
     }
 
     /**
