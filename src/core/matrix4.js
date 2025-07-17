@@ -61,6 +61,10 @@ class Matrix4
      */
     static createScale(x, y, z)
     {
+        this.#validateComponent(x, 'x');
+        this.#validateComponent(y, 'y');
+        this.#validateComponent(z, 'z');
+        
         return new Matrix4(
             x, 0, 0, 0,
             0, y, 0, 0,
