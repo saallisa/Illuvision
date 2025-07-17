@@ -10,12 +10,17 @@ class Engine
     #context = null;
     #format = null;
 
+    #width = null;
+    #height = null;
+    #aspectRatio = null;
+
     #initialized = false;
 
     constructor()
     {
-        this.width = 800;
-        this.height = 600;
+        this.#width = 800;
+        this.#height = 600;
+        this.#aspectRatio = this.#width / this.#height;
     }
 
     /**
@@ -32,8 +37,9 @@ class Engine
             throw new TypeError('Height must be a positive number.');
         }
 
-        this.width = width;
-        this.height = height;
+        this.#width = width;
+        this.#height = height;
+        this.#aspectRatio = this.#width / this.#height;
 
         if (this.#canvas) {
             this.#canvas.width = width;
@@ -105,17 +111,24 @@ class Engine
     }
 
     /**
+     * Returns the aspect ratio of the canvas element.
+     */
+    getAspectRatio() {
+        return this.#aspectRatio;
+    }
+
+    /**
      * Creates a new HTML canvas element with the specified dimensions.
      */
     #createCanvas()
     {
         this.#canvas = document.createElement('canvas');
-        this.#canvas.width = this.width;
-        this.#canvas.height = this.height;
+        this.#canvas.width = this.#width;
+        this.#canvas.height = this.#height;
         
         // Set CSS size to match canvas size for proper display
-        this.#canvas.style.width = this.width + 'px';
-        this.#canvas.style.height = this.height + 'px';
+        this.#canvas.style.width = this.#width + 'px';
+        this.#canvas.style.height = this.#height + 'px';
     }
 
     /**
