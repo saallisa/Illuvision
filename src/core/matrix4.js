@@ -99,6 +99,23 @@ class Matrix4
     }
 
     /**
+     * Convenience method for creating a translation matrix.
+     */
+    static createTranslation(x, y, z)
+    {
+        this.#validateComponent(x, 'x');
+        this.#validateComponent(y, 'y');
+        this.#validateComponent(z, 'z');
+
+        return new Matrix4([
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            x, y, z, 1
+        ]);
+    }
+
+    /**
      * Convenience method for creating a scaling matrix.
      */
     static createScale(x, y, z)
@@ -112,6 +129,60 @@ class Matrix4
             0, y, 0, 0,
             0, 0, z, 0,
             0, 0, 0, 1 
+        ]);
+    }
+
+    /**
+     * Convenience method for creating a rotation x matrix.
+     */
+    static createRotateX(angle)
+    {
+        const radian = angle * Math.PI / 180;
+
+        const cos = Math.cos(radian);
+        const sin = Math.sin(radian);
+
+        return new Matrix4([
+            1, 0, 0, 0,
+            0, cos, sin, 0,
+            0, -sin, cos, 0,
+            0, 0, 0, 1
+        ]);
+    }
+
+    /**
+     * Convenience method for creating a rotation x matrix.
+     */
+    static createRotateY(angle)
+    {
+        const radian = angle * Math.PI / 180;
+
+        const cos = Math.cos(radian);
+        const sin = Math.sin(radian);
+
+        return new Matrix4([
+            cos, 0, -sin, 0,
+            0, 1, 0, 0,
+            sin, 0, cos, 0,
+            0, 0, 0, 1
+        ]);
+    }
+
+    /**
+     * Convenience method for creating a rotation z matrix.
+     */
+    static createRotateZ(angle)
+    {
+        const radian = angle * Math.PI / 180;
+
+        const cos = Math.cos(radian);
+        const sin = Math.sin(radian);
+
+        return new Matrix4([
+            cos, sin, 0, 0,
+            -sin, cos, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
         ]);
     }
 
