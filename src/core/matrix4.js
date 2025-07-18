@@ -50,10 +50,52 @@ class Matrix4
     }
 
     /**
+     * Modifies this matrix by multiplying it with another matrix.
+     */
+    multiply(other)
+    {
+        Matrix4.#validateInstance(other);
+
+        this.#elements = Matrix4.#multiplyArray(
+            this.#elements, other.toArray()
+        );
+    }
+
+    /**
+     * Multiply this matrix with another and return the result as a
+     * new matrix.
+     */
+    multiplyOther(other) {
+        Matrix4.#validateInstance(other);
+
+        const result = Matrix4.#multiplyArray(
+            this.#elements, other.toArray()
+        );
+
+        return new Matrix4(result);
+    }
+
+    /**
      * Returns the matrix as an array.
      */
     toArray() {
         return Array.from(this.#elements);
+    }
+
+    /**
+     * Multiplies two Matrix4 instances.
+     */
+    static multiply(matrixA, matrixB)
+    {
+        Matrix4.#validateInstance(matrixA);
+        Matrix4.#validateInstance(matrixB);
+
+        const ma = matrixA.toArray();
+        const mb = matrixB.toArray();
+
+        return new Matrix4(
+            Matrix4.#multiplyArray(ma, mb)
+        );
     }
 
     /**
@@ -121,6 +163,30 @@ class Matrix4
         if (!(value instanceof Matrix4)) {
             throw new TypeError('Expected an instance of Matrix4');
         }
+    }
+
+    /**
+     * Multiplies two array representations of Matrix4 and returns the result
+     * as an array.
+     */
+    static #multiplyArray(ma, mb)
+    {
+        const result = new Array(16);
+
+        for (let row = 0; row < 4; row++) {
+            for (let col = 0; col < 4; col++) {
+                let sum = 0;
+
+                sum += ma[row * 4 + 0] * mb[0 * 4 + col];
+                sum += ma[row * 4 + 1] * mb[1 * 4 + col];
+                sum += ma[row * 4 + 2] * mb[2 * 4 + col];
+                sum += ma[row * 4 + 3] * mb[3 * 4 + col];
+
+                result[row * 4 + col] = sum;
+            }
+        }
+
+        return result;
     }
 }
 
