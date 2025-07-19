@@ -42,11 +42,15 @@ class Engine
         this.#aspectRatio = this.#width / this.#height;
 
         if (this.#canvas) {
-            this.#canvas.width = width;
-            this.#canvas.height = height;
-            this.#canvas.style.width = width + 'px';
-            this.#canvas.style.height = height + 'px';
+            this.#updateCanvasSize();
         }
+    }
+
+    /**
+     * Resizes canvas to fit the current window size.
+     */
+    setSizeToWindow() {
+        this.setSize(window.innerWidth, window.innerHeight);
     }
 
     /**
@@ -123,6 +127,14 @@ class Engine
     #createCanvas()
     {
         this.#canvas = document.createElement('canvas');
+        this.#updateCanvasSize();
+    }
+
+    /**
+     * Updates the canvas dimensions and CSS styles.
+     */
+    #updateCanvasSize()
+    {
         this.#canvas.width = this.#width;
         this.#canvas.height = this.#height;
         
