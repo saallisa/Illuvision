@@ -8,8 +8,13 @@ import { Vector3 } from '/src/core/vector3.js';
  */
 async function main()
 {
+    // Configure engine
+    const baseUrl = new URL(window.location.href);
+    Engine.setRootPath(baseUrl.origin + '/src/');
+
     // Init engine
     const engine = new Engine();
+    engine.setSizeToWindow();
     await engine.initialize();
 
     // Add canvas to page
