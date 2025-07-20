@@ -1,5 +1,8 @@
 
+import { BasicMaterial } from '/src/core/material/basic-material.js';
+import { Color } from '/src/core/color.js';
 import { Engine } from '/src/engine.js';
+import { Mesh } from '/src/core/mesh.js';
 import { Triangle } from '/src/core/geometry/triangle.js';
 import { Vector3 } from '/src/core/vector3.js';
 
@@ -27,10 +30,13 @@ async function main()
         new Vector3(0.5, -0.5, 0)
     );
 
-    // ... Here I'd like to create a material:
-    // triangleMaterial = new PhongMaterial();
-    // ... Here I'd like to create a mesh
-    // triangle = new Mesh(triangleGeometry, triangleMaterial);
+    // Define the material to use
+    const triangleMaterial = await BasicMaterial.init({
+        color: Color.MAGENTA
+    });
+
+    // Create a mesh from the geometry and material
+    const triangle = new Mesh(triangleGeometry, triangleMaterial);
 }
 
 main();
