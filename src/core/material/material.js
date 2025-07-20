@@ -166,6 +166,14 @@ class Material
     }
 
     /**
+     * Abstract method for initializing this material. Must be implemented
+     * by the concrete implementation of this class.
+     */
+    static async init(settings = {}) {
+        throw new Error('Method init not implemented!');
+    }
+
+    /**
      * Makes sure that the material's name is valid
      */
     static #validateName(name)

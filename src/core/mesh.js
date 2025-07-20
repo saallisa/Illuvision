@@ -156,3 +156,7 @@ class Mesh
         }
     }
 }
+
+export {
+    Mesh
+};

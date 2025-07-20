@@ -1,4 +1,6 @@
 
+import { Loader } from './core/loader.js';
+
 /**
  * 3D rendering engine using the WebGPU API and HTML canvas.
  */
@@ -15,12 +17,29 @@ class Engine
     #aspectRatio = null;
 
     #initialized = false;
+    static #rootPath = '';
 
     constructor()
     {
         this.#width = 800;
         this.#height = 600;
         this.#aspectRatio = this.#width / this.#height;
+    }
+
+    /**
+     * Sets the absolute path to the engine folder. 
+     */
+    static setRootPath(path)
+    {
+        if (typeof path !== 'string') {
+            throw new TypeError('Path must be a string.');
+        }
+
+        if (path.length === 0) {
+            throw new Error('Path may not be an empty string.');
+        }
+
+        Engine.#rootPath = Loader.normalizePath(path);
     }
 
     /**
@@ -64,6 +83,13 @@ class Engine
         await this.#configureContext();
 
         this.#initialized = true;
+    }
+
+    /**
+     * Returns the absolute path to the engine folder
+     */
+    static getRootPath() {
+        return Engine.#rootPath;
     }
 
     /**

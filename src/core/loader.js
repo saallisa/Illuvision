@@ -14,7 +14,7 @@ class Loader
         this.#validateFileName(name);
         this.#validateFilePath(path);
 
-        const fullPath = this.#normalizePath(path) + name;
+        const fullPath = this.normalizePath(path) + name;
 
         // Try to get from cache
         if (this.#cache.has(fullPath)) {
@@ -55,7 +55,7 @@ class Loader
      * Normalizes the path to always end with one trailing slash.
      * Also fills an empty path to load from current directory.
      */
-    static #normalizePath(path)
+    static normalizePath(path)
     {
         if (path.length === 0) {
             return './';
