@@ -19,7 +19,7 @@ class Vector3
      */
     add(other)
     {
-        Vector3.#validateInstance(other);
+        Vector3.validateInstance(other);
 
         this.x = this.x + other.x;
         this.y = this.y + other.y;
@@ -31,7 +31,7 @@ class Vector3
      */
     subtract(other)
     {
-        Vector3.#validateInstance(other);
+        Vector3.validateInstance(other);
 
         this.x = this.x - other.x;
         this.y = this.y - other.y;
@@ -43,7 +43,7 @@ class Vector3
      */
     cross(other)
     {
-        Vector3.#validateInstance(other);
+        Vector3.validateInstance(other);
 
         const newX = this.y * other.z - this.z * other.y;
         const newY = this.z * other.x - this.x * other.z;
@@ -109,8 +109,8 @@ class Vector3
      */
     static add(vectorA, vectorB)
     {
-        Vector3.#validateInstance(vectorA);
-        Vector3.#validateInstance(vectorB);
+        Vector3.validateInstance(vectorA);
+        Vector3.validateInstance(vectorB);
 
         const x = vectorA.x + vectorB.x;
         const y = vectorA.y + vectorB.y;
@@ -124,8 +124,8 @@ class Vector3
      */
     static subtract(vectorA, vectorB)
     {
-        Vector3.#validateInstance(vectorA);
-        Vector3.#validateInstance(vectorB);
+        Vector3.validateInstance(vectorA);
+        Vector3.validateInstance(vectorB);
 
         const x = vectorA.x - vectorB.x;
         const y = vectorA.y - vectorB.y;
@@ -139,8 +139,8 @@ class Vector3
      */
     static cross(vectorA, vectorB)
     {
-        Vector3.#validateInstance(vectorA);
-        Vector3.#validateInstance(vectorB);
+        Vector3.validateInstance(vectorA);
+        Vector3.validateInstance(vectorB);
 
         const x = vectorA.y * vectorB.z - vectorA.z * vectorB.y;
         const y = vectorA.z * vectorB.x - vectorA.x * vectorB.z;
@@ -154,8 +154,8 @@ class Vector3
      */
     static dot(vectorA, vectorB)
     {
-        Vector3.#validateInstance(vectorA);
-        Vector3.#validateInstance(vectorB);
+        Vector3.validateInstance(vectorA);
+        Vector3.validateInstance(vectorB);
 
         const x = vectorA.x * vectorB.x;
         const y = vectorA.y * vectorB.y;
@@ -169,7 +169,7 @@ class Vector3
      */
     static normalize(vector)
     {
-        Vector3.#validateInstance(vector);
+        Vector3.validateInstance(vector);
 
         const length = vector.length();
         
@@ -228,7 +228,7 @@ class Vector3
     /**
      * Validates that an object is a Vector3 instance.
      */
-    static #validateInstance(value)
+    static validateInstance(value)
     {
         if (!(value instanceof Vector3)) {
             throw new TypeError('Expected an instance of Vector3.');

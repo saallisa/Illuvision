@@ -265,6 +265,18 @@ class Engine
             );
         }
     }
+
+    /**
+     * Validates the engine instance.
+     */
+    static validateEngine(engine)
+    {
+        if (!(engine instanceof Engine)) {
+            throw new TypeError(
+                'Engine must be an istance of Engine class.'
+            );
+        }
+    }
 }
 
 export {
