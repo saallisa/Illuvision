@@ -15,6 +15,7 @@ class Material
     #vertexColors = false;
 
     #uniformBuffer = null;
+    #bindGroup = null;
     #compiled = false;
 
     constructor(name = 'Material')
@@ -123,6 +124,20 @@ class Material
     }
 
     /**
+     * Gets the bind group of this mesh.
+     */
+    getBindGroup()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Material must be compiled before accessing bind group.'
+            );
+        }
+
+        return this.#bindGroup;
+    }
+
+    /**
      * Compiles the material by creating the WebGPU shader and buffers.
      */
     compile(device)
@@ -139,6 +154,7 @@ class Material
 
         this.#shader.compile(device);
         this.#uniformBuffer.compile(device);
+        this.#createBindGroup(device);
         this.#compiled = true;
     }
 
@@ -158,6 +174,8 @@ class Material
             this.#uniformBuffer.destroy();
         }
 
+        this.#bindGroup = null;
+
         if (this.#shader) {
             this.#shader.destroy();
         }
@@ -171,6 +189,22 @@ class Material
      */
     static async init(settings = {}) {
         throw new Error('Method init not implemented!');
+    }
+
+    /**
+     * Creates the bind group layout.
+     */
+    #createBindGroup(device)
+    {
+        this.#bindGroup = device.createBindGroup({
+            label: 'material',
+            entries: [{
+                binding: 0,
+                resource: {
+                    buffer: this.#uniformBuffer.getUniformBuffer()
+                }
+            }]
+        });
     }
 
     /**

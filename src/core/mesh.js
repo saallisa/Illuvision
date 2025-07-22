@@ -13,8 +13,6 @@ class Mesh
 
     #compiled = false;
     #geometryBuffer = null;
-    #pipeline = null;
-    #bindGroup = null;
 
     constructor(geometry, material)
     {
@@ -54,34 +52,6 @@ class Mesh
     }
 
     /**
-     * Gets the render pipeline.
-     */
-    getPipeline()
-    {
-        if (!this.#compiled) {
-            throw new Error(
-                'Mesh must be compiled before accessing render pipeline.'
-            );
-        }
-
-        return this.#pipeline;
-    }
-
-    /**
-     * Gets the bind group of this mesh.
-     */
-    getBindGroup()
-    {
-        if (!this.#compiled) {
-            throw new Error(
-                'Mesh must be compiled before accessing bind group.'
-            );
-        }
-
-        return this.#bindGroup;
-    }
-
-    /**
      * Returns whether the mesh is compiled.
      */
     isCompiled() {
@@ -98,16 +68,13 @@ class Mesh
             return;
         }
 
-        Mesh.#validateEngine(engine);
+        Engine.validateEngine(engine);
         const device = engine.getDevice();
 
         this.#material.compile(device);
         const bufferLayout = this.#createBufferLayout();
         this.#geometryBuffer = this.#geometry.createBuffer(bufferLayout);
         this.#geometryBuffer.compile(device);
-
-        await this.#createRenderPipeline(device, engine.getFormat());
-        this.#createBindGroup(device);
 
         this.#compiled = true;
     }
@@ -124,9 +91,6 @@ class Mesh
         if (this.#material && this.#material.isCompiled()) {
             this.#material.destroy();
         }
-
-        this.#bindGroup = null;
-        this.#pipeline = null;
 
         this.#compiled = false;
     }
@@ -161,51 +125,6 @@ class Mesh
     }
 
     /**
-     * Creates the bind group layout.
-     */
-    #createBindGroup(device)
-    {
-        const uniformBuffer = this.#material.getUniformBuffer();
-
-        this.#bindGroup = device.createBindGroup({
-            layout: this.#pipeline.getBindGroupLayout(0),
-            entries: [{
-                binding: 0,
-                resource: {
-                    buffer: uniformBuffer.getUniformBuffer()
-                }
-            }]
-        });
-    }
-
-    /**
-     * Creates the WebGPU render pipeline for this mesh.
-     */
-    async #createRenderPipeline(device, format)
-    {
-        const shader = this.#material.getShader();
-
-        this.#pipeline = await device.createRenderPipeline({
-            layout: 'auto',
-            vertex: {
-                module: shader.getVertexModule(),
-                buffers: [
-                    await this.#geometryBuffer.getVertexBufferLayout()
-                ]
-            },
-            fragment: {
-                module: shader.getFragmentModule(),
-                targets: [{
-                    format: format
-                }]
-            },
-            primitive: {
-                topology: 'triangle-list'
-            }
-        });
-    }
-
-    /**
      * Validates the geometry instance.
      */
     static #validateGeometry(geometry)
@@ -234,18 +153,6 @@ class Mesh
 
         if (!material.getShader()) {
             throw new Error('Material must have a shader assigned.');
-        }
-    }
-
-    /**
-     * Validates the engine instance.
-     */
-    static #validateEngine(engine)
-    {
-        if (!(engine instanceof Engine)) {
-            throw new TypeError(
-                'Engine must be an istance of Engine class.'
-            );
         }
     }
 }

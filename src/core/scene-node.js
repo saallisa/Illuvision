@@ -1,0 +1,185 @@
+
+import { Matrix4 } from './matrix4.js';
+import { Mesh } from './mesh.js';
+import { UniformBuffer } from './buffer/uniform-buffer.js';
+import { Vector3 } from './vector3.js';
+
+/**
+ * Represents an object node in a scene.
+ */
+class SceneNode
+{
+    #mesh = null;
+    #position = null;
+    #scale = null;
+
+    #uniformBuffer = null;
+    #bindGroup = null;
+    #compiled = false;
+
+    constructor(mesh = null)
+    {
+        if (mesh !== null) {
+            SceneNode.#validateMesh(mesh);
+            this.#mesh = mesh;
+        }
+
+        this.#position = new Vector3(0, 0, 0);
+        this.#scale = new Vector3(1, 1, 1);
+        this.#uniformBuffer = new UniformBuffer();
+    }
+
+    /**
+     * Gets the scene node's mesh.
+     */
+    getMesh() {
+        return this.#mesh;
+    }
+
+    /**
+     * Sets the scene node's position relative to its parent object.
+     */
+    setPosition(position)
+    {
+        Vector3.validateInstance(position);
+
+        this.#position = position;
+    }
+
+    /**
+     * Returns the scene node's position relative to its parent object.
+     */
+    getPosition() {
+        return this.#position;
+    }
+
+    /**
+     * Returns the scene node's scale factors.
+     */
+    getScale() {
+        return this.#scale;
+    }
+
+    /**
+     * Sets the scene node's scale factors.
+     */
+    setScale(scale)
+    {
+        Vector3.validateInstance(scale);
+
+        this.#scale = scale;
+    }
+
+    /**
+     * Retrieve the uniform buffer.
+     */
+    getUniformBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Scene node must be compiled before accessing uniform buffer!'
+            );
+        }
+
+        return this.#uniformBuffer;
+    }
+
+    /**
+     * Retrieve the bind group.
+     */
+    getBindGroup()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Scene node must be compiled before accessing bind group!'
+            );
+        }
+
+        return this.#bindGroup;
+    }
+
+    /**
+     * Compiles the scene node.
+     */
+    async compile(engine)
+    {
+        if (this.#compiled) {
+            return;
+        }
+
+        await this.#mesh.compile(engine);
+        this.#uniformBuffer.setUniform(
+            'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.compile(engine.getDevice());
+        this.#createBindGroup(engine.getDevice());
+
+        this.#compiled = true;
+    }
+
+    /**
+     * Destroys WebGPU resources associated with this scene node.
+     */
+    destroy()
+    {
+        if (this.#mesh && this.#mesh.isCompiled()) {
+            this.#mesh.destroy();
+        }
+
+        this.#bindGroup = null;
+        this.#compiled = false;
+    }
+
+    /**
+     * Returns the scene node's model matrix.
+     */
+    #getModelMatrix()
+    {
+        const position = Matrix4.createTranslation(
+            this.#position.x,
+            this.#position.y,
+            this.#position.z
+        );
+
+        const scale = Matrix4.createScale(
+            this.#scale.x,
+            this.#scale.y,
+            this.#scale.z
+        );
+
+        return position.multiplyOther(scale);
+    }
+
+    /**
+     * Create the bind group for this node.
+     */
+    #createBindGroup(device)
+    {
+        // Erstelle die BindGroup mit dem Transform Uniform Buffer
+        this.#bindGroup = device.createBindGroup({
+            label: 'model',
+            entries: [{
+                binding: 0,
+                resource: {
+                    buffer: this.#uniformBuffer.getUniformBuffer()
+                }
+            }]
+        });
+    }
+
+    /**
+     * Validates the mesh instance.
+     */
+    static #validateMesh(mesh)
+    {
+        if (!(mesh instanceof Mesh)) {
+            throw new TypeError(
+                'Mesh must be an istance of Mesh class.'
+            );
+        }
+    }
+}
+
+export {
+    SceneNode
+};
