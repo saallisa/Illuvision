@@ -15,10 +15,11 @@ class Material
     #vertexColors = false;
 
     #uniformBuffer = null;
+    #bindGroupLayout = null;
     #bindGroup = null;
     #compiled = false;
 
-    constructor(name = 'Material')
+    constructor(name = 'material')
     {
         if (this.constructor === Material) {
             throw new Error('Material cannot be instantiated directly.');
@@ -124,7 +125,21 @@ class Material
     }
 
     /**
-     * Gets the bind group of this mesh.
+     * Gets the bind group layout of this material.
+     */
+    getBindGroupLayout()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Material must be compiled before accessing bind group layout.'
+            );
+        }
+
+        return this.#bindGroupLayout;
+    }
+
+    /**
+     * Gets the bind group of this material.
      */
     getBindGroup()
     {
@@ -196,8 +211,17 @@ class Material
      */
     #createBindGroup(device)
     {
+        this.#bindGroupLayout = device.createBindGroupLayout({
+            entries: [{
+                binding: 0,
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: {},
+            }]
+        });
+
         this.#bindGroup = device.createBindGroup({
-            label: 'material',
+            label: this.#name + '-material',
+            layout: this.#bindGroupLayout,
             entries: [{
                 binding: 0,
                 resource: {

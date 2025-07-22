@@ -14,6 +14,7 @@ class SceneNode
     #scale = null;
 
     #uniformBuffer = null;
+    #bindGroupLayout = null;
     #bindGroup = null;
     #compiled = false;
 
@@ -85,6 +86,20 @@ class SceneNode
     }
 
     /**
+     * Gets the bind group layout of this material.
+     */
+    getBindGroupLayout()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Scene node must be compiled before accessing bind group layout.'
+            );
+        }
+
+        return this.#bindGroupLayout;
+    }
+
+    /**
      * Retrieve the bind group.
      */
     getBindGroup()
@@ -101,18 +116,18 @@ class SceneNode
     /**
      * Compiles the scene node.
      */
-    async compile(engine)
+    async compile(device)
     {
         if (this.#compiled) {
             return;
         }
 
-        await this.#mesh.compile(engine);
+        await this.#mesh.compile(device);
         this.#uniformBuffer.setUniform(
             'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
         );
-        this.#uniformBuffer.compile(engine.getDevice());
-        this.#createBindGroup(engine.getDevice());
+        this.#uniformBuffer.compile(device);
+        this.#createBindGroup(device);
 
         this.#compiled = true;
     }
@@ -155,9 +170,17 @@ class SceneNode
      */
     #createBindGroup(device)
     {
-        // Erstelle die BindGroup mit dem Transform Uniform Buffer
+        this.#bindGroupLayout = device.createBindGroupLayout({
+            entries: [{
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX,
+                buffer: {},
+            }]
+        });
+
         this.#bindGroup = device.createBindGroup({
             label: 'model',
+            layout: this.#bindGroupLayout,
             entries: [{
                 binding: 0,
                 resource: {

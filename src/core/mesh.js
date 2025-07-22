@@ -1,5 +1,4 @@
 
-import { Engine } from '../engine.js';
 import { Geometry } from './geometry/geometry.js';
 import { Material } from './material/material.js';
 
@@ -62,14 +61,11 @@ class Mesh
      * Compiles the mesh by creating geometry buffers, material uniforms
      * and render pipeline.
      */
-    async compile(engine)
+    async compile(device)
     {
         if (this.#compiled) {
             return;
         }
-
-        Engine.validateEngine(engine);
-        const device = engine.getDevice();
 
         this.#material.compile(device);
         const bufferLayout = this.#createBufferLayout();

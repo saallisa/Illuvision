@@ -97,6 +97,20 @@ class Color
     }
 
     /**
+     * Return as an object which can be used in the clearValue of a render pass
+     * descriptor.
+     */
+    toClearValue()
+    {
+        return {
+            r: this.red,
+            g: this.green,
+            b: this.blue,
+            a: this.alpha
+        }
+    }
+
+    /**
      * Linear interpolation from one color towards another color.
      * Returns a new Color instance without modifying the originals.
      */
