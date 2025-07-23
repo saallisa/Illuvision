@@ -190,6 +190,7 @@ class Material
         }
 
         this.#bindGroup = null;
+        this.#bindGroupLayout = null;
 
         if (this.#shader) {
             this.#shader.destroy();

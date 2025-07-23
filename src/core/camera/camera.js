@@ -118,6 +118,21 @@ class Camera
     }
 
     /**
+     * Destroys WebGPU resources associated with this camera.
+     */
+    destroy()
+    {
+        if (this.#uniformBuffer.isCompiled()) {
+            this.#uniformBuffer.destroy();
+        }
+
+        this.#bindGroup = null;
+        this.#bindGroupLayout = null;
+
+        this.#compiled = false;
+    }
+
+    /**
      * Creates the bind group for the camera.
      */
     #createBindGroup(device)

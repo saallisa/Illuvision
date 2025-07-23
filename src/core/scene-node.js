@@ -142,6 +142,8 @@ class SceneNode
         }
 
         this.#bindGroup = null;
+        this.#bindGroupLayout = null;
+        
         this.#compiled = false;
     }
 
