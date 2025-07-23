@@ -186,7 +186,7 @@ class Engine
             throw new TypeError('Scene must be an instance of Scene class.');
         }
 
-        if (!camera instanceof Camera) {
+        if (!(camera instanceof Camera)) {
             throw new TypeError('Camera must be an instance of Camera class.');
         }
 
