@@ -1,5 +1,7 @@
 
+import { Color } from './core/color.js';
 import { Loader } from './core/loader.js';
+import { Scene } from './core/scene.js';
 
 /**
  * 3D rendering engine using the WebGPU API and HTML canvas.
@@ -11,10 +13,13 @@ class Engine
     #device = null;
     #context = null;
     #format = null;
+    #commandEncoder = null;
+    #renderPass = null;
 
     #width = null;
     #height = null;
     #aspectRatio = null;
+    #clearColor = null;
 
     #initialized = false;
     static #rootPath = '';
@@ -24,6 +29,7 @@ class Engine
         this.#width = 800;
         this.#height = 600;
         this.#aspectRatio = this.#width / this.#height;
+        this.#clearColor = Color.BLACK;
     }
 
     /**
@@ -70,6 +76,18 @@ class Engine
      */
     setSizeToWindow() {
         this.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    /**
+     * Sets the clear color to use when rendering a scene.
+     */
+    setClearColor(color)
+    {
+        if (!(color instanceof Color)) {
+            throw new TypeError('Clear color must be an instance of Color.');
+        }
+
+        this.#clearColor = color;
     }
 
     /**
@@ -148,6 +166,36 @@ class Engine
     }
 
     /**
+     * Returns the clear color to use when rendering a scene.
+     */
+    getClearColor() {
+        return this.#clearColor;
+    }
+
+    /**
+     * Render a scene using the provided camera.
+     */
+    async render(scene)
+    {
+        if (!this.#initialized) {
+            throw new Error('Engine must be initialized before rendering!');
+        }
+
+        if (!(scene instanceof Scene)) {
+            throw new TypeError('Scene must be an instance of Scene class.');
+        }
+
+        await scene.compile(this.#device);
+        this.#createRenderPass();
+        await this.#renderScene(scene);
+        this.#renderPass.end();
+
+        this.#device.queue.submit([
+            this.#commandEncoder.finish()
+        ]);
+    }
+
+    /**
      * Creates a new HTML canvas element with the specified dimensions.
      */
     #createCanvas()
@@ -220,6 +268,98 @@ class Engine
                 'Failed to configure WebGPU context: ' + e.message
             );
         }
+    }
+
+    /**
+     * Creates the WebGPU commend encoder and render pass.
+     */
+    #createRenderPass()
+    {
+        this.#commandEncoder = this.#device.createCommandEncoder();
+
+        // Create render pass descriptor
+        const renderPassDescriptor = {
+            colorAttachments: [{
+                clearValue: this.#clearColor.toClearValue(),
+                loadOp: "clear",
+                storeOp: "store"
+            }]
+        };
+
+        renderPassDescriptor.colorAttachments[0].view = this.#context
+            .getCurrentTexture()
+            .createView();
+        
+        this.#renderPass = this.#commandEncoder.beginRenderPass(
+            renderPassDescriptor
+        );
+    }
+
+    /**
+     * Render a scene using the provided camera.
+     */
+    async #renderScene(scene)
+    {
+        const nodes = scene.getNodes();
+
+        for (const node of nodes) {
+            await this.#renderNode(node);
+        }
+    }
+
+    /**
+     * Render a single node of a scene.
+     */
+    async #renderNode(node)
+    {
+        const material = node.getMesh().getMaterial();
+        const geometry = node.getMesh().getGeometryBuffer();
+
+        const pipeline = await this.#createRenderPipeline(
+            geometry, material, node
+        );
+
+        this.#renderPass.setPipeline(pipeline);
+        this.#renderPass.setBindGroup(0, material.getBindGroup());
+        this.#renderPass.setBindGroup(1, node.getBindGroup());
+
+        this.#renderPass.setVertexBuffer(0, geometry.getGpuVertexBuffer());
+        this.#renderPass.setIndexBuffer(geometry.getGpuIndexBuffer(), 'uint16');
+        this.#renderPass.drawIndexed(geometry.getIndexCount());
+    }
+
+    /**
+     * Creates a render pipeline for the given material and geometry.
+     */
+    async #createRenderPipeline(geometry, material, node)
+    {
+        const shader = material.getShader();
+        
+        const pipelineLayout = this.#device.createPipelineLayout({
+            bindGroupLayouts: [
+                material.getBindGroupLayout(),
+                node.getBindGroupLayout(),
+            ]
+        });
+
+        return this.#device.createRenderPipeline({
+            layout: pipelineLayout,
+            vertex: {
+                module: shader.getVertexModule(),
+                buffers: [
+                    await geometry.getVertexBufferLayout()
+                ]
+            },
+            fragment: {
+                module: shader.getFragmentModule(),
+                targets: [{
+                    format: this.#format
+                }]
+            },
+            primitive: {
+                topology: 'triangle-list'
+            }
+        });
     }
 
     /**
