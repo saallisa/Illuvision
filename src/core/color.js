@@ -24,8 +24,8 @@ class Color
         Color.#validateComponent(t, 'interpolation factor');
 
         this.red += (color.red - this.red) * t;
-		this.green += (color.green - this.green) * t;
-		this.blue += (color.blue - this.blue) * t;
+        this.green += (color.green - this.green) * t;
+        this.blue += (color.blue - this.blue) * t;
     }
 
     /**
@@ -54,10 +54,10 @@ class Color
         Color.#validateComponent(t, 'interpolation factor');
 
         const red = this.red + (color.red - this.red) * t;
-		const green = this.green + (color.green - this.green) * t;
-		const blue = this.blue + (color.blue - this.blue) * t;
+        const green = this.green + (color.green - this.green) * t;
+        const blue = this.blue + (color.blue - this.blue) * t;
 
-		return new Color(red, green, blue, this.alpha);
+        return new Color(red, green, blue, this.alpha);
     }
 
     /**
