@@ -16,6 +16,7 @@ class Engine
     #format = null;
     #commandEncoder = null;
     #renderPass = null;
+    #depthTexture = null;
 
     #width = null;
     #height = null;
@@ -284,13 +285,17 @@ class Engine
     {
         this.#commandEncoder = this.#device.createCommandEncoder();
 
+        this.#createDepthTextureView();
+        const depthAttachment = this.#createDepthAttachment();
+
         // Create render pass descriptor
         const renderPassDescriptor = {
             colorAttachments: [{
                 clearValue: this.#clearColor.toClearValue(),
                 loadOp: "clear",
                 storeOp: "store"
-            }]
+            }],
+            depthStencilAttachment: depthAttachment
         };
 
         renderPassDescriptor.colorAttachments[0].view = this.#context
@@ -300,6 +305,38 @@ class Engine
         this.#renderPass = this.#commandEncoder.beginRenderPass(
             renderPassDescriptor
         );
+    }
+
+    /**
+     * Create the depth texture view.
+     */
+    #createDepthTextureView()
+    {
+        const depthTextureDesc = {
+            size: [this.#width, this.#canvas.height, 1],
+            dimension: '2d',
+            format: 'depth24plus-stencil8',
+            usage: GPUTextureUsage.RENDER_ATTACHMENT 
+        };
+
+        const depthTexture = this.#device.createTexture(depthTextureDesc);
+        this.#depthTexture = depthTexture.createView();
+    }
+
+    /**
+     * Create the depth attachment description.
+     */
+    #createDepthAttachment()
+    {
+        return {
+            view: this.#depthTexture,
+            depthClearValue: 1,
+            depthLoadOp: 'clear',
+            depthStoreOp: 'store',
+            stencilClearValue: 0,
+            stencilLoadOp: 'clear',
+            stencilStoreOp: 'store'
+        };
     }
 
     /**
@@ -366,6 +403,11 @@ class Engine
             },
             primitive: {
                 topology: 'triangle-list'
+            },
+            depthStencil: {
+                depthWriteEnabled: true,
+                depthCompare: 'less',
+                format: 'depth24plus-stencil8'
             }
         });
     }
