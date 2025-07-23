@@ -1,4 +1,5 @@
 
+import { Camera } from './core/camera/camera.js';
 import { Color } from './core/color.js';
 import { Loader } from './core/loader.js';
 import { Scene } from './core/scene.js';
@@ -175,7 +176,7 @@ class Engine
     /**
      * Render a scene using the provided camera.
      */
-    async render(scene)
+    async render(scene, camera)
     {
         if (!this.#initialized) {
             throw new Error('Engine must be initialized before rendering!');
@@ -185,9 +186,15 @@ class Engine
             throw new TypeError('Scene must be an instance of Scene class.');
         }
 
+        if (!camera instanceof Camera) {
+            throw new TypeError('Camera must be an instance of Camera class.');
+        }
+
         await scene.compile(this.#device);
+        await camera.compile(this.#device);
         this.#createRenderPass();
-        await this.#renderScene(scene);
+        this.#renderPass.setBindGroup(0, camera.getBindGroup());
+        this.#renderScene(scene, camera);
         this.#renderPass.end();
 
         this.#device.queue.submit([
@@ -298,30 +305,30 @@ class Engine
     /**
      * Render a scene using the provided camera.
      */
-    async #renderScene(scene)
+    async #renderScene(scene, camera)
     {
         const nodes = scene.getNodes();
 
         for (const node of nodes) {
-            await this.#renderNode(node);
+            await this.#renderNode(node, camera);
         }
     }
 
     /**
      * Render a single node of a scene.
      */
-    async #renderNode(node)
+    async #renderNode(node, camera)
     {
         const material = node.getMesh().getMaterial();
         const geometry = node.getMesh().getGeometryBuffer();
 
         const pipeline = await this.#createRenderPipeline(
-            geometry, material, node
+            geometry, material, node, camera
         );
 
         this.#renderPass.setPipeline(pipeline);
-        this.#renderPass.setBindGroup(0, material.getBindGroup());
-        this.#renderPass.setBindGroup(1, node.getBindGroup());
+        this.#renderPass.setBindGroup(1, material.getBindGroup());
+        this.#renderPass.setBindGroup(2, node.getBindGroup());
 
         this.#renderPass.setVertexBuffer(0, geometry.getGpuVertexBuffer());
         this.#renderPass.setIndexBuffer(geometry.getGpuIndexBuffer(), 'uint16');
@@ -331,12 +338,13 @@ class Engine
     /**
      * Creates a render pipeline for the given material and geometry.
      */
-    async #createRenderPipeline(geometry, material, node)
+    async #createRenderPipeline(geometry, material, node, camera)
     {
         const shader = material.getShader();
         
         const pipelineLayout = this.#device.createPipelineLayout({
             bindGroupLayouts: [
+                camera.getBindGroupLayout(),
                 material.getBindGroupLayout(),
                 node.getBindGroupLayout(),
             ]

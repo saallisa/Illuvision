@@ -3,6 +3,7 @@ import { BasicMaterial } from '/src/core/material/basic-material.js';
 import { Color } from '/src/core/color.js';
 import { Engine } from '/src/engine.js';
 import { Mesh } from '/src/core/mesh.js';
+import { OrthographicCamera } from '/src/core/camera/orthographic-camera.js';
 import { Scene } from '/src/core/scene.js';
 import { SceneNode } from '/src/core/scene-node.js';
 import { Triangle } from '/src/core/geometry/triangle.js';
@@ -54,7 +55,11 @@ async function main()
     const scene = new Scene();
     scene.addNode(sceneNode);
 
-    await engine.render(scene);
+    // Create an orthographic camera
+    const camera = new OrthographicCamera();
+    camera.setAspectRatio(engine.getAspectRatio());
+
+    await engine.render(scene, camera);
 }
 
 main();
