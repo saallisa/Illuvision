@@ -101,8 +101,8 @@ class Camera
     {
         Engine.validateDevice(device);
 
-        this.#uniformBuffer.set(
-            'matrix', this.getProjectionMatrix(), 'mat4x4<f32>'
+        this.#uniformBuffer.setUniform(
+            'matrix', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
         );
 
         this.#uniformBuffer.compile(device);
