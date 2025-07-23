@@ -191,7 +191,7 @@ class Engine
         }
 
         await scene.compile(this.#device);
-        await camera.compile(this.#device);
+        camera.compile(this.#device);
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
         await this.#renderScene(scene, camera);
