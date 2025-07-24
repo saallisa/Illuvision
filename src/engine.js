@@ -17,6 +17,7 @@ class Engine
     #commandEncoder = null;
     #renderPass = null;
     #depthTexture = null;
+    #pipelines = new Map();
 
     #width = null;
     #height = null;
@@ -358,10 +359,19 @@ class Engine
     {
         const material = node.getMesh().getMaterial();
         const geometry = node.getMesh().getGeometryBuffer();
+        const geometryId = node.getMesh().getGeometry().getId();
 
-        const pipeline = await this.#createRenderPipeline(
-            geometry, material, node, camera
-        );
+        const pipelineKey = material.getId() + '_' + geometryId;
+        let pipeline = null;
+
+        if (this.#pipelines.has(pipelineKey)) {
+            pipeline = this.#pipelines.get();
+        } else {
+            pipeline = await this.#createRenderPipeline(
+                geometry, material, node, camera
+            );
+            this.#pipelines.set(pipelineKey, pipeline);
+        }
 
         this.#renderPass.setPipeline(pipeline);
         this.#renderPass.setBindGroup(1, material.getBindGroup());
