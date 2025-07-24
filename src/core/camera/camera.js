@@ -99,6 +99,10 @@ class Camera
      */
     compile(device)
     {
+        if (this.#compiled) {
+            return;
+        }
+
         Engine.validateDevice(device);
 
         this.#uniformBuffer.setUniform(
@@ -108,6 +112,23 @@ class Camera
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
         this.#compiled = true;
+    }
+
+    /**
+     * Updates the camera's uniform buffer with the current values.
+     */
+    update(device)
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Camera must be compiled before updating uniform buffer!'
+            );
+        }
+        
+        this.#aspectRatio.setUniform(
+            'matrix', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.updateUniformBuffer(device);
     }
 
     /**
