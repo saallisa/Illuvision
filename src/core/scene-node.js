@@ -29,6 +29,11 @@ class SceneNode
 
         this.#position = new Vector3(0, 0, 0);
         this.#scale = new Vector3(1, 1, 1);
+
+        this.rotateX = 0;
+        this.rotateY = 0;
+        this.rotateZ = 0;
+
         this.#uniformBuffer = new UniformBuffer();
     }
 
@@ -99,6 +104,54 @@ class SceneNode
         Vector3.validateInstance(scale);
 
         this.#scale = scale;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Get the x rotation directly.
+     */
+    get rotateX() {
+        return this._rotateX;
+    }
+
+    /**
+     * Sets the x rotation directly.
+     */
+    set rotateX(angle)
+    {
+        this._rotateX = (angle + 360) % 360;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Get the y rotation directly.
+     */
+    get rotateY() {
+        return this._rotateY;
+    }
+
+    /**
+     * Sets the y rotation directly.
+     */
+    set rotateY(angle)
+    {
+        this._rotateY = (angle + 360) % 360;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Get the z rotation directly.
+     */
+    get rotateZ() {
+        return this._rotateZ;
+    }
+
+    /**
+     * Sets the z rotation directly.
+     */
+    set rotateZ(angle)
+    {
+        this._rotateZ = (angle + 360) % 360;
         this.#needsUpdate = true;
     }
 
@@ -229,7 +282,14 @@ class SceneNode
             this.#scale.z
         );
 
-        return position.multiplyOther(scale);
+        const rotationX = Matrix4.createRotateX(this.rotateX);
+        const rotationY = Matrix4.createRotateY(this.rotateY);
+        const rotationZ = Matrix4.createRotateZ(this.rotateZ);
+        const rotation = rotationX
+            .multiplyOther(rotationY)
+            .multiplyOther(rotationZ);
+
+        return rotation.multiplyOther(position).multiplyOther(scale);
     }
 
     /**
