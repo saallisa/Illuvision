@@ -9,6 +9,12 @@ import { Scene } from './core/scene.js';
  */
 class Engine
 {
+    #width = null;
+    #height = null;
+    #aspectRatio = null;
+    #clearColor = null;
+    static #rootPath = '';
+
     #canvas = null;
     #adapter = null;
     #device = null;
@@ -19,13 +25,7 @@ class Engine
     #depthTexture = null;
     #pipelines = new Map();
 
-    #width = null;
-    #height = null;
-    #aspectRatio = null;
-    #clearColor = null;
-
     #initialized = false;
-    static #rootPath = '';
 
     constructor()
     {
@@ -368,7 +368,11 @@ class Engine
             pipeline = this.#pipelines.get();
         } else {
             pipeline = await this.#createRenderPipeline(
-                geometry, material, node, camera
+                geometry, material, [
+                    camera.getBindGroupLayout(),
+                    material.getBindGroupLayout(),
+                    node.getBindGroupLayout(),
+                ]
             );
             this.#pipelines.set(pipelineKey, pipeline);
         }
@@ -385,16 +389,12 @@ class Engine
     /**
      * Creates a render pipeline for the given material and geometry.
      */
-    async #createRenderPipeline(geometry, material, node, camera)
+    async #createRenderPipeline(geometry, material, groups)
     {
         const shader = material.getShader();
         
         const pipelineLayout = this.#device.createPipelineLayout({
-            bindGroupLayouts: [
-                camera.getBindGroupLayout(),
-                material.getBindGroupLayout(),
-                node.getBindGroupLayout(),
-            ]
+            bindGroupLayouts: groups
         });
 
         return this.#device.createRenderPipeline({
