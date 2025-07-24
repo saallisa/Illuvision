@@ -10,6 +10,7 @@ import { UniformBuffer } from '../buffer/uniform-buffer.js';
 class Material
 {
     #name = null;
+    #id = null;
     #shader = null;
     #color = null;
     #vertexColors = false;
@@ -27,6 +28,7 @@ class Material
 
         Material.#validateName(name);
         this.#name = name;
+        this.#id = crypto.randomUUID();
 
         this.#uniformBuffer = new UniformBuffer();
         this.setColor(Color.WHITE.clone());
@@ -47,6 +49,13 @@ class Material
         Material.#validateName(name);
 
         this.#name = name;
+    }
+
+    /**
+     * Gets the universally unique identifier of this material.
+     */
+    getId() {
+        return this.#id;
     }
 
     /**

@@ -11,12 +11,24 @@ import { Vector3 } from '../vector3.js';
  */
 class Geometry
 {
+    #id = null;
     #vertices = [];
     #faces = [];
     #uvs = [];
     #vertexNormals = [];
     #faceNormals = [];
     #vertexColors = [];
+
+    constructor() {
+        this.#id = crypto.randomUUID();
+    }
+
+    /**
+     * Gets the universally unique identifier of this geometry.
+     */
+    getId() {
+        return this.#id;
+    }
 
     /**
      * Gets a copy of all vertices.
