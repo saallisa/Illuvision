@@ -51,6 +51,33 @@ class SceneNode
     }
 
     /**
+     * Changes the position's x value to the given value.
+     */
+    updateX(x)
+    {
+        this.#position.x = x;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Changes the position's y value to the given value.
+     */
+    updateY(y)
+    {
+        this.#position.y = y;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Changes the position's z value to the given value.
+     */
+    updateZ(z)
+    {
+        this.#position.z = z;
+        this.#needsUpdate = true;
+    }
+
+    /**
      * Returns the scene node's position relative to its parent object.
      */
     getPosition() {
@@ -145,6 +172,13 @@ class SceneNode
     }
 
     /**
+     * Require an update on next rendering.
+     */
+    requireUpdate() {
+        this.#needsUpdate = true;
+    }
+
+    /**
      * Updates the scene node's uniform buffer with current values.
      */
     update(device)
@@ -158,7 +192,7 @@ class SceneNode
         this.#uniformBuffer.setUniform(
             'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
         );
-        this.#uniformBuffer.update(device);
+        this.#uniformBuffer.updateUniformBuffer(device);
         this.#needsUpdate = false;
     }
 

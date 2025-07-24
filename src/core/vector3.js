@@ -7,8 +7,6 @@ class Vector3
 {
     constructor(x = 0, y = 0, z = 0)
     {
-        Vector3.#validateComponents(x, y, z);
-
         this.x = x;
         this.y = y;
         this.z = z;
@@ -204,6 +202,54 @@ class Vector3
     }
 
     /**
+     * Gets x directly.
+     */
+    get x() {
+        return this._x;
+    }
+
+    /**
+     * Sets x directly, but with validation.
+     */
+    set x(x)
+    {
+        Vector3.#validateComponent(x, 'x');
+        this._x = x;
+    }
+
+    /**
+     * Gets y directly.
+     */
+    get y() {
+        return this._y;
+    }
+
+    /**
+     * Sets y directly, but with validation.
+     */
+    set y(y)
+    {
+        Vector3.#validateComponent(y, 'y');
+        this._y = y;
+    }
+
+    /**
+     * Gets z directly.
+     */
+    get z() {
+        return this._z;
+    }
+
+    /**
+     * Sets z directly, but with validation.
+     */
+    set z(z)
+    {
+        Vector3.#validateComponent(z, 'z');
+        this._z = z;
+    }
+
+    /**
      * Validates that a single component is a finite number.
      */
     static #validateComponent(value, componentName)
@@ -213,16 +259,6 @@ class Vector3
                 `Invalid value for ${componentName}: expected a finite number`
             );
         }
-    }
-
-    /**
-     * Validates multiple components at once.
-     */
-    static #validateComponents(x, y, z)
-    {
-        Vector3.#validateComponent(x, 'x');
-        Vector3.#validateComponent(y, 'y');
-        Vector3.#validateComponent(z, 'z');
     }
 
     /**
