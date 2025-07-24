@@ -9,12 +9,14 @@ import { Scene } from './core/scene.js';
  */
 class Engine
 {
+    // Settings
     #width = null;
     #height = null;
     #aspectRatio = null;
     #clearColor = null;
     static #rootPath = '';
 
+    // WebGPU properties
     #canvas = null;
     #adapter = null;
     #device = null;
@@ -25,7 +27,13 @@ class Engine
     #depthTexture = null;
     #pipelines = new Map();
 
+    // Animation
+    #animationId = null;
+    #animation = null;
+
+    // State
     #initialized = false;
+    #animating = false;
 
     constructor()
     {
@@ -176,6 +184,48 @@ class Engine
     }
 
     /**
+     * Returns whether the animation loop is currently running.
+     */
+    isAnimating() {
+        return this.#animating;
+    }
+
+    /**
+     * Sets the animation loop callback function.
+     */
+    setAnimationLoop(callback)
+    {
+        if (callback !== null && typeof callback !== 'function') {
+            throw new TypeError(
+                'Animation callback must be a function or null.'
+            );
+        }
+
+        this.#animation = callback;
+
+        if (callback === null) {
+            this.stopAnimation();
+        }
+
+        if (!this.#animating && callback !== null) {
+            this.#startAnimation();
+        }
+    }
+
+    /**
+     * Stops the animation loop.
+     */
+    stopAnimation()
+    {
+        if (this.#animationId) {
+            cancelAnimationFrame(this.#animationId);
+            this.#animationId = null;
+        }
+
+        this.#animating = false;
+    }
+
+    /**
      * Render a scene using the provided camera.
      */
     async render(scene, camera)
@@ -280,13 +330,52 @@ class Engine
     }
 
     /**
+     * Starts the animation loop.
+     */
+    #startAnimation()
+    {
+        if (this.#animating) {
+            return;
+        }
+
+        this.#animating = true;
+        this.#animationLoop();
+    }
+
+    /**
+     * Internal animation loop function.
+     */
+    #animationLoop()
+    {
+        if (!this.#animating || !this.#animation) {
+            return;
+        }
+
+        try {
+            this.#animation();
+        } catch (error) {
+            console.error('Error in animation callback:', error);
+            this.stopAnimation();
+            return;
+        }
+
+        // Schedule next frame
+        this.#animationId = requestAnimationFrame(function () {
+            return this.#animationLoop()
+        }.bind(this));
+    }
+
+    /**
      * Creates the WebGPU commend encoder and render pass.
      */
     #createRenderPass()
     {
         this.#commandEncoder = this.#device.createCommandEncoder();
 
-        this.#createDepthTextureView();
+        if (!this.#depthTexture) {
+            this.#createDepthTextureView();
+        }
+        
         const depthAttachment = this.#createDepthAttachment();
 
         // Create render pass descriptor
@@ -365,7 +454,7 @@ class Engine
         let pipeline = null;
 
         if (this.#pipelines.has(pipelineKey)) {
-            pipeline = this.#pipelines.get();
+            pipeline = this.#pipelines.get(pipelineKey);
         } else {
             pipeline = await this.#createRenderPipeline(
                 geometry, material, [
