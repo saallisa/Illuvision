@@ -16,7 +16,9 @@ class SceneNode
     #uniformBuffer = null;
     #bindGroupLayout = null;
     #bindGroup = null;
+
     #compiled = false;
+    #needsUpdate = false;
 
     constructor(mesh = null)
     {
@@ -45,6 +47,7 @@ class SceneNode
         Vector3.validateInstance(position);
 
         this.#position = position;
+        this.#needsUpdate = true;
     }
 
     /**
@@ -69,6 +72,7 @@ class SceneNode
         Vector3.validateInstance(scale);
 
         this.#scale = scale;
+        this.#needsUpdate = true;
     }
 
     /**
@@ -129,7 +133,33 @@ class SceneNode
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
 
+        this.#needsUpdate = false;
         this.#compiled = true;
+    }
+
+    /**
+     * Returns whether the scene node's uniform buffer needs to be updated.
+     */
+    needsUpdate() {
+        return this.#needsUpdate;
+    }
+
+    /**
+     * Updates the scene node's uniform buffer with current values.
+     */
+    update(device)
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Scene node must be compiled before updating.'
+            );
+        }
+
+        this.#uniformBuffer.setUniform(
+            'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.update(device);
+        this.#needsUpdate = false;
     }
 
     /**
@@ -145,6 +175,7 @@ class SceneNode
         this.#bindGroupLayout = null;
         
         this.#compiled = false;
+        this.#needsUpdate = true;
     }
 
     /**

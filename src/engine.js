@@ -446,6 +446,10 @@ class Engine
      */
     async #renderNode(node, camera)
     {
+        if (node.needsUpdate()) {
+            node.update(this.#device);
+        }
+
         const material = node.getMesh().getMaterial();
         const geometry = node.getMesh().getGeometryBuffer();
         const geometryId = node.getMesh().getGeometry().getId();
