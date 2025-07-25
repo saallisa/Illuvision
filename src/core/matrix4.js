@@ -76,6 +76,30 @@ class Matrix4
     }
 
     /**
+     * Transposes this matrix directly.
+     */
+    transposeSelf()
+    {
+        const m = this.#elements;
+        let temp;
+
+        temp = m[1];  m[1] = m[4];   m[4] = temp;
+        temp = m[2];  m[2] = m[8];   m[8] = temp;
+        temp = m[3];  m[3] = m[12];  m[12] = temp;
+        temp = m[6];  m[6] = m[9];   m[9] = temp;
+        temp = m[7];  m[7] = m[13];  m[13] = temp;
+        temp = m[11]; m[11] = m[14]; m[14] = temp;
+    }
+
+    /**
+     * Transposes this matrix and returns the result as a new Matrix4 instance
+     * without changing the original one.
+     */
+    transpose() {
+        return new Matrix4(Matrix4.#transposeArray(this.#elements));
+    }
+
+    /**
      * Returns the matrix as an array.
      */
     toArray() {
@@ -96,6 +120,13 @@ class Matrix4
         return new Matrix4(
             Matrix4.#multiplyArray(ma, mb)
         );
+    }
+
+    /**
+     * Transposes a Matrix4 instance.
+     */
+    static transpose(matrix) {
+        return new Matrix4(Matrix4.#transposeArray(matrix.toArray()));
     }
 
     /**
@@ -258,6 +289,22 @@ class Matrix4
         }
 
         return result;
+    }
+
+    /**
+     * Transposes an array representation of a matrix and returns the result
+     * as an array.
+     */
+    static #transposeArray(m)
+    {
+        const r = new Array(16);
+
+        r[0] = m[0];   r[4] = m[1];   r[8] = m[2];    r[12] = m[3];
+        r[1] = m[4];   r[5] = m[5];   r[9] = m[6];    r[13] = m[7];
+        r[2] = m[8];   r[6] = m[9];   r[10] = m[10];  r[14] = m[11];
+        r[3] = m[12];  r[7] = m[13];  r[11] = m[14];  r[15] = m[15];
+
+        return r;
     }
 }
 
