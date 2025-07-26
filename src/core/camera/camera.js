@@ -1,6 +1,8 @@
 
 import { Engine } from '../../engine.js';
 import { UniformBuffer } from '../buffer/uniform-buffer.js';
+import { Matrix4 } from '../matrix4.js';
+import { Vector3 } from '../vector3.js';
 
 /**
  * Camera class for managing camera properties and transformations.
@@ -8,6 +10,10 @@ import { UniformBuffer } from '../buffer/uniform-buffer.js';
 class Camera
 {
     #aspectRatio = 1;
+    #position = null;
+    #target = null;
+    #up = null;
+
     #uniformBuffer = null;
     #bindGroupLayout = null;
     #bindGroup = null;
@@ -18,6 +24,10 @@ class Camera
         if (this.constructor === Camera) {
             throw new Error('Camera cannot be instantiated directly.');
         }
+
+        this.#position = new Vector3(5, 5, 5);
+        this.#target = new Vector3(0, 0, 0);
+        this.#up = new Vector3(0, 1, 0);
 
         this.#uniformBuffer = new UniformBuffer();
     }
@@ -39,6 +49,64 @@ class Camera
      */
     getAspectRatio() {
         return this.#aspectRatio;
+    }
+
+    /**
+     * Set the position of the camera in the world.
+     */
+    setPosition(position)
+    {
+        Vector3.validateInstance(position);
+        this.#position = position;
+    }
+
+    /**
+     * Returns the current position of the camera.
+     */
+    getPosition() {
+        return this.#position;
+    }
+
+    /**
+     * Set the target of the camera in the world.
+     */
+    setTarget(target)
+    {
+        Vector3.validateInstance(target);
+        this.#target = target;
+    }
+
+    /**
+     * Returns the current target of the camera.
+     */
+    getTarget() {
+        return this.#target;
+    }
+
+    /**
+     * Returns the view matrix for the camera.
+     */
+    getViewMatrix()
+    {
+        const z = Vector3.subtract(this.#target, this.#position);
+        z.normalize();
+
+        const x = z.clone();
+        x.cross(this.#up);
+        x.normalize();
+
+        const y = x.clone();
+        y.cross(z);
+        y.normalize();
+
+        const result = new Matrix4([
+            x.x, x.y, x.z, x.dot(this.#position),
+            y.x, y.y, y.z, y.dot(this.#position),
+            z.x, z.y, z.z, -z.dot(this.#position),
+            0, 0, 0, 1
+        ]);
+
+        return result.transpose();
     }
 
     /**
@@ -106,7 +174,10 @@ class Camera
         Engine.validateDevice(device);
 
         this.#uniformBuffer.setUniform(
-            'matrix', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
+            'projection', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.setUniform(
+            'view', this.getViewMatrix().toArray(), 'mat4x4<f32>'
         );
 
         this.#uniformBuffer.compile(device);

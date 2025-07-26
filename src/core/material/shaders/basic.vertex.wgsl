@@ -4,7 +4,8 @@ struct VertexOut {
 }
 
 struct CameraUniforms {
-    matrix: mat4x4<f32>
+    projection: mat4x4<f32>,
+    view: mat4x4<f32>
 }
 
 struct ModelUniforms {
@@ -19,6 +20,11 @@ fn vertex_main(
     @location(0) position: vec4<f32>
 ) -> VertexOut {
     var output : VertexOut;
-    output.position = model.matrix * position * camera.matrix;
+    
+    var world_position = model.matrix * position;
+    var view_position = camera.view * world_position;
+    
+    output.position = camera.projection * view_position;
+    
     return output;
 }
