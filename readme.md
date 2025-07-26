@@ -10,6 +10,30 @@ It is free of dependencies and is coded in plain JavaScript.
 
 TBA.
 
+## Todo
+
+This list gives an overview of what is planned for and what is already implemented in the first release.
+
+- [ ] Geometries
+  - [x] Triangle
+  - [x] Plane
+  - [ ] Box
+- [ ] Lights
+  - [ ] Ambient light
+  - [ ] Directional light
+- [ ] Materials
+  - [x] Basic
+  - [ ] Lambert
+- [ ] Cameras
+  - [x] Orthographic camera
+  - [ ] Perspective camera
+- [x] Scene
+  - [x] Meshes
+  - [x] Scene Nodes
+- [x] Rendering
+
+More features will be added in later releases.
+
 ## Contribution guide
 
 As I use this project mainly for learning purposes, I'd like to implement most of its features myself.
