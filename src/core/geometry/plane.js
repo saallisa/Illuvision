@@ -22,11 +22,11 @@ class Plane extends Geometry
     ) {
         super();
 
-        Plane.#validateDimension(width, 'width');
-        Plane.#validateDimension(height, 'height');
+        Plane.validateDimension(width, 'width');
+        Plane.validateDimension(height, 'height');
 
-        Plane.#validateSegment(widthSegments, 'widthSegments');
-        Plane.#validateSegment(heightSegments, 'heightSegments');
+        Plane.validateSegment(widthSegments, 'widthSegments');
+        Plane.validateSegment(heightSegments, 'heightSegments');
 
         this.#triangulate = triangulate;
 
@@ -138,48 +138,6 @@ class Plane extends Geometry
                     this.addFace(face);
                 }
             }
-        }
-    }
-
-    /**
-     * Validates that a dimension is a positive number.
-     */
-    static #validateDimension(value, dimensionName)
-    {
-        if (typeof value !== 'number' || !isFinite(value)) {
-            throw new TypeError(
-                `${dimensionName} must be a finite number.`
-            );
-        }
-        
-        if (value <= 0) {
-            throw new RangeError(
-                `${dimensionName} must be a positive number.`
-            );
-        }
-    }
-
-    /**
-     * Validates that a segmentation number is a positive, finite integer.
-     */
-    static #validateSegment(value, segmentName)
-    {
-        if (typeof value !== 'number' || !isFinite(value)) {
-            throw new TypeError(
-                `${segmentName} must be a finite number.`
-            );
-        }
-
-        if (!Number.isInteger(value)) {
-            throw new TypeError(
-                `${segmentName} must be an integer.`
-            );
-        }
-
-        if (value <= 0) {
-            throw new RangeError(
-                `${segmentName} must be a positive number.`
-            );
         }
     }
 }

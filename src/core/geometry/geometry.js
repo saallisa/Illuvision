@@ -673,6 +673,48 @@ class Geometry
         buffer[offset + 3] = color.alpha;
     }
 
+    /**
+     * Validates that a dimension is a positive number.
+     */
+    static validateDimension(value, dimensionName)
+    {
+        if (typeof value !== 'number' || !isFinite(value)) {
+            throw new TypeError(
+                `${dimensionName} must be a finite number.`
+            );
+        }
+        
+        if (value <= 0) {
+            throw new RangeError(
+                `${dimensionName} must be a positive number.`
+            );
+        }
+    }
+
+    /**
+     * Validates that a segmentation number is a positive, finite integer.
+     */
+    static validateSegment(value, segmentName)
+    {
+        if (typeof value !== 'number' || !isFinite(value)) {
+            throw new TypeError(
+                `${segmentName} must be a finite number.`
+            );
+        }
+
+        if (!Number.isInteger(value)) {
+            throw new TypeError(
+                `${segmentName} must be an integer.`
+            );
+        }
+
+        if (value <= 0) {
+            throw new RangeError(
+                `${segmentName} must be a positive number.`
+            );
+        }
+    }
+
     // Some fake constants containing valid triangulation methods.
 
     static get FAN() {
