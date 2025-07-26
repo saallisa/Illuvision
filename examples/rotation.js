@@ -80,7 +80,7 @@ async function main()
     scene.addNode(sceneNode2);
 
     // Create an orthographic camera
-    const camera = new OrthographicCamera();
+    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 10);
     camera.setAspectRatio(engine.getAspectRatio());
 
     // Create the function for the animation loop 
