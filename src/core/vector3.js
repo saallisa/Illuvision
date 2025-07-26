@@ -74,6 +74,18 @@ class Vector3
     }
 
     /**
+     * Multiply this vector's components by the given scalar.
+     */
+    multiplyScalar(scalar)
+    {
+        Vector3.#validateComponent(scalar, 'scalar');
+
+        this.x = this.x * scalar;
+        this.y = this.y * scalar;
+        this.z = this.z * scalar;
+    }
+
+    /**
      * Add another vector to this one and return the result as a new vector.
      */
     addOther(other) {
@@ -98,8 +110,23 @@ class Vector3
     /**
      * Dot this vector with another vector and return the result.
      */
-    dotOther(other) {
+    dot(other) {
         return Vector3.dot(this, other);
+    }
+
+    /**
+     * Multiply this vector's components by the given scalar and return the
+     * result as a new vector.
+     */
+    multiplyScalarOther(scalar)
+    {
+        Vector3.#validateComponent(scalar, 'scalar');
+
+        const x = this.x * scalar;
+        const y = this.y * scalar;
+        const z = this.z * scalar;
+
+        return new Vector3(x, y, z);
     }
 
     /**
@@ -180,6 +207,17 @@ class Vector3
             vector.y / length,
             vector.z / length
         );
+    }
+
+    /**
+     * Multiplies a vector with a scalar.
+     */
+    static multiplyScalar(vector, scalar)
+    {
+        Vector3.validateInstance(vector);
+        Vector3.#validateComponent(scalar);
+
+        return vector.multiplyScalarOther(scalar);
     }
 
     /**
