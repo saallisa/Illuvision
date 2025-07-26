@@ -17,7 +17,7 @@ This list gives an overview of what is planned for and what is already implement
 - [ ] Geometries
   - [x] Triangle
   - [x] Plane
-  - [ ] Box
+  - [x] Box
 - [ ] Lights
   - [ ] Ambient light
   - [ ] Directional light
