@@ -43,7 +43,7 @@ class Plane extends Geometry
         );
 
         this.#createPlaneUvs(
-            width, height, widthSegments, heightSegments
+            widthSegments, heightSegments
         );
 
         this.#createPlaneFaces(
@@ -89,7 +89,7 @@ class Plane extends Geometry
      * Create UV coordinates for the plane vertices.
      * UV coordinates are calculated to map the entire texture across the plane.
      */
-    #createPlaneUvs(width, height, widthSegments, heightSegments)
+    #createPlaneUvs(widthSegments, heightSegments)
     {
         // Calculate UV step sizes
         const uStep = 1.0 / widthSegments;
