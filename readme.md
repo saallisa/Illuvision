@@ -14,15 +14,16 @@ TBA.
 
 This list gives an overview of what is planned for and what is already implemented in the first release.
 
-- [ ] Geometries
+- [x] Geometries
   - [x] Triangle
   - [x] Plane
   - [x] Box
 - [ ] Lights
-  - [ ] Ambient light
+  - [x] Ambient light
   - [ ] Directional light
 - [ ] Materials
   - [x] Basic
+  - [x] Ambient
   - [ ] Lambert
 - [ ] Cameras
   - [x] Orthographic camera
