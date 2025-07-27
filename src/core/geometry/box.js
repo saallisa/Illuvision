@@ -56,7 +56,31 @@ class Box extends Geometry
             new Vector3(-x, -y, -z), // 4: bottom-left-back
             new Vector3(x, -y, -z),  // 5: bottom-right-back
             new Vector3(x, y, -z),   // 6: top-right-back
-            new Vector3(-x, y, -z)   // 7: top-left-back
+            new Vector3(-x, y, -z),  // 7: top-left-back
+
+            // Left face vertices
+            new Vector3(-x, -y, z),  // 8: bottom-left-front
+            new Vector3(-x, -y, -z), // 9: bottom-left-back
+            new Vector3(-x, y, -z),  // 10: top-left-back
+            new Vector3(-x, y, z),   // 11: top-left-front
+
+            // Right face vertices
+            new Vector3(x, -y, z),   // 12: bottom-right-front
+            new Vector3(x, y, z),    // 13: top-right-front
+            new Vector3(x, y, -z),   // 14: top-right-back
+            new Vector3(x, -y, -z),  // 15: bottom-right-back
+
+            // Top face vertices
+            new Vector3(-x, y, z),   // 16: top-left-front
+            new Vector3(x, y, z),    // 17: top-right-front
+            new Vector3(x, y, -z),   // 18: top-right-back
+            new Vector3(-x, y, -z),  // 19: top-left-back
+
+            // Bottom face vertices
+            new Vector3(-x, -y, z),  // 20: bottom-left-front
+            new Vector3(-x, -y, -z), // 21: bottom-left-back
+            new Vector3(x, -y, -z),  // 22: bottom-right-back
+            new Vector3(x, -y, z)    // 23: bottom-right-front
         ];
 
         for (const vertex of vertices) {
@@ -72,10 +96,10 @@ class Box extends Geometry
         const faces = [
             new Face([0, 1, 2, 3]), // Front face
             new Face([5, 4, 7, 6]), // Back face
-            new Face([4, 0, 3, 7]), // Left face
-            new Face([1, 5, 6, 2]), // Right face
-            new Face([4, 5, 1, 0]), // Bottom face
-            new Face([3, 2, 6, 7]) // Top face
+            new Face([8, 9, 10, 11]),  // Left face
+            new Face([12, 13, 14, 15]), // Right face
+            new Face([16, 17, 18, 19]), // Top face
+            new Face([20, 21, 22, 23])  // Bottom face
         ];
 
         // Add faces to geometry
@@ -100,7 +124,31 @@ class Box extends Geometry
             new Uv(0, 0), // 4: bottom-left
             new Uv(1, 0), // 5: bottom-right
             new Uv(1, 1), // 6: top-right
-            new Uv(0, 1)  // 7: top-left
+            new Uv(0, 1), // 7: top-left
+
+            // Left face UVs
+            new Uv(0, 0), // 8: bottom-left
+            new Uv(1, 0), // 9: bottom-right
+            new Uv(1, 1), // 10: top-right
+            new Uv(0, 1), // 11: top-left
+
+            // Right face UVs
+            new Uv(0, 0), // 12: bottom-left
+            new Uv(1, 0), // 13: bottom-right
+            new Uv(1, 1), // 14: top-right
+            new Uv(0, 1), // 15: top-left
+
+            // Top face UVs
+            new Uv(0, 0), // 16: bottom-left
+            new Uv(1, 0), // 17: bottom-right
+            new Uv(1, 1), // 18: top-right
+            new Uv(0, 1), // 19: top-left
+
+            // Bottom face UVs
+            new Uv(0, 0), // 20: bottom-left
+            new Uv(1, 0), // 21: bottom-right
+            new Uv(1, 1), // 22: top-right
+            new Uv(0, 1)  // 23: top-left
         ];
 
         for (const uv of uvCoordinates) {
