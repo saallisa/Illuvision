@@ -97,6 +97,19 @@ class Color
     }
 
     /**
+     * Convert the color to an array with only red, green and blue, without
+     * using the alpha value.
+     */
+    toRgbArray()
+    {
+        return [
+            this.red,
+            this.green,
+            this.blue
+        ];
+    }
+
+    /**
      * Return as an object which can be used in the clearValue of a render pass
      * descriptor.
      */
@@ -120,6 +133,36 @@ class Color
         Color.#validateColorInstance(other, 'other');
 
         return color.lerp(other, t);
+    }
+
+    /**
+     * Linear interpolation for multiple, differently weighted colors.
+     * Returns a new Color instance without modifying the originals.
+     */
+    static multiLerp(colors, weights)
+    {
+        this.#validateMultiLerp(colors, weights);
+
+        let red = 0;
+        let green = 0;
+        let blue = 0;
+        let alpha = 0;
+
+        // Add all the color values together using the weight.
+        colors.forEach((color, index) => {
+            if (!(color instanceof Color)) {
+                throw new TypeError(
+                    'All colors must be an instance of Color class.'
+                );
+            }
+
+            red += color.red * weights[index];
+            green += color.green * weights[index];
+            blue += color.green * weights[index];
+            alpha += color.alpha * weights[index];
+        });
+
+        return new Color(red, green, blue, alpha);
     }
 
     /**
@@ -174,6 +217,39 @@ class Color
             throw new TypeError(
                 `${name} must be an instance of Color class.`
             );
+        }
+    }
+
+    /**
+     * Validates the input for the multi lerp method.
+     */
+    static #validateMultiLerp(colors, weights)
+    {
+        if (!Array.isArray(colors) || !Array.isArray(weights)) {
+            throw new TypeError(
+                'Colors and weights must be provided in an array!'
+            );
+        }
+
+        if (colors.length !== weights.length) {
+            throw new TypeError('There must be a weight for each color!');
+        }
+
+        Color.#validateWeights(weights);
+    }
+
+    /**
+     * Valides that a weights array adds up to approximately 1.
+     */
+    static #validateWeights(weights)
+    {
+        const sumWeights = weights.reduce(function (total, weight) {
+            Color.#validateComponent(weight, 'weight');
+            return total + weight;
+        }, 0);
+
+        if (sumWeights < 0.99 || sumWeights > 1.01) {
+            throw new Error('Sum of weights must be approximately 1!');
         }
     }
 
