@@ -246,6 +246,7 @@ class Engine
         camera.compile(this.#device);
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
+        this.#renderPass.setBindGroup(1, scene.getBindGroup());
         await this.#renderScene(scene, camera);
         this.#renderPass.end();
 
@@ -437,14 +438,14 @@ class Engine
         const nodes = scene.getNodes();
 
         for (const node of nodes) {
-            await this.#renderNode(node, camera);
+            await this.#renderNode(node, camera, scene);
         }
     }
 
     /**
      * Render a single node of a scene.
      */
-    async #renderNode(node, camera)
+    async #renderNode(node, camera, scene)
     {
         if (node.needsUpdate()) {
             node.update(this.#device);
@@ -463,6 +464,7 @@ class Engine
             pipeline = await this.#createRenderPipeline(
                 geometry, material, [
                     camera.getBindGroupLayout(),
+                    scene.getBindGroupLayout(),
                     material.getBindGroupLayout(),
                     node.getBindGroupLayout(),
                 ]
@@ -471,8 +473,8 @@ class Engine
         }
 
         this.#renderPass.setPipeline(pipeline);
-        this.#renderPass.setBindGroup(1, material.getBindGroup());
-        this.#renderPass.setBindGroup(2, node.getBindGroup());
+        this.#renderPass.setBindGroup(2, material.getBindGroup());
+        this.#renderPass.setBindGroup(3, node.getBindGroup());
 
         this.#renderPass.setVertexBuffer(0, geometry.getGpuVertexBuffer());
         this.#renderPass.setIndexBuffer(geometry.getGpuIndexBuffer(), 'uint16');
