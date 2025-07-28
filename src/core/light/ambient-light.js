@@ -3,7 +3,7 @@ import { Color } from '../color.js';
 import { Light } from './light.js';
 
 /**
- * Represents the ambient light, which is light comming from every direction.
+ * Represents the ambient light, which is light coming from every direction.
  */
 class AmbientLight extends Light
 {
