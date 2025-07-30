@@ -125,6 +125,24 @@ class BaseBuffer
 
         return typeSizes[type] || 1;
     }
+
+    /**
+     * Flattens values into a Float32Array.
+     */
+    static flattenValues(values)
+    {
+        const flatValues = [];
+
+        for (const value of values) {
+            if (Array.isArray(value)) {
+                flatValues.push(...value);
+            } else {
+                flatValues.push(value);
+            }
+        }
+
+        return new Float32Array(flatValues);
+    }
 }
 
 export {

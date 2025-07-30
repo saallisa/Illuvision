@@ -95,7 +95,9 @@ class UniformBuffer extends BaseBuffer
 
         Engine.validateDevice(device);
 
-        const flatUniforms = this.flattenUniforms();
+        const flatUniforms = UniformBuffer.flattenValues(
+            this.#uniforms.values()
+        );
 
         if (flatUniforms.byteLength > this.#uniformBuffer.size) {
             this.#uniformBuffer.destroy();
@@ -103,25 +105,6 @@ class UniformBuffer extends BaseBuffer
         } else {
             device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
         }
-    }
-
-    /**
-     * Returns the uniform data as a Float32Array so it can be fed into a
-     * WebGPU uniform buffer.
-     */
-    flattenUniforms()
-    {
-        const flatUniforms = [];
-
-        for (const value of this.#uniforms.values()) {
-            if (Array.isArray(value)) {
-                flatUniforms.push(...value);
-            } else {
-                flatUniforms.push(value);
-            }
-        }
-
-        return new Float32Array(flatUniforms);
     }
 
     /**
@@ -164,7 +147,9 @@ class UniformBuffer extends BaseBuffer
      */
     #createUniformBuffer(device)
     {
-        const flatUniforms = this.flattenUniforms();
+        const flatUniforms = UniformBuffer.flattenValues(
+            this.#uniforms.values()
+        );
         const bufferSize = Math.max(flatUniforms.byteLength, 16);
 
         this.#uniformBuffer = device.createBuffer({
