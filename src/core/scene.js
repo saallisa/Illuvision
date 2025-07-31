@@ -1,9 +1,11 @@
 
 import { AmbientLight } from './light/ambient-light.js';
+import { Color } from './color.js';
+import { DirectionalLight } from './light/directional-light.js';
 import { Engine } from '../engine.js';
 import { SceneNode } from './scene-node.js';
 import { UniformBuffer } from './buffer/uniform-buffer.js';
-import { Color } from './color.js';
+import { StorageBuffer } from './buffer/storage-buffer.js';
 
 /**
  * Manages the camera and objects in a scene.
@@ -12,14 +14,18 @@ class Scene
 {
     #nodes = [];
     #ambientLights = [];
+    #directionalLights = new Map();
 
     #uniformBuffer = null;
+    #storageBuffer = null;
     #bindGroupLayout = null;
     #bindGroup = null;
     #compiled = false;
 
-    constructor() {
+    constructor()
+    {
         this.#uniformBuffer = new UniformBuffer();
+        this.#storageBuffer = new StorageBuffer(DirectionalLight.LAYOUT);
     }
 
     /**
@@ -42,7 +48,7 @@ class Scene
     }
 
     /**
-     * Adds a light to the scene.
+     * Adds an ambient light to the scene.
      */
     addAmbientLight(light)
     {
@@ -61,6 +67,27 @@ class Scene
     }
 
     /**
+     * Adds a directional light to the scene.
+     */
+    addDirectionalLight(name, light)
+    {
+        if (!(light instanceof DirectionalLight)) {
+            throw new TypeError(
+                'Light must be an instance of DirectionalLight.'
+            );
+        }
+
+        this.#directionalLights.set(name, light);
+    }
+
+    /**
+     * Gets the directional lights visible in this scene.
+     */
+    getDirectionalLights() {
+        return this.#directionalLights;
+    }
+
+    /**
      * Retrieve the uniform buffer.
      */
     getUniformBuffer()
@@ -72,6 +99,20 @@ class Scene
         }
 
         return this.#uniformBuffer;
+    }
+
+    /**
+     * Retrieve the storage buffer.
+     */
+    getStorageBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Scene must be compiled before accessing storage buffer!'
+            );
+        }
+
+        return this.#storageBuffer;
     }
 
     /**
@@ -121,7 +162,9 @@ class Scene
         Engine.validateDevice(device);
 
         this.#fillUniformBuffer();
+        this.#fillStorageBuffer();
         this.#uniformBuffer.compile(device);
+        this.#storageBuffer.compile(device);
         this.#createBindGroup(device);
 
         // Compile all nodes
@@ -146,6 +189,10 @@ class Scene
             this.#uniformBuffer.destroy();
         }
 
+        if (this.#storageBuffer.isCompiled()) {
+            this.#storageBuffer.destroy();
+        }
+
         this.#bindGroup = null;
         this.#bindGroupLayout = null;
 
@@ -153,7 +200,7 @@ class Scene
     }
 
     /**
-     * Fills the uniform buffer with the scene data.
+     * Fills the uniform buffer with the relevant scene data.
      */
     #fillUniformBuffer()
     {
@@ -205,6 +252,24 @@ class Scene
     }
 
     /**
+     * Fills the storage buffer with the relevant scene data.
+     */
+    #fillStorageBuffer()
+    {
+        if (this.#directionalLights.length === 0) {
+            return;
+        }
+
+        for (const [name, value] in this.#directionalLights) {
+            this.#storageBuffer.setStorageEntry(name, {
+                direction: value.position.toArray(),
+                color: value.color.toRgbArray(),
+                intensity: value.intensity
+            });
+        }
+    }
+
+    /**
      * Creates the bind group layout.
      */
     #createBindGroup(device)
@@ -213,7 +278,15 @@ class Scene
             entries: [{
                 binding: 0,
                 visibility: GPUShaderStage.FRAGMENT,
-                buffer: {},
+                buffer: {
+                    type: 'uniform'
+                }
+            }, {
+                binding: 1,
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: {
+                    type: 'storage'
+                }
             }]
         });
 
@@ -224,6 +297,11 @@ class Scene
                 binding: 0,
                 resource: {
                     buffer: this.#uniformBuffer.getUniformBuffer()
+                }
+            }, {
+                binding: 1,
+                resource: {
+                    buffer: this.#storageBuffer.getStorageBuffer()
                 }
             }]
         });
