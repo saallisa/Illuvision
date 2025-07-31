@@ -127,6 +127,34 @@ class BaseBuffer
     }
 
     /**
+     * Validates that a buffer value with a specific type has the right size.
+     */
+    static validateBufferValueSize(value, type)
+    {
+        const expectedSize = BaseBuffer.getBufferTypeSize(type);
+
+        if (typeof value === 'number') {
+            if (expectedSize !== 1) {
+                throw new TypeError(
+                    `Expected array of ${expectedSize} elements for ` +
+                    `type '${type}', got single number.`
+                );
+            }
+        } else if (Array.isArray(value)) {
+            if (value.length !== expectedSize) {
+                throw new TypeError(
+                    `Expected array of ${expectedSize} elements for ` +
+                    `type '${type}', got ${value.length}.`
+                );
+            }
+        } else {
+            throw new TypeError(
+                `Field value must be a number or array for type '${type}'.`
+            );
+        }
+    }
+
+    /**
      * Flattens values into a Float32Array.
      */
     static flattenValues(values)
