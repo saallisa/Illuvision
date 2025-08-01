@@ -127,6 +127,34 @@ class BaseBuffer
     }
 
     /**
+     * Gets the alignment requirement for a given WGSL type in bytes.
+     * This follows WGSL memory layout rules.
+     */
+    static getBufferTypeAlignment(type)
+    {
+        const alignments = {
+            // Scalar types
+            'f32': 4, 'i32': 4, 'u32': 4, 'bool': 4,
+            'float': 4, 'int': 4, 'uint': 4,
+
+            // Vector types
+            'vec2<f32>': 8, 'vec2<i32>': 8, 'vec2<u32>': 8, 'vec2<bool>': 8,
+            'vec3<f32>': 16, 'vec3<i32>': 16, 'vec3<u32>': 16, 'vec3<bool>': 16,
+            'vec4<f32>': 16, 'vec4<i32>': 16, 'vec4<u32>': 16, 'vec4<bool>': 16,
+            'vec2': 8, 'vec3': 16, 'vec4': 16,
+
+            // Matrix types - matrices are arrays of column vectors
+            'mat2x2<f32>': 8, 'mat2x3<f32>': 16, 'mat2x4<f32>': 16,
+            'mat3x2<f32>': 8, 'mat3x3<f32>': 16, 'mat3x4<f32>': 16,
+            'mat4x2<f32>': 8, 'mat4x3<f32>': 16, 'mat4x4<f32>': 16,
+            'mat2': 8, 'mat3': 16, 'mat4': 16,
+            'mat2x2': 8, 'mat3x3': 16, 'mat4x4': 16
+        };
+
+        return alignments[type] || 4;
+    }
+
+    /**
      * Validates that a buffer value with a specific type has the right size.
      */
     static validateBufferValueSize(value, type)
