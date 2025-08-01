@@ -260,9 +260,9 @@ class Scene
             return;
         }
 
-        for (const [name, value] in this.#directionalLights) {
+        for (const [name, value] of this.#directionalLights) {
             this.#storageBuffer.setStorageEntry(name, {
-                direction: value.position.toArray(),
+                direction: value.direction.toArray(),
                 color: value.color.toRgbArray(),
                 intensity: value.intensity
             });
@@ -285,7 +285,7 @@ class Scene
                 binding: 1,
                 visibility: GPUShaderStage.FRAGMENT,
                 buffer: {
-                    type: 'storage'
+                    type: 'read-only-storage'
                 }
             }]
         });

@@ -147,7 +147,7 @@ class StorageBuffer extends BaseBuffer
         Engine.validateDevice(device);
 
         const initialSize = Math.max(
-            this.#storage.size * this.#elementSize * 4,
+            this.#storage.size * this.#elementSize * 4 + 4,
             this.#minBufferSize
         );
         this.#createStorageBuffer(device, initialSize);
@@ -229,7 +229,7 @@ class StorageBuffer extends BaseBuffer
         }
 
         // Check for extra fields
-        for (const fieldName of Object.keys(elementData)) {
+        for (const fieldName of Object.keys(entryData)) {
             if (!this.#storageLayout.has(fieldName)) {
                 throw new TypeError(
                     `Unknown field '${fieldName}' in storage entry.`
@@ -262,9 +262,12 @@ class StorageBuffer extends BaseBuffer
     #flattenStorage()
     {
         let flatData = [];
+        flatData.push(this.getEntryCount());
 
         for (const value of this.#storage.values()) {
-            const flatValues = StorageBuffer.flattenValues(value.values);
+            const flatValues = StorageBuffer.flattenValues(
+                Object.entries(value)
+            );
             flatData.push(...flatValues);
         }
 
