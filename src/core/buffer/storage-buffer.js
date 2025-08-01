@@ -266,7 +266,7 @@ class StorageBuffer extends BaseBuffer
 
         for (const value of this.#storage.values()) {
             const flatValues = StorageBuffer.flattenValues(
-                Object.entries(value)
+                Object.values(value)
             );
             flatData.push(...flatValues);
         }
