@@ -24,6 +24,8 @@ class Box extends Geometry
         if (triangulate === true) {
             this.triangulate();
         }
+
+        this.calculateVertexNormals();
     }
 
     /**

@@ -17,11 +17,12 @@ class StorageBuffer extends BaseBuffer
     #storageBuffer = null;
     #compiled = false;
 
-    constructor(layout = {})
+    constructor(layout = {}, length = 5)
     {
         super();
 
         this.setStorageLayout(layout);
+        this.#minBufferSize = this.#elementSize * length * 4 + length * 4;
     }
 
     /**
@@ -147,7 +148,7 @@ class StorageBuffer extends BaseBuffer
         Engine.validateDevice(device);
 
         const initialSize = Math.max(
-            this.#storage.size * this.#elementSize * 4 + 4,
+            this.#storage.size * this.#elementSize * 4,
             this.#minBufferSize
         );
         this.#createStorageBuffer(device, initialSize);
@@ -262,7 +263,6 @@ class StorageBuffer extends BaseBuffer
     #flattenStorage()
     {
         let flatData = [];
-        flatData.push(this.getEntryCount());
 
         for (const value of this.#storage.values()) {
             const flatValues = StorageBuffer.flattenValues(

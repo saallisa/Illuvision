@@ -23,7 +23,7 @@ class AmbientMaterial extends Material
     }
 
     /**
-     * Initializes the basic material.
+     * Initializes the ambient material.
      */
     static async init(settings = {})
     {

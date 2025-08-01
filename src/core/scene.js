@@ -25,7 +25,7 @@ class Scene
     constructor()
     {
         this.#uniformBuffer = new UniformBuffer();
-        this.#storageBuffer = new StorageBuffer(DirectionalLight.LAYOUT);
+        this.#storageBuffer = new StorageBuffer(DirectionalLight.LAYOUT, 10);
     }
 
     /**
