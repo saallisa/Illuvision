@@ -143,7 +143,7 @@ class BaseBuffer
             'vec4<f32>': 16, 'vec4<i32>': 16, 'vec4<u32>': 16, 'vec4<bool>': 16,
             'vec2': 8, 'vec3': 16, 'vec4': 16,
 
-            // Matrix types - matrices are arrays of column vectors
+            // Matrix types
             'mat2x2<f32>': 8, 'mat2x3<f32>': 16, 'mat2x4<f32>': 16,
             'mat3x2<f32>': 8, 'mat3x3<f32>': 16, 'mat3x4<f32>': 16,
             'mat4x2<f32>': 8, 'mat4x3<f32>': 16, 'mat4x4<f32>': 16,
@@ -152,6 +152,79 @@ class BaseBuffer
         };
 
         return alignments[type] || 4;
+    }
+
+    /**
+     * Gets the stride (padded size) for a given WGSL type in bytes.
+     * This accounts for alignment padding.
+     */
+    static getBufferTypeStride(type)
+    {
+        const strides = {
+            // Scalar types
+            'f32': 4, 'i32': 4, 'u32': 4, 'bool': 4,
+            'float': 4, 'int': 4, 'uint': 4,
+
+            // Vector types
+            'vec2<f32>': 8, 'vec2<i32>': 8, 'vec2<u32>': 8, 'vec2<bool>': 8,
+            'vec3<f32>': 16, 'vec3<i32>': 16, 'vec3<u32>': 16, 'vec3<bool>': 16,
+            'vec4<f32>': 16, 'vec4<i32>': 16, 'vec4<u32>': 16, 'vec4<bool>': 16,
+            'vec2': 8, 'vec3': 16, 'vec4': 16,
+
+            // Matrix types
+            'mat2x2<f32>': 16, 'mat2x3<f32>': 32, 'mat2x4<f32>': 32,
+            'mat3x2<f32>': 24, 'mat3x3<f32>': 48, 'mat3x4<f32>': 48,
+            'mat4x2<f32>': 32, 'mat4x3<f32>': 64, 'mat4x4<f32>': 64,
+            'mat2': 16, 'mat3': 48, 'mat4': 64,
+            'mat2x2': 16, 'mat3x3': 48, 'mat4x4': 64
+        };
+
+        return strides[type] || 4;
+    }
+
+    /**
+     * Calculates the total struct size including alignment padding.
+     */
+    static calculateStructSize(layout)
+    {
+        let offset = 0;
+        let minAlignment = 4;
+
+        for (const [name, type] of Object.entries(layout)) {
+            const alignment = this.getBufferTypeAlignment(type);
+            const stride = this.getBufferTypeStride(type);
+            
+            minAlignment = Math.max(minAlignment, alignment);
+            
+            // Align current offset to field requirement
+            offset = Math.ceil(offset / alignment) * alignment;
+            offset += stride;
+        }
+
+        // Align final struct size to largest member alignment
+        return Math.ceil(offset / minAlignment) * minAlignment;
+    }
+
+    /**
+     * Calculates field offsets within a struct considering WGSL
+     * alignment rules.
+     */
+    static calculateFieldOffsets(layout)
+    {
+        const offsets = new Map();
+        let offset = 0;
+
+        for (const [name, type] of Object.entries(layout)) {
+            const alignment = this.getBufferTypeAlignment(type);
+            const stride = this.getBufferTypeStride(type);
+            
+            // Align offset to field requirement
+            offset = Math.ceil(offset / alignment) * alignment;
+            offsets.set(name, offset);
+            offset += stride;
+        }
+
+        return offsets;
     }
 
     /**
@@ -198,6 +271,18 @@ class BaseBuffer
         }
 
         return new Float32Array(flatValues);
+    }
+
+    /**
+     * Pads a vec3 value to vec4 for proper alignment.
+     */
+    static padVec3ToVec4(value, paddingValue = 0)
+    {
+        if (Array.isArray(value) && value.length === 3) {
+            return [...value, paddingValue];
+        }
+
+        return value;
     }
 }
 
