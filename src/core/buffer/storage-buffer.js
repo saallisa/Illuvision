@@ -341,7 +341,7 @@ class StorageBuffer extends BaseBuffer
                 const fieldOffset = this.#fieldOffsets.get(fieldName);
                 const value = entry[fieldName];
                 
-                StorageBuffer.#writeValueToBuffer(
+                StorageBuffer.writeValueToBuffer(
                     view, 
                     baseOffset + fieldOffset, 
                     value, 
@@ -353,36 +353,6 @@ class StorageBuffer extends BaseBuffer
         }
         
         return new Float32Array(buffer);
-    }
-
-    /**
-     * Writes an array value to a DataView with proper padding.
-     */
-    static #writeArrayValue(view, offset, value, type)
-    {
-        // Handle vec3 padding to vec4 alignment
-        const paddedValue = type.includes('vec3') ? 
-            StorageBuffer.padVec3ToVec4(value) : value;
-            
-        const writer = StorageBuffer.getTypeWriter(type);
-        
-        for (let i = 0; i < paddedValue.length; i++) {
-            const elemOffset = offset + i * 4;
-            writer(view, elemOffset, paddedValue[i]);
-        }
-    }
-
-    /**
-     * Writes a value to a DataView at the specified offset.
-     */
-    static #writeValueToBuffer(view, offset, value, type)
-    {
-        if (typeof value === 'number') {
-            const writer = StorageBuffer.getTypeWriter(type);
-            writer(view, offset, value);
-        } else if (Array.isArray(value)) {
-            StorageBuffer.#writeArrayValue(view, offset, value, type);
-        }
     }
 }
 
