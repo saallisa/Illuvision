@@ -54,7 +54,7 @@ class Matrix4
      */
     multiply(other)
     {
-        Matrix4.#validateInstance(other);
+        Matrix4.validateInstance(other);
 
         this.#elements = Matrix4.#multiplyArray(
             this.#elements, other.toArray()
@@ -66,7 +66,7 @@ class Matrix4
      * new matrix.
      */
     multiplyOther(other) {
-        Matrix4.#validateInstance(other);
+        Matrix4.validateInstance(other);
 
         const result = Matrix4.#multiplyArray(
             this.#elements, other.toArray()
@@ -111,8 +111,8 @@ class Matrix4
      */
     static multiply(matrixA, matrixB)
     {
-        Matrix4.#validateInstance(matrixA);
-        Matrix4.#validateInstance(matrixB);
+        Matrix4.validateInstance(matrixA);
+        Matrix4.validateInstance(matrixB);
 
         const ma = matrixA.toArray();
         const mb = matrixB.toArray();
@@ -125,7 +125,10 @@ class Matrix4
     /**
      * Transposes a Matrix4 instance.
      */
-    static transpose(matrix) {
+    static transpose(matrix)
+    {
+        Matrix4.validateInstance(matrix);
+
         return new Matrix4(Matrix4.#transposeArray(matrix.toArray()));
     }
 
@@ -260,7 +263,7 @@ class Matrix4
     /**
      * Validates that an object is a Matrix4 instance.
      */
-    static #validateInstance(value)
+    static validateInstance(value)
     {
         if (!(value instanceof Matrix4)) {
             throw new TypeError('Expected an instance of Matrix4');
