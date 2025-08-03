@@ -9,9 +9,19 @@ class UniformBuffer extends BaseBuffer
 {
     #uniforms = new Map();
     #uniformLayout = new Map();
+    #alignedUniformSize = 0;
+    #fieldOffsets = new Map();
 
+    #aligned = true;
     #uniformBuffer = null;
     #compiled = false;
+
+    constructor(aligned = true)
+    {
+        super();
+
+        this.#aligned = aligned;
+    }
 
     /**
      * Sets a uniform value.
@@ -95,9 +105,9 @@ class UniformBuffer extends BaseBuffer
 
         Engine.validateDevice(device);
 
-        const flatUniforms = UniformBuffer.flattenValues(
-            this.#uniforms.values()
-        );
+        this.#calculateAligned();
+
+        const flatUniforms = this.#flattenUniforms();
 
         if (flatUniforms.byteLength > this.#uniformBuffer.size) {
             this.#uniformBuffer.destroy();
@@ -118,6 +128,7 @@ class UniformBuffer extends BaseBuffer
 
         Engine.validateDevice(device);
 
+        this.#calculateAligned();
         this.#createUniformBuffer(device);
         this.#compiled = true;
     }
@@ -143,13 +154,27 @@ class UniformBuffer extends BaseBuffer
     }
 
     /**
+     * Calculates the alignment and offsets for this uniform buffer.
+     */
+    #calculateAligned()
+    {
+        if (this.#aligned) {
+            // Calculate proper aligned size and field offsets
+            this.#alignedUniformSize = UniformBuffer.calculateStructSize(
+                Object.fromEntries(this.#uniformLayout)
+            );
+            this.#fieldOffsets = UniformBuffer.calculateFieldOffsets(
+                Object.fromEntries(this.#uniformLayout)
+            );
+        }
+    }
+
+    /**
      * Creates a uniform buffer for the current uniforms.
      */
     #createUniformBuffer(device)
     {
-        const flatUniforms = UniformBuffer.flattenValues(
-            this.#uniforms.values()
-        );
+        const flatUniforms = this.#flattenUniforms();
         const bufferSize = Math.max(flatUniforms.byteLength, 16);
 
         this.#uniformBuffer = device.createBuffer({
@@ -159,6 +184,28 @@ class UniformBuffer extends BaseBuffer
 
         if (flatUniforms.byteLength > 0) {
             device.queue.writeBuffer(this.#uniformBuffer, 0, flatUniforms);
+        }
+    }
+
+    /**
+     * Flattens the uniforms according to the rules set at buffer creation.
+     */
+    #flattenUniforms()
+    {
+        if (this.#aligned) {
+            const buffer = new ArrayBuffer(this.#alignedUniformSize);
+            const view = new DataView(buffer);
+
+            for (const [name, value] of this.#uniforms) {
+                const type = this.#uniformLayout.get(name);
+                const offset = this.#fieldOffsets.get(name);
+                
+                UniformBuffer.writeValueToBuffer(view, offset, value, type);
+            }
+
+            return new Float32Array(buffer);
+        } else {
+            return UniformBuffer.flattenValues(this.#uniforms.values());
         }
     }
 }

@@ -328,7 +328,7 @@ class BaseBuffer
     {
         // Handle vec3 padding to vec4 alignment
         const paddedValue = type.includes('vec3') ? 
-            StorageBuffer.padVec3ToVec4(value) : value;
+            BaseBuffer.padVec3ToVec4(value) : value;
             
         const writer = BaseBuffer.getTypeWriter(type);
         
@@ -344,7 +344,7 @@ class BaseBuffer
     static writeValueToBuffer(view, offset, value, type)
     {
         if (typeof value === 'number') {
-            const writer = StorageBuffer.getTypeWriter(type);
+            const writer = BaseBuffer.getTypeWriter(type);
             writer(view, offset, value);
         } else if (Array.isArray(value)) {
             BaseBuffer.writeArrayValue(view, offset, value, type);
