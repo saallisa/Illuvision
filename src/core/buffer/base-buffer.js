@@ -274,6 +274,42 @@ class BaseBuffer
     }
 
     /**
+     * Gets the appropriate writer function for a WGSL type.
+     */
+    static getTypeWriter(type)
+    {
+        const float32Fun = function (view, offset, value) {
+            view.setFloat32(offset, value, true);
+        }
+
+        if (type.includes('f32') || type === 'vec2' || type === 'vec3' 
+            || type === 'vec4' || type === 'float'
+        ) {
+            return float32Fun;
+        }
+
+        if (type.includes('i32') || type === 'int') {
+            return function (view, offset, value) {
+                view.setInt32(offset, value, true);
+            }
+        }
+
+        if (type.includes('u32') || type === 'uint') {
+            return function (view, offset, value) {
+                view.setUint32(offset, value, true);
+            }
+        }
+
+        if (type.includes('bool')) {
+            return function (view, offset, value) {
+                view.setUint32(offset, value ? 1 : 0, true);
+            }
+        }
+        
+        return float32Fun;
+    }
+
+    /**
      * Pads a vec3 value to vec4 for proper alignment.
      */
     static padVec3ToVec4(value, paddingValue = 0)
@@ -283,6 +319,36 @@ class BaseBuffer
         }
 
         return value;
+    }
+
+    /**
+     * Writes an array value to a DataView with proper padding.
+     */
+    static writeArrayValue(view, offset, value, type)
+    {
+        // Handle vec3 padding to vec4 alignment
+        const paddedValue = type.includes('vec3') ? 
+            StorageBuffer.padVec3ToVec4(value) : value;
+            
+        const writer = BaseBuffer.getTypeWriter(type);
+        
+        for (let i = 0; i < paddedValue.length; i++) {
+            const elemOffset = offset + i * 4;
+            writer(view, elemOffset, paddedValue[i]);
+        }
+    }
+
+    /**
+     * Writes a value to a DataView at the specified offset.
+     */
+    static writeValueToBuffer(view, offset, value, type)
+    {
+        if (typeof value === 'number') {
+            const writer = StorageBuffer.getTypeWriter(type);
+            writer(view, offset, value);
+        } else if (Array.isArray(value)) {
+            BaseBuffer.writeArrayValue(view, offset, value, type);
+        }
     }
 }
 
