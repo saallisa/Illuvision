@@ -51,6 +51,14 @@ class Matrix3
     }
 
     /**
+     * Transposes this matrix and returns the result as a new Matrix3 instance
+     * without changing the original one.
+     */
+    transpose() {
+        return new Matrix3(Matrix3.#transposeArray(this.#elements));
+    }
+
+    /**
      * Returns the matrix as an array.
      */
     toArray() {
@@ -74,6 +82,26 @@ class Matrix3
 
 		return new Matrix3(elements);
 	}
+
+    /**
+     * Transposes a Matrix3 instance.
+     */
+    static transpose(matrix)
+    {
+        Matrix3.validateInstance(matrix);
+
+        return new Matrix3(Matrix3.#transposeArray(matrix.toArray()));
+    }
+
+    /**
+     * Validates that an object is a Matrix3 instance.
+     */
+    static validateInstance(value)
+    {
+        if (!(value instanceof Matrix3)) {
+            throw new TypeError('Expected an instance of Matrix3');
+        }
+    }
 
     /**
      * Validates the elements array for matrix construction.
@@ -113,6 +141,21 @@ class Matrix3
         if (row < 0 || row >= 3 || col < 0 || col >= 3) {
             throw new RangeError('Row and column must be between 0 and 2');
         }
+    }
+
+    /**
+     * Transposes an array representation of a matrix and returns the result
+     * as an array.
+     */
+    static #transposeArray(m)
+    {
+        const r = new Array(9);
+
+        r[0] = m[0]; r[3] = m[1]; r[6] = m[2];
+        r[1] = m[3]; r[4] = m[4]; r[7] = m[5];
+        r[2] = m[6]; r[5] = m[7]; r[8] = m[8];
+
+        return r;
     }
 }
 
