@@ -51,6 +51,21 @@ class Matrix3
     }
 
     /**
+     * Transposes this matrix directly.
+     */
+    transposeSelf()
+    {
+        const m = this.toArray();
+        const r = new Array(9);
+
+        r[0] = m[0]; r[3] = m[1]; r[6] = m[2];
+        r[1] = m[3]; r[4] = m[4]; r[7] = m[5];
+        r[2] = m[6]; r[5] = m[7]; r[8] = m[8];
+
+        this.#elements = r;
+    }
+
+    /**
      * Transposes this matrix and returns the result as a new Matrix3 instance
      * without changing the original one.
      */
