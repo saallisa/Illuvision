@@ -53,16 +53,8 @@ class Matrix3
     /**
      * Transposes this matrix directly.
      */
-    transposeSelf()
-    {
-        const m = this.toArray();
-        const r = new Array(9);
-
-        r[0] = m[0]; r[3] = m[1]; r[6] = m[2];
-        r[1] = m[3]; r[4] = m[4]; r[7] = m[5];
-        r[2] = m[6]; r[5] = m[7]; r[8] = m[8];
-
-        this.#elements = r;
+    transposeSelf() {
+        this.#elements = Matrix3.#transposeArray(this.toArray());
     }
 
     /**
@@ -71,6 +63,28 @@ class Matrix3
      */
     transpose() {
         return new Matrix3(Matrix3.#transposeArray(this.#elements));
+    }
+
+    /**
+     * Calculate the determinant of this matrix using the leibnitz formula.
+     */
+    determinant() {
+		return Matrix3.#determinantArray(this.#elements)
+    }
+
+    /**
+     * Inverts this matrix directly.
+     */
+    invertSelf() {
+        this.#elements = Matrix3.#invertArray(this.toArray());
+    }
+
+    /**
+     * Inverts this matrix and returns the result as a new Matrix3 instance
+     * without changing the original one.
+     */
+    invert() {
+        return new Matrix3(Matrix3.#invertArray(this.#elements));
     }
 
     /**
@@ -89,13 +103,11 @@ class Matrix3
 
 		const m = matrix.toArray();
 
-		elements = [
+		return new Matrix3([
 			m[0], m[1], m[2],
 			m[4], m[5], m[6],
 			m[8], m[9], m[10]
-        ];
-
-		return new Matrix3(elements);
+        ]);
 	}
 
     /**
@@ -106,6 +118,16 @@ class Matrix3
         Matrix3.validateInstance(matrix);
 
         return new Matrix3(Matrix3.#transposeArray(matrix.toArray()));
+    }
+
+    /**
+     * Inverts a Matrix3 instance.
+     */
+    static invert(matrix)
+    {
+        Matrix3.validateInstance(matrix);
+
+        return new Matrix3(Matrix3.#invertArray(matrix.toArray()));
     }
 
     /**
@@ -171,6 +193,54 @@ class Matrix3
         r[2] = m[6]; r[5] = m[7]; r[8] = m[8];
 
         return r;
+    }
+
+    /**
+     * Calculates the determinant of the array representation of a matrix.
+     */
+    static #determinantArray(m)
+    {
+        const a = m[0], b = m[1], c = m[2];
+	    const d = m[3], e = m[4], f = m[5];
+		const g = m[6], h = m[7], i = m[8];
+
+		let determinant = (a * e * i) + (b * f * g) + (c * d * h);
+        determinant = determinant - (c * e * g) - (b * d * i) - (a * f * h);
+        return determinant;
+    }
+
+    /**
+     * Inverts an array representation of a matrix and returns the result as
+     * a new array.
+     */
+    static #invertArray(m)
+    {
+        const determinant = Matrix3.#determinantArray(m);
+
+        if (determinant === 0) {
+            return [
+                0, 0, 0,
+                0, 0, 0,
+                0, 0, 0
+            ]
+        }
+
+        const invDet = 1 / determinant;
+        const i = new Array(9);
+
+		i[0] = (m[8] * m[4] - m[5] * m[7]) * invDet;
+		i[1] = (m[2] * m[7] - m[8] * m[1]) * invDet;
+		i[2] = (m[5] * m[1] - m[2] * m[4]) * invDet;
+
+		i[3] = (m[5] * m[6] - m[8] * m[3]) * invDet;
+		i[4] = (m[8] * m[0] - m[2] * m[6]) * invDet;
+		i[5] = (m[2] * m[3] - m[5] * m[0]) * invDet;
+
+		i[6] = (m[7] * m[3] - m[4] * m[6]) * invDet;
+		i[7] = (m[1] * m[6] - m[7] * m[0]) * invDet;
+		i[8] = (m[4] * m[0] - m[1] * m[3]) * invDet;
+
+        return i;
     }
 }
 
