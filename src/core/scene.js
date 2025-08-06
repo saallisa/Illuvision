@@ -204,10 +204,6 @@ class Scene
      */
     #fillUniformBuffer()
     {
-        if (this.#ambientLights.length === 0) {
-            return;
-        }
-
         const ambient = this.#createAccumulatedAmbientLight();
 
         this.#uniformBuffer.setUniform(
@@ -229,6 +225,11 @@ class Scene
      */
     #createAccumulatedAmbientLight()
     {
+        // Zero intensity for no ambient lights
+        if (this.#ambientLights.length === 0) {
+            return new AmbientLight(Color.BLACK, 0);
+        }
+
         let intensity = 0;
         const colors = [];
         const weights = [];
