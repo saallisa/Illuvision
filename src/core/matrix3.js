@@ -69,7 +69,7 @@ class Matrix3
      * Calculate the determinant of this matrix using the leibnitz formula.
      */
     determinant() {
-		return Matrix3.#determinantArray(this.#elements)
+		return Matrix3.#determinantArray(this.#elements);
     }
 
     /**

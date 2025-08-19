@@ -215,7 +215,7 @@ class Vector3
     static multiplyScalar(vector, scalar)
     {
         Vector3.validateInstance(vector);
-        Vector3.#validateComponent(scalar);
+        Vector3.#validateComponent(scalar, 'scalar');
 
         return vector.multiplyScalarOther(scalar);
     }

@@ -137,9 +137,9 @@ class Matrix4
      */
     static createTranslation(x, y, z)
     {
-        this.#validateComponent(x, 'x');
-        this.#validateComponent(y, 'y');
-        this.#validateComponent(z, 'z');
+        Matrix4.#validateComponent(x, 'x');
+        Matrix4.#validateComponent(y, 'y');
+        Matrix4.#validateComponent(z, 'z');
 
         return new Matrix4([
             1, 0, 0, 0,
@@ -154,9 +154,9 @@ class Matrix4
      */
     static createScale(x, y, z)
     {
-        this.#validateComponent(x, 'x');
-        this.#validateComponent(y, 'y');
-        this.#validateComponent(z, 'z');
+        Matrix4.#validateComponent(x, 'x');
+        Matrix4.#validateComponent(y, 'y');
+        Matrix4.#validateComponent(z, 'z');
 
         return new Matrix4([
             x, 0, 0, 0,
