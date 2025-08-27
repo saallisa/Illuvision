@@ -60,6 +60,16 @@ class Vector3
     }
 
     /**
+     * Calculates the distance between this and another vector.
+     */
+    distanceTo(other)
+    {
+        Vector3.validateInstance(other);
+
+        return this.subtractOther(other).length();
+    }
+
+    /**
      * Normalizes this vector directly.
      */
     normalize()
@@ -218,6 +228,17 @@ class Vector3
         Vector3.#validateComponent(scalar, 'scalar');
 
         return vector.multiplyScalarOther(scalar);
+    }
+
+    /**
+     * Calculate the distance between two vectors.
+     */
+    static distance(vectorA, vectorB)
+    {
+        Vector3.validateInstance(vectorA);
+        Vector3.validateInstance(vectorB);
+
+        return vectorA.subtractOther(vectorB).length();
     }
 
     /**

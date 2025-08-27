@@ -1,4 +1,6 @@
 
+import { Vector3 } from './vector3.js';
+
 /**
  * This class provides comprehensive 4x4 matrix operations for three
  * dimensional graphics programming and transformations.
@@ -218,6 +220,46 @@ class Matrix4
             0, 0, 1, 0,
             0, 0, 0, 1
         ]);
+    }
+
+    /**
+     * Convenience method for creating an orthographic projection matrix.
+     */
+    static createOrthgraphicProjection(left, right, top, bottom, near, far)
+    {
+        const width = 1 / (left - right);
+        const height = 1 / (bottom - top);
+        const depth = 1 / (near - far);
+
+        const matrix = new Array(16);
+
+        // First row
+        matrix[0] = -2 * width;
+        matrix[1] = 0;
+        matrix[2] = 0;
+        matrix[3] = 0;
+
+        // Second row
+        matrix[4] = 0;
+        matrix[5] = -2 * height;
+        matrix[6] = 0;
+        matrix[7] = 0;
+
+        // Third row
+        matrix[8] = 0;
+        matrix[9] = 0;
+        matrix[10] = depth;
+        matrix[11] = 0;
+
+        // Fourth row
+        matrix[12] = (left + right) * width;
+        matrix[13] = (top + bottom) * height;
+        matrix[14] = near * depth;
+        matrix[15] = 1;
+
+        console.log(matrix);
+
+        return new Matrix4(matrix);
     }
 
     /**
