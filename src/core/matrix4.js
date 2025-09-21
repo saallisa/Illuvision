@@ -67,7 +67,8 @@ class Matrix4
      * Multiply this matrix with another and return the result as a
      * new matrix.
      */
-    multiplyOther(other) {
+    multiplyOther(other)
+    {
         Matrix4.validateInstance(other);
 
         const result = Matrix4.#multiplyArray(
@@ -257,7 +258,96 @@ class Matrix4
         matrix[14] = near * depth;
         matrix[15] = 1;
 
-        console.log(matrix);
+        return new Matrix4(matrix);
+    }
+
+    /**
+     * Convenience method for creating a perspective projection matrix.
+     */
+    static createPerspectiveProjection(fov, aspect, near, far)
+    {
+        const fovRad = fov * Math.PI / 180;
+        const f = 1 / Math.tan(fovRad / 2);
+
+        const matrix = new Array(16);
+        
+        // First row
+        matrix[0] = f / aspect;
+        matrix[1] = 0;
+        matrix[2] = 0;
+        matrix[3] = 0;
+        // Second row
+        matrix[4] = 0;
+        matrix[5] = f;
+        matrix[6] = 0;
+        matrix[7] = 0;
+        // Third row
+        matrix[8] = 0;
+        matrix[9] = 0;
+        matrix[10] = (far + near) / (near - far);
+        matrix[11] = -1;
+        // Fourth row
+        matrix[12] = 0;
+        matrix[13] = 0;
+        matrix[14] = (2 * far * near) / (near - far);
+        matrix[15] = 0;
+
+        return new Matrix4(matrix);
+    }
+
+    /**
+     * Convenience method for creating a look at matrix with position, target
+     * and up parameters.
+     */
+    static createLookAt(position, target, up)
+    {
+        Vector3.validateInstance(position);
+        Vector3.validateInstance(target);
+        Vector3.validateInstance(up);
+
+        const boundary = 0.0005;
+
+        let z = Vector3.subtract(position, target);
+
+        // For too small values return an identity matrix
+        if (Math.abs(z.x) < boundary &&
+            Math.abs(z.y) < boundary &&
+            Math.abs(z.z) < boundary
+        ) {
+            return new Matrix4();
+        }
+
+        length = 1 / z.length();
+        z.multiplyScalar(length);
+
+        let x = Vector3.cross(up, z);
+        length = x.length();
+
+        if (length === 0) {
+            x = new Vector3(0, 0, 0);
+        } else {
+            x.multiplyScalar(1 / length);
+        }
+
+        let y = Vector3.cross(z, x);
+        length = y.length();
+
+        if (length === 0) {
+            y = new Vector3(0, 0, 0);
+        } else {
+            y.multiplyScalar(1 / length);
+        }
+
+        const matrix = new Array(16);
+
+        matrix[0] = x.x, matrix[1] = y.x, matrix[2] = z.x, matrix[3] = 0;
+        matrix[4] = x.y, matrix[5] = y.y, matrix[6] = z.y, matrix[7] = 0;
+        matrix[8] = x.z, matrix[9] = y.z, matrix[10] = z.z, matrix[11] = 0;
+
+        matrix[12] = -(x.x * position.x + x.y * position.y + x.z * position.z);
+        matrix[13] = -(y.x * position.x + y.y * position.y + y.z * position.z);
+        matrix[14] = -(z.x * position.x + z.y * position.y + z.z * position.z);
+        matrix[15] = 1;
 
         return new Matrix4(matrix);
     }
