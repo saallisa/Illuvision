@@ -86,27 +86,8 @@ class Camera
     /**
      * Returns the view matrix for the camera.
      */
-    getViewMatrix()
-    {
-        const z = Vector3.subtract(this.#target, this.#position);
-        z.normalize();
-
-        const x = z.clone();
-        x.cross(this.#up);
-        x.normalize();
-
-        const y = x.clone();
-        y.cross(z);
-        y.normalize();
-
-        const result = new Matrix4([
-            x.x, x.y, x.z, x.dot(this.#position),
-            y.x, y.y, y.z, y.dot(this.#position),
-            z.x, z.y, z.z, -z.dot(this.#position),
-            0, 0, 0, 1
-        ]);
-
-        return result.transpose();
+    getViewMatrix() {
+        return Matrix4.createLookAt(this.#position, this.#target, this.#up);
     }
 
     /**

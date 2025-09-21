@@ -49,29 +49,13 @@ class OrthographicCamera extends Camera
      */
     getProjectionMatrix()
     {
-        // x-axis
-        const xLength = this.#right - this.#left;
-        const xScale = 1 / xLength;
-        const xDisplacement = -((this.#right + this.#left) / xLength);
-
-        // y-axis
-        const yLength = this.#top - this.#bottom;
-        const yScale = 1 / yLength;
-        const yDisplacement = -((this.#top + this.#bottom) / yLength);
-
-        // z-axis
-        const zLength = this.#far - this.#near;
-        const zScale = 1 / zLength;
-        const zDisplacement = - ((this.#far + this.#near) / zLength);
-
-        const translation = Matrix4.createTranslation(
-            xDisplacement, yDisplacement, zDisplacement
+        const projection = Matrix4.createOrthgraphicProjection(
+            this.#left, this.#right,
+            this.#top, this.#bottom,
+            this.#near, this.#far
         );
-        const scaling = Matrix4.createScale(
-            xScale, this.getAspectRatio() * yScale, zScale
-        );
-
-        return translation.multiplyOther(scaling);
+        
+        return projection;
     }
 }
 
