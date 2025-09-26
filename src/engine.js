@@ -404,7 +404,7 @@ class Engine
     #createDepthTextureView()
     {
         const depthTextureDesc = {
-            size: [this.#width, this.#canvas.height, 1],
+            size: [this.#width, this.#height, 1],
             dimension: '2d',
             format: 'depth24plus-stencil8',
             usage: GPUTextureUsage.RENDER_ATTACHMENT 
