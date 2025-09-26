@@ -270,6 +270,8 @@ class Matrix4
         const f = 1 / Math.tan(fovRad / 2);
 
         const matrix = new Array(16);
+
+        const nf = 1 / (near - far);
         
         // First row
         matrix[0] = f / aspect;
@@ -284,12 +286,12 @@ class Matrix4
         // Third row
         matrix[8] = 0;
         matrix[9] = 0;
-        matrix[10] = (far + near) / (near - far);
+        matrix[10] = far * nf;
         matrix[11] = -1;
         // Fourth row
         matrix[12] = 0;
         matrix[13] = 0;
-        matrix[14] = (2 * far * near) / (near - far);
+        matrix[14] = far * near * nf;
         matrix[15] = 0;
 
         return new Matrix4(matrix);
