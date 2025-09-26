@@ -54,6 +54,8 @@ async function main()
     // Create an orthographic camera
     const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 10);
     camera.setAspectRatio(engine.getAspectRatio());
+    camera.setPosition(new Vector3(0, 0, -1));
+    camera.setTarget(new Vector3(0, 0, 0));
 
     await engine.render(scene, camera);
 }
