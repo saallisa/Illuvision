@@ -49,13 +49,34 @@ class OrthographicCamera extends Camera
      */
     getProjectionMatrix()
     {
-        const projection = Matrix4.createOrthgraphicProjection(
-            this.#left, this.#right,
-            this.#top, this.#bottom,
+        let adjustedLeft = this.#left;
+        let adjustedRight = this.#right;
+        let adjustedTop = this.#top;
+        let adjustedBottom = this.#bottom;
+
+        if (this.getAspectRatio() > 1.0) {
+            // Widescreen format
+            const halfWidth = (this.#right - this.#left) * 0.5;
+            const center = (this.#left + this.#right) * 0.5;
+            const newHalfWidth = halfWidth * this.getAspectRatio();
+            
+            adjustedLeft = center - newHalfWidth;
+            adjustedRight = center + newHalfWidth;
+        } else {
+            // Portrait format
+            const halfHeight = (this.#top - this.#bottom) * 0.5;
+            const center = (this.#top + this.#bottom) * 0.5;
+            const newHalfHeight = halfHeight / this.getAspectRatio();
+
+            adjustedTop = center + newHalfHeight;
+            adjustedBottom = center - newHalfHeight;
+        }
+
+        return Matrix4.createOrthographicProjection(
+            adjustedLeft, adjustedRight,
+            adjustedTop, adjustedBottom,
             this.#near, this.#far
         );
-        
-        return projection;
     }
 }
 

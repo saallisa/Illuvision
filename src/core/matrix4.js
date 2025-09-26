@@ -226,7 +226,7 @@ class Matrix4
     /**
      * Convenience method for creating an orthographic projection matrix.
      */
-    static createOrthgraphicProjection(left, right, top, bottom, near, far)
+    static createOrthographicProjection(left, right, top, bottom, near, far)
     {
         const width = 1 / (left - right);
         const height = 1 / (bottom - top);
