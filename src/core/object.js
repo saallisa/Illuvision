@@ -1,4 +1,5 @@
 
+import { Color } from './color.js';
 import { Vector3 } from './vector3.js';
 
 /**
@@ -9,6 +10,7 @@ class Object
 {
     #id = null;
     #vertices = [];
+    #vertexColors = [];
 
     constructor() {
         this.#id = crypto.randomUUID();
@@ -37,6 +39,13 @@ class Object
     }
 
     /**
+     * Gets a copy of all vertex colors.
+     */
+    getVertexColors() {
+        return Array.from(this.#vertexColors);
+    }
+
+    /**
      * Gets a single vertex by its index.
      */
     getVertex(index) {
@@ -44,10 +53,24 @@ class Object
     }
 
     /**
+     * Gets a single vertex color by its index.
+     */
+    getVertexColor(index) {
+        return this.#vertexColors[index];
+    }
+
+    /**
      * Gets the number of vertices in the object.
      */
     getVertexCount() {
         return this.#vertices.length;
+    }
+
+    /**
+     * Gets the number of vertex colors in the object.
+     */
+    getVertexColorCount() {
+        return this.#vertexColors.length;
     }
 
     /**
@@ -63,6 +86,18 @@ class Object
 
         // Return the index of the newly added vertex
         return this.#vertices.length - 1;
+    }
+
+    /**
+     * Adds a vertex color to the object
+     */
+    addVertexColor(vertexColor)
+    {
+        if (!(vertexColor instanceof Color)) {
+            throw new TypeError('Vertex color must be a Color instance.');
+        }
+
+        this.#vertexColors.push(vertexColor.clone());
     }
 
     // Topology constants

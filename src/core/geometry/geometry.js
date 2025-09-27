@@ -16,7 +16,6 @@ class Geometry extends Object
     #uvs = [];
     #vertexNormals = [];
     #faceNormals = [];
-    #vertexColors = [];
 
     constructor() {
         super();
@@ -55,13 +54,6 @@ class Geometry extends Object
      */
     getFaceNormals() {
         return Array.from(this.#faceNormals);
-    }
-
-    /**
-     * Gets a copy of all vertex colors.
-     */
-    getVertexColors() {
-        return Array.from(this.#vertexColors);
     }
 
     /**
@@ -130,18 +122,6 @@ class Geometry extends Object
         }
 
         this.#uvs.push(uv.clone());
-    }
-
-    /**
-     * Adds a vertex color to the geometry.
-     */
-    addVertexColor(vertexColor)
-    {
-        if (!(vertexColor instanceof Color)) {
-            throw new TypeError('Vertex color must be a Color instance.');
-        }
-
-        this.#vertexColors.push(vertexColor.clone());
     }
 
     /**
@@ -548,7 +528,7 @@ class Geometry extends Object
      */
     #validateColorCount()
     {
-        if (this.#vertexColors.length !== this.getVertexCount()) {
+        if (this.getVertexColorCount() !== this.getVertexCount()) {
             throw new Error('Vertex color count must match vertex count.');
         }
     }
@@ -635,7 +615,7 @@ class Geometry extends Object
      */
     #writeColorData(buffer, offset, vertexIndex)
     {
-        const color = this.#vertexColors[vertexIndex];
+        const color = this.getVertexColor(vertexIndex);
 
         buffer[offset] = color.red;
         buffer[offset + 1] = color.green;
