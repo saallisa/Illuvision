@@ -12,7 +12,6 @@ import { Vector3 } from '../vector3.js';
  */
 class Geometry extends Object
 {
-    #vertices = [];
     #faces = [];
     #uvs = [];
     #vertexNormals = [];
@@ -24,10 +23,10 @@ class Geometry extends Object
     }
 
     /**
-     * Gets a copy of all vertices.
+     * Gets the rendering topology.
      */
-    getVertices() {
-        return Array.from(this.#vertices);
+    getTopology() {
+        return Object.TRIANGLES;
     }
 
     /**
@@ -66,13 +65,6 @@ class Geometry extends Object
     }
 
     /**
-     * Gets the number of vertices in the geometry.
-     */
-    getVertexCount() {
-        return this.#vertices.length;
-    }
-
-    /**
      * Gets the number of faces in the geometry.
      */
     getFaceCount() {
@@ -84,21 +76,6 @@ class Geometry extends Object
      */
     getUvCount() {
         return this.#uvs.length;
-    }
-
-    /**
-     * Adds a vertex to the geometry and return its index.
-     */
-    addVertex(vertex)
-    {
-        if (!(vertex instanceof Vector3)) {
-            throw new TypeError('Expected a Vector3 instance.');
-        }
-
-        this.#vertices.push(vertex.clone());
-
-        // Return the index of the newly added vertex
-        return this.#vertices.length - 1;
     }
 
     /**
@@ -183,7 +160,7 @@ class Geometry extends Object
         this.#vertexNormals = [];
 
         // Initialize vertex normals array with zero vectors
-        for (let i = 0; i < this.#vertices.length; i++) {
+        for (let i = 0; i < this.getVertexCount(); i++) {
             this.#vertexNormals.push(new Vector3(0, 0, 0));
         }
 
@@ -267,7 +244,7 @@ class Geometry extends Object
             Array.from(layout),
             stride,
             offsets,
-            this.#vertices.length
+            this.getVertexCount()
         );
 
         if (this.getFaceCount() > 0) {
@@ -344,9 +321,9 @@ class Geometry extends Object
     {
         const indices = face.getIndices();
 
-        const vertex1 = this.#vertices[indices[0]];
-        const vertex2 = this.#vertices[indices[1]];
-        const vertex3 = this.#vertices[indices[2]];
+        const vertex1 = this.getVertex(indices[0]);
+        const vertex2 = this.getVertex(indices[1]);
+        const vertex3 = this.getVertex(indices[2]);
 
         const edge1 = vertex2.subtractOther(vertex1);
         const edge2 = vertex3.subtractOther(vertex1);
@@ -360,7 +337,7 @@ class Geometry extends Object
     #validateFaceIndices(face)
     {
         const indices = face.getIndices();
-        const maxValidIndex = this.#vertices.length - 1;
+        const maxValidIndex = this.getVertexCount() - 1;
         
         for (let i = 0; i < indices.length; i++) {
             const index = indices[i];
@@ -561,7 +538,7 @@ class Geometry extends Object
      */
     #validateUvCount()
     {
-        if (this.#uvs.length !== this.#vertices.length) {
+        if (this.#uvs.length !== this.getVertexCount()) {
             throw new Error('UV coordinate count must match vertex count.');
         }
     }
@@ -571,7 +548,7 @@ class Geometry extends Object
      */
     #validateColorCount()
     {
-        if (this.#vertexColors.length !== this.#vertices.length) {
+        if (this.#vertexColors.length !== this.getVertexCount()) {
             throw new Error('Vertex color count must match vertex count.');
         }
     }
@@ -581,10 +558,10 @@ class Geometry extends Object
      */
     #writeGeometryData(componentInfo, stride)
     {
-        const bufferSize = this.#vertices.length * stride;
+        const bufferSize = this.getVertexCount() * stride;
         const buffer = new Float32Array(bufferSize);
         
-        for (let index = 0; index < this.#vertices.length; index++) {
+        for (let index = 0; index < this.getVertexCount(); index++) {
             this.#writeGeometryBuffer(buffer, index, stride, componentInfo);
         }
         
@@ -623,7 +600,7 @@ class Geometry extends Object
      */
     #writeVertexData(buffer, offset, vertexIndex)
     {
-        const vertex = this.#vertices[vertexIndex];
+        const vertex = this.getVertex(vertexIndex);
 
         buffer[offset] = vertex.x;
         buffer[offset + 1] = vertex.y;
