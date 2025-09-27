@@ -23,7 +23,7 @@ class PerspectiveCamera extends Camera
 
         this.setFov(fov);
         this.#near = near;
-        this.getFar(far);
+        this.setFar(far);
     }
 
     /**
