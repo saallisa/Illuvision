@@ -2,6 +2,7 @@
 import { Color } from '../color.js';
 import { Face } from '../face.js';
 import { GeometryBuffer } from '../buffer/geometry-buffer.js';
+import { Object } from '../object.js';
 import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
@@ -9,9 +10,8 @@ import { Vector3 } from '../vector3.js';
  * A minimal yet extensible Geometry class that stores vertices, faces and
  * uv-coordinates. Supports automatic normal calculation
  */
-class Geometry
+class Geometry extends Object
 {
-    #id = null;
     #vertices = [];
     #faces = [];
     #uvs = [];
@@ -20,14 +20,7 @@ class Geometry
     #vertexColors = [];
 
     constructor() {
-        this.#id = crypto.randomUUID();
-    }
-
-    /**
-     * Gets the universally unique identifier of this geometry.
-     */
-    getId() {
-        return this.#id;
+        super();
     }
 
     /**
