@@ -47,7 +47,7 @@ async function main()
     sceneNode.rotateX = 90;
 
     // Create a simple box
-    const boxGeometry = new Box(0.5, 0.5, 0.5);
+    const boxGeometry = new Box(1, 1, 1);
 
     // Define the material to use
     const boxMaterial = await BasicMaterial.init({
@@ -59,7 +59,7 @@ async function main()
 
     // Create a second scene node for the box
     const sceneNode2 = new SceneNode(box);
-    sceneNode2.setPosition(new Vector3(0, 0, 0));
+    sceneNode2.setPosition(new Vector3(0, 1, 0));
 
     // Create a new Scene and add the node to it
     const scene = new Scene();
@@ -67,10 +67,10 @@ async function main()
     scene.addNode(sceneNode2);
 
     // Create an perspective camera
-    const camera = new PerspectiveCamera(70, 0.1, 1000);
+    const camera = new PerspectiveCamera(45, 0.1, 100);
     camera.setAspectRatio(engine.getAspectRatio());
     camera.setTarget(new Vector3(0, 0, 0));
-    camera.setPosition(new Vector3(0, 0.5, -5));
+    camera.setPosition(new Vector3(5, 5, 5));
 
     // Create the function for the animation loop 
     const animation = function ()
