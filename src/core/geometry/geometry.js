@@ -1,5 +1,4 @@
 
-import { Color } from '../color.js';
 import { Face } from '../face.js';
 import { GeometryBuffer } from '../buffer/geometry-buffer.js';
 import { Object } from '../object.js';
