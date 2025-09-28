@@ -2,7 +2,8 @@
 import * as VYXEN from '/src/vyxen.js';
 
 /**
- * Render a plane onto the canvas.
+ * Render a spinning cube and a ground plane onto the canvas.
+ * In this example, use a perspective camera.
  */
 async function main()
 {
@@ -57,7 +58,7 @@ async function main()
     scene.addNode(sceneNode);
     scene.addNode(sceneNode2);
 
-    // Create an perspective camera
+    // Create a perspective camera
     const camera = new VYXEN.PerspectiveCamera(45, 0.1, 100);
     camera.setAspectRatio(engine.getAspectRatio());
     camera.setTarget(new VYXEN.Vector3(0, 0, 0));
