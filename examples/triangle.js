@@ -1,13 +1,5 @@
 
-import { BasicMaterial } from '/src/core/material/basic-material.js';
-import { Color } from '/src/core/color.js';
-import { Engine } from '/src/engine.js';
-import { Mesh } from '/src/core/mesh.js';
-import { OrthographicCamera } from '/src/core/camera/orthographic-camera.js';
-import { Scene } from '/src/core/scene.js';
-import { SceneNode } from '/src/core/scene-node.js';
-import { Triangle } from '/src/core/geometry/triangle.js';
-import { Vector3 } from '/src/core/vector3.js';
+import * as VYXEN from '/src/vyxen.js';
 
 /**
  * Render a triangle onto the canvas.
@@ -16,50 +8,50 @@ async function main()
 {
     // Configure engine
     const baseUrl = new URL(window.location.href);
-    Engine.setRootPath(baseUrl.origin + '/src/');
+    VYXEN.Engine.setRootPath(baseUrl.origin + '/src/');
 
     // Init engine
-    const engine = new Engine();
+    const engine = new VYXEN.Engine();
     engine.setSizeToWindow();
-    engine.setClearColor(Color.GREY);
+    engine.setClearColor(VYXEN.Color.GREY);
     await engine.initialize();
 
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
     // Create a simple triangle
-    const triangleGeometry = new Triangle(
-        new Vector3(0, 0.5, 0),
-        new Vector3(-0.5, -0.5, 0),
-        new Vector3(0.5, -0.5, 0)
+    const triangleGeometry = new VYXEN.Triangle(
+        new VYXEN.Vector3(0, 0.5, 0),
+        new VYXEN.Vector3(-0.5, -0.5, 0),
+        new VYXEN.Vector3(0.5, -0.5, 0)
     );
 
     // Define the material to use
-    const triangleMaterial = await BasicMaterial.init({
-        color: Color.MAGENTA
+    const triangleMaterial = await VYXEN.BasicMaterial.init({
+        color: VYXEN.Color.MAGENTA
     });
 
     // Create a mesh from the geometry and material
-    const triangle = new Mesh(triangleGeometry, triangleMaterial);
+    const triangle = new VYXEN.Mesh(triangleGeometry, triangleMaterial);
 
     // Create a scene node
-    const sceneNode = new SceneNode(triangle);
+    const sceneNode = new VYXEN.SceneNode(triangle);
 
     // Set the position relative to the origin
-    sceneNode.setPosition(new Vector3(0.5, 0, 0));
+    sceneNode.setPosition(new VYXEN.Vector3(0.5, 0, 0));
 
     // Scale it by half
-    sceneNode.setScale(new Vector3(0.5, 0.5, 0.5));
+    sceneNode.setScale(new VYXEN.Vector3(0.5, 0.5, 0.5));
 
     // Create a new Scene and add the node to it
-    const scene = new Scene();
+    const scene = new VYXEN.Scene();
     scene.addNode(sceneNode);
 
     // Create an orthographic camera
-    const camera = new OrthographicCamera(-1, 1, 1, -1, 0, 10);
+    const camera = new VYXEN.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     camera.setAspectRatio(engine.getAspectRatio());
-    camera.setPosition(new Vector3(0, 0, -1));
-    camera.setTarget(new Vector3(0, 0, 0));
+    camera.setPosition(new VYXEN.Vector3(0, 0, -1));
+    camera.setTarget(new VYXEN.Vector3(0, 0, 0));
 
     await engine.render(scene, camera);
 }
