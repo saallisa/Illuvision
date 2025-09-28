@@ -497,7 +497,7 @@ class Geometry extends Object
                     this.#validateUvCount();
                     break;
                 case Geometry.COLOR:
-                    this.#validateColorCount();
+                    this.validateColorCount();
             }
         }
     }
@@ -519,16 +519,6 @@ class Geometry extends Object
     {
         if (this.#uvs.length !== this.getVertexCount()) {
             throw new Error('UV coordinate count must match vertex count.');
-        }
-    }
-
-    /**
-     * Validates that vertex colors match vertex count.
-     */
-    #validateColorCount()
-    {
-        if (this.getVertexColorCount() !== this.getVertexCount()) {
-            throw new Error('Vertex color count must match vertex count.');
         }
     }
 
@@ -676,20 +666,12 @@ class Geometry extends Object
 
     // Some more fake constants for interleaved geometry flattening.
 
-    static get VERTEX() {
-        return 'vertex';
-    }
-
     static get NORMAL() {
         return 'normal';
     }
 
     static get UV() {
         return 'uv';
-    }
-
-    static get COLOR() {
-        return 'color';
     }
 }
 

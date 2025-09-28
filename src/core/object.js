@@ -12,7 +12,12 @@ class Object
     #vertices = [];
     #vertexColors = [];
 
-    constructor() {
+    constructor()
+    {
+        if (this.constructor === Object) {
+            throw new Error('Object cannot be instantiated directly.');
+        }
+
         this.#id = crypto.randomUUID();
     }
 
@@ -100,6 +105,16 @@ class Object
         this.#vertexColors.push(vertexColor.clone());
     }
 
+    /**
+     * Validates that vertex color count matches vertex count.
+     */
+    validateColorCount()
+    {
+        if (this.#vertices.length !== this.#vertexColors.length) {
+            throw new Error('Vertex color count must match vertex count.');
+        }
+    }
+
     // Topology constants
     static get TRIANGLES() {
         return 'triangle-list';
@@ -111,6 +126,15 @@ class Object
 
     static get POINTS() {
         return 'point-list';
+    }
+
+    // Constants for interleaved vertex data flattening.
+    static get VERTEX() {
+        return 'vertex';
+    }
+
+    static get COLOR() {
+        return 'color';
     }
 }
 
