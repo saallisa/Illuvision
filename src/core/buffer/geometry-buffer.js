@@ -194,7 +194,7 @@ class GeometryBuffer
     #createVertexBuffer()
     {
         this.#gpuBuffer = this.#device.createBuffer({
-            size: GeometryBuffer.#alignBufferSize(
+            size: GeometryBuffer.alignBufferSize(
                 this.#buffer.byteLength
             ),
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
@@ -242,7 +242,7 @@ class GeometryBuffer
     #createIndexBuffer()
     {
         this.#gpuIndexBuffer = this.#device.createBuffer({
-            size: GeometryBuffer.#alignBufferSize(
+            size: GeometryBuffer.alignBufferSize(
                 this.#indexBuffer.byteLength
             ),
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
@@ -252,13 +252,6 @@ class GeometryBuffer
         const mappedBuffer = this.#gpuIndexBuffer.getMappedRange();
         new Uint16Array(mappedBuffer).set(this.#indexBuffer);
         this.#gpuIndexBuffer.unmap();
-    }
-
-    /**
-     * Aligns buffer size to 4-byte boundary required by WebGPU.
-     */
-    static #alignBufferSize(size) {
-        return Math.ceil(size / 4) * 4;
     }
 
     /**

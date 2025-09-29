@@ -155,6 +155,13 @@ class BaseBuffer
     }
 
     /**
+     * Aligns buffer size to 4-byte boundary required by WebGPU.
+     */
+    static alignBufferSize(size) {
+        return Math.ceil(size / 4) * 4;
+    }
+
+    /**
      * Gets the stride (padded size) for a given WGSL type in bytes.
      * This accounts for alignment padding.
      */
