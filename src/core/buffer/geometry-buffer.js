@@ -1,4 +1,5 @@
 
+import { BaseBuffer } from './base-buffer.js';
 import { Engine } from '../../engine.js';
 import { Geometry } from '../geometry/geometry.js';
 
@@ -194,7 +195,7 @@ class GeometryBuffer
     #createVertexBuffer()
     {
         this.#gpuBuffer = this.#device.createBuffer({
-            size: GeometryBuffer.alignBufferSize(
+            size: BaseBuffer.alignBufferSize(
                 this.#buffer.byteLength
             ),
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.VERTEX,
@@ -242,7 +243,7 @@ class GeometryBuffer
     #createIndexBuffer()
     {
         this.#gpuIndexBuffer = this.#device.createBuffer({
-            size: GeometryBuffer.alignBufferSize(
+            size: BaseBuffer.alignBufferSize(
                 this.#indexBuffer.byteLength
             ),
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,

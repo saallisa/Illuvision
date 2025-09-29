@@ -1,4 +1,7 @@
 
+import { BaseBuffer } from './base-buffer.js';
+import { Engine } from '../../engine.js';
+
 /**
  * Represents an index buffer with metadata for GPU usage.
  */
@@ -88,7 +91,7 @@ class IndexBuffer
     #createIndexBuffer()
     {
         this.#gpuBuffer = this.#device.createBuffer({
-            size: IndexBuffer.alignBufferSize(
+            size: BaseBuffer.alignBufferSize(
                 this.#buffer.byteLength
             ),
             usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.INDEX,
@@ -100,3 +103,7 @@ class IndexBuffer
         this.#gpuBuffer.unmap();
     }
 }
+
+export {
+    IndexBuffer
+};
