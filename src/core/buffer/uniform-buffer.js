@@ -85,7 +85,7 @@ class UniformBuffer extends BaseBuffer
     {
         if (!this.#compiled) {
             throw new Error(
-                'Uniform uffer must be compiled before accessing it!'
+                'Uniform buffer must be compiled before accessing it!'
             );
         }
 

@@ -239,7 +239,7 @@ class Color
     }
 
     /**
-     * Valides that a weights array adds up to approximately 1.
+     * Validates that a weights array adds up to approximately 1.
      */
     static #validateWeights(weights)
     {
