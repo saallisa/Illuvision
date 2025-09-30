@@ -452,7 +452,8 @@ class Engine
         }
 
         const material = node.getMesh().getMaterial();
-        const geometry = node.getMesh().getGeometryBuffer();
+        const vertices = node.getMesh().getVertexBuffer();
+        const indices = node.getMesh().getIndexBuffer();
         const geometryId = node.getMesh().getGeometry().getId();
 
         const pipelineKey = material.getId() + '_' + geometryId;
@@ -462,7 +463,7 @@ class Engine
             pipeline = this.#pipelines.get(pipelineKey);
         } else {
             pipeline = await this.#createRenderPipeline(
-                geometry, material, [
+                vertices, material, [
                     camera.getBindGroupLayout(),
                     scene.getBindGroupLayout(),
                     material.getBindGroupLayout(),
@@ -476,15 +477,15 @@ class Engine
         this.#renderPass.setBindGroup(2, material.getBindGroup());
         this.#renderPass.setBindGroup(3, node.getBindGroup());
 
-        this.#renderPass.setVertexBuffer(0, geometry.getGpuVertexBuffer());
-        this.#renderPass.setIndexBuffer(geometry.getGpuIndexBuffer(), 'uint16');
-        this.#renderPass.drawIndexed(geometry.getIndexCount());
+        this.#renderPass.setVertexBuffer(0, vertices.getGpuVertexBuffer());
+        this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), 'uint16');
+        this.#renderPass.drawIndexed(indices.getIndexCount());
     }
 
     /**
      * Creates a render pipeline for the given material and geometry.
      */
-    async #createRenderPipeline(geometry, material, groups)
+    async #createRenderPipeline(vertices, material, groups)
     {
         const shader = material.getShader();
         
@@ -497,7 +498,7 @@ class Engine
             vertex: {
                 module: shader.getVertexModule(),
                 buffers: [
-                    await geometry.getVertexBufferLayout()
+                    await vertices.getVertexBufferLayout()
                 ]
             },
             fragment: {

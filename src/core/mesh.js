@@ -11,7 +11,8 @@ class Mesh
     #material = null;
 
     #compiled = false;
-    #geometryBuffer = null;
+    #vertexBuffer = null;
+    #indexBuffer = null;
 
     constructor(geometry, material)
     {
@@ -37,17 +38,31 @@ class Mesh
     }
 
     /**
-     * Gets the geometry buffer for this mesh.
+     * Gets the vertex buffer for this mesh.
      */
-    getGeometryBuffer()
+    getVertexBuffer()
     {
         if (!this.#compiled) {
             throw new Error(
-                'Mesh must be compiled before accessing geometry buffer.'
+                'Mesh must be compiled before accessing vertex buffer.'
             );
         }
 
-        return this.#geometryBuffer;
+        return this.#vertexBuffer;
+    }
+
+    /**
+     * Gets the index buffer for this mesh.
+     */
+    getIndexBuffer()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Mesh must be compiled before accessing index buffer.'
+            );
+        }
+
+        return this.#indexBuffer;
     }
 
     /**
@@ -69,8 +84,10 @@ class Mesh
 
         this.#material.compile(device);
         const bufferLayout = this.#createBufferLayout();
-        this.#geometryBuffer = this.#geometry.createBuffer(bufferLayout);
-        this.#geometryBuffer.compile(device);
+        this.#vertexBuffer = this.#geometry.createVertexBuffer(bufferLayout);
+        this.#vertexBuffer.compile(device);
+        this.#indexBuffer = this.#geometry.createIndexBuffer();
+        this.#indexBuffer.compile(device);
 
         this.#compiled = true;
     }
@@ -80,8 +97,12 @@ class Mesh
      */
     destroy()
     {
-        if (this.#geometryBuffer && this.#geometryBuffer.isCompiled()) {
-            this.#geometryBuffer.destroy();
+        if (this.#vertexBuffer && this.#vertexBuffer.isCompiled()) {
+            this.#vertexBuffer.destroy();
+        }
+
+        if (this.#indexBuffer && this.#indexBuffer.isCompiled()) {
+            this.#indexBuffer.destroy();
         }
 
         if (this.#material && this.#material.isCompiled()) {

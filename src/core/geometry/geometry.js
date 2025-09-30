@@ -1,9 +1,10 @@
 
 import { Face } from '../face.js';
-import { GeometryBuffer } from '../buffer/geometry-buffer.js';
+import { IndexBuffer } from '../buffer/index-buffer.js';
 import { Object } from '../object.js';
 import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
+import { VertexBuffer } from '../buffer/vertex-buffer.js';
 
 /**
  * A minimal yet extensible Geometry class that stores vertices, faces and
@@ -205,9 +206,9 @@ class Geometry extends Object
 
     /**
      * Flattens geometry data into an interleaved vertex buffer based on
-     * the specified layout and returns a GeometryBuffer instance.
+     * the specified layout and returns a Vertex Buffer instance.
      */
-    createBuffer(layout)
+    createVertexBuffer(layout)
     {
         Geometry.validateBufferLayout(layout);
 
@@ -218,7 +219,7 @@ class Geometry extends Object
         this.#prepareGeometryData(layout);
         const buffer = this.#writeGeometryData(componentInfo, stride);
 
-        const geometryBuffer = new GeometryBuffer(
+        const vertexBuffer = new VertexBuffer(
             buffer,
             Array.from(layout),
             stride,
@@ -226,16 +227,24 @@ class Geometry extends Object
             this.getVertexCount()
         );
 
-        if (this.getFaceCount() > 0) {
-            const indexData = this.#createIndexData();
+        return vertexBuffer;
+    }
 
-            geometryBuffer.addIndices(
-                indexData.buffer,
-                indexData.count
-            );
+    /**
+     * Create and return an Index Buffer if indices are set.
+     */
+    createIndexBuffer()
+    {
+        if (this.#faces.length === 0) {
+            return null;
         }
 
-        return geometryBuffer;
+        const indexData = this.#createIndexData();
+
+        return new IndexBuffer(
+            indexData.buffer,
+            indexData.count
+        );
     }
 
     /**
