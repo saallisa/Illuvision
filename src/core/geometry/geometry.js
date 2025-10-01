@@ -4,6 +4,7 @@ import { IndexBuffer } from '../buffer/index-buffer.js';
 import { Object } from '../object.js';
 import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
+import { VertexAttributes } from '../vertex-attributes.js';
 import { VertexBuffer } from '../buffer/vertex-buffer.js';
 
 /**
@@ -253,10 +254,10 @@ class Geometry extends Object
     static validateComponent(component)
     {
         const validComponents = [
-            Geometry.VERTEX,
-            Geometry.NORMAL,
-            Geometry.UV,
-            Geometry.COLOR
+            VertexAttributes.POSITION,
+            VertexAttributes.NORMAL,
+            VertexAttributes.UV,
+            VertexAttributes.COLOR
         ];
 
         if (!validComponents.includes(component)) {
@@ -272,12 +273,12 @@ class Geometry extends Object
     static getComponentSize(component)
     {
         switch (component) {
-            case Geometry.VERTEX:
-            case Geometry.NORMAL:
+            case VertexAttributes.POSITION:
+            case VertexAttributes.NORMAL:
                 return 3;
-            case Geometry.UV:
+            case VertexAttributes.UV:
                 return 2;
-            case Geometry.COLOR:
+            case VertexAttributes.COLOR:
                 return 4;
             default:
                 throw new Error(`Unknown layout component: ${component}`);
@@ -499,13 +500,13 @@ class Geometry extends Object
     {
         for (const component of layout) {
             switch (component) {
-                case Geometry.NORMAL: 
+                case VertexAttributes.NORMAL: 
                     this.#ensureNormalsExist();
                     break;
-                case Geometry.UV:
+                case VertexAttributes.UV:
                     this.#validateUvCount();
                     break;
-                case Geometry.COLOR:
+                case VertexAttributes.COLOR:
                     this.validateColorCount();
             }
         }
@@ -557,16 +558,16 @@ class Geometry extends Object
             const offset = baseOffset + info.offset;
             
             switch (component) {
-                case Geometry.VERTEX:
+                case VertexAttributes.POSITION:
                     this.#writeVertexData(buffer, offset, index);
                     break;
-                case Geometry.NORMAL:
+                case VertexAttributes.NORMAL:
                     this.#writeNormalData(buffer, offset, index);
                     break;
-                case Geometry.UV:
+                case VertexAttributes.UV:
                     this.#writeUvData(buffer, offset, index);
                     break;
-                case Geometry.COLOR:
+                case VertexAttributes.COLOR:
                     this.#writeColorData(buffer, offset, index);
                     break;
             }
@@ -671,16 +672,6 @@ class Geometry extends Object
 
     static get EARCLIPPING() {
         return 'earclipping';
-    }
-
-    // Some more fake constants for interleaved geometry flattening.
-
-    static get NORMAL() {
-        return 'normal';
-    }
-
-    static get UV() {
-        return 'uv';
     }
 }
 

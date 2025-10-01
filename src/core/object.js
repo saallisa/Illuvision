@@ -127,15 +127,6 @@ class Object
     static get POINTS() {
         return 'point-list';
     }
-
-    // Constants for interleaved vertex data flattening.
-    static get VERTEX() {
-        return 'vertex';
-    }
-
-    static get COLOR() {
-        return 'color';
-    }
 }
 
 export {

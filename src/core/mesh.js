@@ -1,6 +1,7 @@
 
 import { Geometry } from './geometry/geometry.js';
 import { Material } from './material/material.js';
+import { VertexAttributes } from './vertex-attributes.js';
 
 /**
  * Combines geometry and material data to create a renderable object.
@@ -118,16 +119,16 @@ class Mesh
      */
     #createBufferLayout()
     {
-        const layout = [Geometry.VERTEX];
+        const layout = [VertexAttributes.POSITION];
 
         // Add normals if geometry has faces
         if (this.#geometry.getFaceCount() > 0) {
-            layout.push(Geometry.NORMAL);
+            layout.push(VertexAttributes.NORMAL);
         }
 
         // Add UV coordinates if geometry has them
         if (this.#geometry.getUvCount() > 0) {
-            layout.push(Geometry.UV);
+            layout.push(VertexAttributes.UV);
         }
 
         // Add vertex colors if material is configured to use them
@@ -135,7 +136,7 @@ class Mesh
             this.#material.getUseVertexColor()
             && this.#geometry.getVertexColors().length > 0
         ) {
-            layout.push(Geometry.COLOR);
+            layout.push(VertexAttributes.COLOR);
         }
 
         return layout;

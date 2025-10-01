@@ -2,6 +2,7 @@
 import { BaseBuffer } from './base-buffer.js';
 import { Engine } from '../../engine.js';
 import { Geometry } from '../geometry/geometry.js';
+import { VertexAttributes } from '../../constants.js';
 
 /**
  * Represents a vertex buffer with metadata for GPU usage.
@@ -194,12 +195,12 @@ class VertexBuffer
     static #getWebGPUFormat(component)
     {
         switch (component) {
-            case Geometry.VERTEX:
-            case Geometry.NORMAL:
+            case VertexAttributes.POSITION:
+            case VertexAttributes.NORMAL:
                 return 'float32x3';
-            case Geometry.UV:
+            case VertexAttributes.UV:
                 return 'float32x2';
-            case Geometry.COLOR:
+            case VertexAttributes.COLOR:
                 return 'float32x4';
             default:
                 throw new Error(`Unknown component type: ${component}`);
