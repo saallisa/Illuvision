@@ -2,7 +2,7 @@
 import { BaseBuffer } from './base-buffer.js';
 import { Engine } from '../../engine.js';
 import { Geometry } from '../geometry/geometry.js';
-import { VertexAttributes } from '../../constants.js';
+import { VertexAttributes } from '../vertex-attributes.js';
 
 /**
  * Represents a vertex buffer with metadata for GPU usage.
