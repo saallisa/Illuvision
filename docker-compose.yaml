@@ -7,11 +7,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: webserver-app
-    expose:
-      - "80"
-# Use ports for simple expose to port "8080"
-#    ports:
-#      - "8080:80"
+    ports:
+      - "80:80"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://webserver-app:80"]
       interval: 60s
