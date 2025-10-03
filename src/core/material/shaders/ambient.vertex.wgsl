@@ -20,16 +20,17 @@ struct ModelUniforms {
 
 @vertex
 fn vertex_main(
-    @location(0) position: vec4<f32>,
+    @location(0) position: vec3<f32>,
     @location(1) normal: vec3<f32>
 ) -> VertexOut {
     var output : VertexOut;
     
-    var world_position = model.model_matrix * position;
+    var position4 = vec4<f32> (position, 1.0);
+    var world_position = model.model_matrix * position4;
     var view_position = camera.view * world_position;
     
     output.position = camera.projection * view_position;
-    output.vertex_position = (model.model_matrix * position).xyz;
+    output.vertex_position = (model.model_matrix * position4).xyz;
     output.vertex_normal = model.normal_matrix * normal;
 
     return output;
