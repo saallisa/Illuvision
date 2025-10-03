@@ -1,10 +1,14 @@
 
+import { AmbientLight } from './core/light/ambient-light.js';
+import { AmbientMaterial } from './core/material/ambient-material.js';
 import { BasicMaterial } from './core/material/basic-material.js';
 import { Box } from './core/geometry/box.js';
 import { Color } from './core/color.js';
+import { DirectionalLight } from './core/light/directional-light.js';
 import { Engine } from './engine.js';
 import { Face } from './core/face.js';
 import { Geometry } from './core/geometry/geometry.js';
+import { LambertMaterial } from './core/material/lambert-material.js';
 import { Mesh } from './core/mesh.js';
 import { OrthographicCamera } from './core/camera/orthographic-camera.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
@@ -16,12 +20,16 @@ import { Uv } from './core/uv.js';
 import { Vector3 } from './core/vector3.js';
 
 export {
+    AmbientLight,
+    AmbientMaterial,
     BasicMaterial,
     Box,
     Color,
+    DirectionalLight,
     Engine,
     Face,
     Geometry,
+    LambertMaterial,
     Mesh,
     OrthographicCamera,
     PerspectiveCamera,
@@ -34,12 +42,16 @@ export {
 }
 
 export default {
+    AmbientLight,
+    AmbientMaterial,
     BasicMaterial,
     Box,
     Color,
+    DirectionalLight,
     Engine,
     Face,
     Geometry,
+    LambertMaterial,
     Mesh,
     OrthographicCamera,
     PerspectiveCamera,
