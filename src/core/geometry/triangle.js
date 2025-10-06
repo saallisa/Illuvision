@@ -29,6 +29,8 @@ class Triangle extends Geometry
         this.addUvCoordinate(new Uv(0, 0)); // Bottom-left
         this.addUvCoordinate(new Uv(1, 0)); // Bottom-right  
         this.addUvCoordinate(new Uv(0.5, 1)); // Top-center
+
+        this.calculateVertexNormals();
     }
 
     /**

@@ -1,4 +1,5 @@
 
+import { Matrix3 } from './matrix3.js';
 import { Matrix4 } from './matrix4.js';
 import { Mesh } from './mesh.js';
 import { UniformBuffer } from './buffer/uniform-buffer.js';
@@ -207,9 +208,7 @@ class SceneNode
         }
 
         await this.#mesh.compile(device);
-        this.#uniformBuffer.setUniform(
-            'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
-        );
+        this.#fillUniformBuffer();
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
 
@@ -242,9 +241,7 @@ class SceneNode
             );
         }
 
-        this.#uniformBuffer.setUniform(
-            'model-matrix', this.#getModelMatrix().toArray(), 'mat4x4<f32>'
-        );
+        this.#fillUniformBuffer();
         this.#uniformBuffer.updateUniformBuffer(device);
         this.#needsUpdate = false;
     }
@@ -290,6 +287,35 @@ class SceneNode
             .multiplyOther(rotationZ);
 
         return rotation.multiplyOther(position).multiplyOther(scale);
+    }
+
+    /**
+     * Returns the scene nodes normal matrix.
+     */
+    #getNormalMatrix(modelMatrix)
+    {
+        // Extract upper 3x3
+        const mat3 = Matrix3.fromMatrix4(modelMatrix);
+        
+        // Inverse-transpose
+        const inverted = Matrix3.invert(mat3);
+        return Matrix3.transpose(inverted);
+    }
+
+    /**
+     * Fill the unifom buffer with the matrices of this scene node.
+     */
+    #fillUniformBuffer()
+    {
+        const modelMatrix = this.#getModelMatrix();
+        const normalMatrix = this.#getNormalMatrix(modelMatrix);
+
+        this.#uniformBuffer.setUniform(
+            'model-matrix', modelMatrix.toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.setUniform(
+            'normal-matrix', normalMatrix.toArray(), 'mat3x3<f32>'
+        );
     }
 
     /**

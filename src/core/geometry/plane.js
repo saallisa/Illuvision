@@ -49,6 +49,8 @@ class Plane extends Geometry
         this.#createPlaneFaces(
             vertexIndices, widthSegments, heightSegments
         );
+
+        this.calculateVertexNormals();
     }
 
     /**
