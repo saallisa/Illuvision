@@ -222,7 +222,7 @@ class Matrix3
                 0, 0, 0,
                 0, 0, 0,
                 0, 0, 0
-            ]
+            ];
         }
 
         const invDet = 1 / determinant;

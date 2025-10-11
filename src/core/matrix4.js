@@ -1,4 +1,5 @@
 
+import { Matrix3 } from './matrix3.js';
 import { Vector3 } from './vector3.js';
 
 /**
@@ -100,6 +101,13 @@ class Matrix4
      */
     transpose() {
         return new Matrix4(Matrix4.#transposeArray(this.#elements));
+    }
+
+    /**
+     * Calculate the determinant of this matrix using the leibnitz formula.
+     */
+    determinant() {
+		return Matrix4.#determinantArray(this.#elements);
     }
 
     /**
@@ -442,6 +450,47 @@ class Matrix4
         r[3] = m[12];  r[7] = m[13];  r[11] = m[14];  r[15] = m[15];
 
         return r;
+    }
+
+    /**
+     * Calculates the determinant of the array representation of a matrix.
+     */
+    static #determinantArray(ma)
+    {
+        const a = ma[0], b = ma[1], c = ma[2], d = ma[3];
+	    const e = ma[4], f = ma[5], g = ma[6], h = ma[7];
+		const i = ma[8], j = ma[9], k = ma[10], l = ma[11];
+        const m = ma[12], n = ma[13], o = ma[14], p = ma[15];
+
+        const matA = new Matrix3([
+            f, g, h,
+            j, k, l,
+            n, o, p
+        ]);
+        const detA = matA.determinant();
+
+        const matB = new Matrix3([
+            e, g, h,
+            i, k, l,
+            m, o, p
+        ]);
+        const detB = matB.determinant();
+        
+        const matC = new Matrix3([
+            e, f, h,
+            i, j, l,
+            m, n, p
+        ]);
+        const detC = matC.determinant();
+
+        const matD = new Matrix3([
+            e, f, g,
+            i, j, k,
+            m, n, o
+        ]);
+        const detD = matD.determinant();
+
+        return detA * a - detB * b + detC * c - detD * d;
     }
 }
 
