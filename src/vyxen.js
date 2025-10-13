@@ -9,6 +9,8 @@ import { Engine } from './engine.js';
 import { Face } from './core/face.js';
 import { Geometry } from './core/geometry/geometry.js';
 import { LambertMaterial } from './core/material/lambert-material.js';
+import { Matrix3 } from './core/matrix3.js';
+import { Matrix4 } from './core/matrix4.js';
 import { Mesh } from './core/mesh.js';
 import { OrthographicCamera } from './core/camera/orthographic-camera.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
@@ -30,6 +32,8 @@ export {
     Face,
     Geometry,
     LambertMaterial,
+    Matrix3,
+    Matrix4,
     Mesh,
     OrthographicCamera,
     PerspectiveCamera,
@@ -52,6 +56,8 @@ export default {
     Face,
     Geometry,
     LambertMaterial,
+    Matrix3,
+    Matrix4,
     Mesh,
     OrthographicCamera,
     PerspectiveCamera,
