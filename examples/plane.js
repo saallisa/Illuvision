@@ -1,5 +1,5 @@
 
-import * as VYXEN from '/src/vyxen.js';
+import * as IVE from '/src/illuvision.js';
 
 /**
  * Render a plane onto the canvas.
@@ -8,46 +8,46 @@ async function main()
 {
     // Configure engine
     const baseUrl = new URL(window.location.href);
-    VYXEN.Engine.setRootPath(baseUrl.origin + '/src/');
+    IVE.Engine.setRootPath(baseUrl.origin + '/src/');
 
     // Init engine
-    const engine = new VYXEN.Engine();
+    const engine = new IVE.Engine();
     engine.setSizeToWindow();
-    engine.setClearColor(VYXEN.Color.GREY);
+    engine.setClearColor(IVE.Color.GREY);
     await engine.initialize();
 
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
     // Create a simple plane
-    const planeGeometry = new VYXEN.Plane(1, 1, 1, 1);
+    const planeGeometry = new IVE.Plane(1, 1, 1, 1);
 
     // Define the material to use
-    const planeMaterial = await VYXEN.BasicMaterial.init({
-        color: VYXEN.Color.RED
+    const planeMaterial = await IVE.BasicMaterial.init({
+        color: IVE.Color.RED
     });
 
     // Create a mesh from the geometry and material
-    const plane = new VYXEN.Mesh(planeGeometry, planeMaterial);
+    const plane = new IVE.Mesh(planeGeometry, planeMaterial);
 
     // Create a scene node
-    const sceneNode = new VYXEN.SceneNode(plane);
+    const sceneNode = new IVE.SceneNode(plane);
 
     // Set the position relative to the origin
-    sceneNode.setPosition(new VYXEN.Vector3(0.5, 0, 0));
+    sceneNode.setPosition(new IVE.Vector3(0.5, 0, 0));
 
     // Scale it by half
-    sceneNode.setScale(new VYXEN.Vector3(0.5, 0.5, 0.5));
+    sceneNode.setScale(new IVE.Vector3(0.5, 0.5, 0.5));
 
     // Create a new Scene and add the node to it
-    const scene = new VYXEN.Scene();
+    const scene = new IVE.Scene();
     scene.addNode(sceneNode);
 
     // Create an orthographic camera
-    const camera = new VYXEN.OrthographicCamera(-1, 1, 1, -1, 0, 10);
+    const camera = new IVE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     camera.setAspectRatio(engine.getAspectRatio());
-    camera.setPosition(new VYXEN.Vector3(0, 0, -1));
-    camera.setTarget(new VYXEN.Vector3(0, 0, 0));
+    camera.setPosition(new IVE.Vector3(0, 0, -1));
+    camera.setTarget(new IVE.Vector3(0, 0, 0));
 
     await engine.render(scene, camera);
 }
