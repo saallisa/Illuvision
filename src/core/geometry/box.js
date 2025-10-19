@@ -67,10 +67,10 @@ class Box extends Geometry
             new Vector3(-x, y, z),   // 11: top-left-front
 
             // Right face vertices
-            new Vector3(x, -y, z),   // 12: bottom-right-front
-            new Vector3(x, y, z),    // 13: top-right-front
-            new Vector3(x, y, -z),   // 14: top-right-back
             new Vector3(x, -y, -z),  // 15: bottom-right-back
+            new Vector3(x, y, -z),   // 14: top-right-back
+            new Vector3(x, y, z),    // 13: top-right-front
+            new Vector3(x, -y, z),   // 12: bottom-right-front
 
             // Top face vertices
             new Vector3(-x, y, z),   // 16: top-left-front
@@ -97,7 +97,7 @@ class Box extends Geometry
     {
         const faces = [
             new Face([0, 1, 2, 3]), // Front face
-            new Face([5, 4, 7, 6]), // Back face
+            new Face([7, 6, 5, 4]), // Back face
             new Face([8, 9, 10, 11]),  // Left face
             new Face([12, 13, 14, 15]), // Right face
             new Face([16, 17, 18, 19]), // Top face
