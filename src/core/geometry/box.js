@@ -55,16 +55,16 @@ class Box extends Geometry
             new Vector3(-x, y, z),   // 3: top-left-front
             
             // Back face vertices
-            new Vector3(-x, -y, -z), // 4: bottom-left-back
-            new Vector3(x, -y, -z),  // 5: bottom-right-back
-            new Vector3(x, y, -z),   // 6: top-right-back
-            new Vector3(-x, y, -z),  // 7: top-left-back
+            new Vector3(-x, y, -z),  // 4: top-left-back
+            new Vector3(x, y, -z),   // 5: top-right-back
+            new Vector3(x, -y, -z),  // 6: bottom-right-back
+            new Vector3(-x, -y, -z), // 7: bottom-left-back
 
             // Left face vertices
-            new Vector3(-x, -y, z),  // 8: bottom-left-front
-            new Vector3(-x, -y, -z), // 9: bottom-left-back
-            new Vector3(-x, y, -z),  // 10: top-left-back
-            new Vector3(-x, y, z),   // 11: top-left-front
+            new Vector3(-x, y, z),   // 8: top-left-front
+            new Vector3(-x, y, -z),  // 9: top-left-back
+            new Vector3(-x, -y, -z), // 10: bottom-left-back
+            new Vector3(-x, -y, z),  // 11: bottom-left-front
 
             // Right face vertices
             new Vector3(x, -y, -z),  // 12: bottom-right-back
