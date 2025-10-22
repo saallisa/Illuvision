@@ -508,7 +508,9 @@ class Engine
                 }]
             },
             primitive: {
-                topology: 'triangle-list'
+                topology: 'triangle-list',
+                frontFace: 'ccw',
+                cullMode: material.getCullMode()
             },
             depthStencil: {
                 depthWriteEnabled: true,

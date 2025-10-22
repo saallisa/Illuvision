@@ -13,6 +13,7 @@ class Material
     #id = null;
     #shader = null;
     #color = null;
+    #cullMode = 'none';
     #vertexColors = false;
 
     #uniformBuffer = null;
@@ -98,6 +99,22 @@ class Material
      */
     getUseVertexColor() {
         return this.#vertexColors;
+    }
+
+    /**
+     * Gets the cull mode of this material. Either front, back or none.
+     */
+    getCullMode() {
+        return this.#cullMode;
+    }
+
+    /**
+     * Sets the cull mode of this material. Either front, back or none.
+     */
+    setCullMode(cullMode)
+    {
+        this.#validateCullMode(cullMode);
+        this.#cullMode = cullMode;
     }
 
     /**
@@ -249,6 +266,38 @@ class Material
         if (typeof name !== 'string' || name.trim().length === 0) {
             throw new TypeError('Material name must be a non-empty string');
         }
+    }
+
+    /**
+     * Validates a cull mode.
+     */
+    #validateCullMode(cullMode)
+    {
+        const validModes = [
+            Material.CULL_BACK,
+            Material.CULL_BACK,
+            Material.CULL_FRONT
+        ];
+
+        if (!validModes.includes(cullMode)) {
+            throw new Error(
+                `Invalid face culling mode: ${cullMode}.`
+            );
+        }
+    }
+
+    // Some fake constants containing valid culling modes.
+
+    static get CULL_FRONT() {
+        return 'front';
+    }
+
+    static get CULL_BACK() {
+        return 'back';
+    }
+
+    static get CULL_NONE() {
+        return 'none';
     }
 }
 
