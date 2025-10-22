@@ -9,6 +9,7 @@ import { Engine } from './engine.js';
 import { Face } from './core/face.js';
 import { Geometry } from './core/geometry/geometry.js';
 import { LambertMaterial } from './core/material/lambert-material.js';
+import { Material} from './core/material/material.js';
 import { Matrix3 } from './core/matrix3.js';
 import { Matrix4 } from './core/matrix4.js';
 import { Mesh } from './core/mesh.js';
@@ -32,6 +33,7 @@ export {
     Face,
     Geometry,
     LambertMaterial,
+    Material,
     Matrix3,
     Matrix4,
     Mesh,
@@ -56,6 +58,7 @@ export default {
     Face,
     Geometry,
     LambertMaterial,
+    Material,
     Matrix3,
     Matrix4,
     Mesh,
