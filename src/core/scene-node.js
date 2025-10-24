@@ -303,7 +303,7 @@ class SceneNode
     }
 
     /**
-     * Fill the unifom buffer with the matrices of this scene node.
+     * Fill the uniform buffer with the matrices of this scene node.
      */
     #fillUniformBuffer()
     {
@@ -350,7 +350,7 @@ class SceneNode
     {
         if (!(mesh instanceof Mesh)) {
             throw new TypeError(
-                'Mesh must be an istance of Mesh class.'
+                'Mesh must be an instance of Mesh class.'
             );
         }
     }

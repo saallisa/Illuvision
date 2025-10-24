@@ -25,7 +25,7 @@ class Box extends Geometry
     /**
      * Sets a different color for each face.
      */
-    setFaceColors(front, right, back, left, top, buttom)
+    setFaceColors(front, right, back, left, top, bottom)
     {
         const colors = [
             // Front face
@@ -59,10 +59,10 @@ class Box extends Geometry
             top.clone(),
 
             // Bottom face
-            buttom.clone(),
-            buttom.clone(),
-            buttom.clone(),
-            buttom.clone()
+            bottom.clone(),
+            bottom.clone(),
+            bottom.clone(),
+            bottom.clone()
         ];
 
         for (const color of colors) {

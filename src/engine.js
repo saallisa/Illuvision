@@ -571,7 +571,7 @@ class Engine
     {
         if (!(engine instanceof Engine)) {
             throw new TypeError(
-                'Engine must be an istance of Engine class.'
+                'Engine must be an instance of Engine class.'
             );
         }
     }
