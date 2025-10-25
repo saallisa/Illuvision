@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: webserver-app
     ports:
       - "80:80"
     healthcheck:
