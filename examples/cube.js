@@ -23,7 +23,7 @@ async function main()
     const groundGeometry = new IVE.Plane(5, 5, 1, 1);
 
     // Define the material to use
-    const groundMaterial = await IVE.BasicMaterial.init({
+    const groundMaterial = new IVE.BasicMaterial({
         color: IVE.Color.GREEN
     });
 
@@ -40,7 +40,7 @@ async function main()
     const boxGeometry = new IVE.Box(0.5, 0.5, 0.5);
 
     // Define the material to use
-    const boxMaterial = await IVE.BasicMaterial.init({
+    const boxMaterial = new IVE.BasicMaterial({
         color: IVE.Color.BLUE
     });
 

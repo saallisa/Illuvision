@@ -13,8 +13,10 @@ class Material
     #id = null;
     #shader = null;
     #color = null;
+    #colorBlend = null;
     #cullMode = 'none';
     #vertexColors = false;
+    #uvCoordinates = false;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -82,6 +84,34 @@ class Material
     }
 
     /**
+     * Gets the blend factor of the material.
+     */
+    getColorBlend() {
+        return this.#colorBlend;
+    }
+
+    /**
+     * Sets the blend factor to use in this material.
+     */
+    setColorBlend(blend)
+    {
+        if (typeof blend !== 'number' || !isFinite(blend)) {
+            throw new TypeError(
+                'Invalid value for blend: expected a finite number'
+            );
+        }
+
+        if (blend >= 1 || blend <= 0) {
+            throw new TypeError('Blend must be a number between 0 and 1');
+        }
+
+        this.#colorBlend = blend;
+        this.#uniformBuffer.setUniform(
+            'colorBlend', this.#colorBlend, 'f32'
+        );
+    }
+
+    /**
      * Configures the material to use vertex colors instead of uniform colors.
      */
     setUseVertexColor(config)
@@ -99,6 +129,25 @@ class Material
      */
     getUseVertexColor() {
         return this.#vertexColors;
+    }
+
+    /**
+     * Configures the material to use uv coordinates.
+     */
+    setUseUvCoordinates(config)
+    {
+        if (typeof config !== 'boolean') {
+            throw new TypeError('Value must be of type boolean.');
+        }
+
+        this.#uvCoordinates = config;
+    }
+
+    /**
+     * Returns whether a material needs uv coordinates.
+     */
+    getUseUvCoordinates() {
+        return this.#uvCoordinates;
     }
 
     /**

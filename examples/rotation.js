@@ -23,7 +23,7 @@ async function main()
     const planeGeometry = new IVE.Plane(1, 1, 1, 1);
 
     // Define the material to use
-    const planeMaterial = await IVE.BasicMaterial.init({
+    const planeMaterial = new IVE.BasicMaterial({
         color: IVE.Color.RED
     });
 
@@ -51,7 +51,7 @@ async function main()
     );
 
     // Define the material to use
-    const triangleMaterial = await IVE.BasicMaterial.init({
+    const triangleMaterial = new IVE.BasicMaterial({
         color: IVE.Color.MAGENTA
     });
 

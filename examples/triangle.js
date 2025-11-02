@@ -27,7 +27,7 @@ async function main()
     );
 
     // Define the material to use
-    const triangleMaterial = await IVE.BasicMaterial.init({
+    const triangleMaterial = new IVE.BasicMaterial({
         color: IVE.Color.MAGENTA
     });
 
