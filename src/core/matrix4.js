@@ -1,4 +1,5 @@
 
+import { Matrix3 } from './matrix3.js';
 import { Vector3 } from './vector3.js';
 
 /**
@@ -103,6 +104,28 @@ class Matrix4
     }
 
     /**
+     * Calculate the determinant of this matrix using the leibnitz formula.
+     */
+    determinant() {
+		return Matrix4.#determinantArray(this.#elements);
+    }
+
+    /**
+     * Inverts this matrix directly.
+     */
+    invertSelf() {
+        this.#elements = Matrix4.#invertArray(this.toArray());
+    }
+
+    /**
+     * Inverts this matrix and returns the result as a new Matrix4 instance
+     * without changing the original one.
+     */
+    invert() {
+        return new Matrix4(Matrix4.#invertArray(this.#elements));
+    }
+
+    /**
      * Returns the matrix as an array.
      */
     toArray() {
@@ -133,6 +156,16 @@ class Matrix4
         Matrix4.validateInstance(matrix);
 
         return new Matrix4(Matrix4.#transposeArray(matrix.toArray()));
+    }
+
+    /**
+     * Inverts a Matrix4 instance.
+     */
+    static invert(matrix)
+    {
+        Matrix4.validateInstance(matrix);
+
+        return new Matrix4(Matrix4.#invertArray(matrix.toArray()));
     }
 
     /**
@@ -442,6 +475,105 @@ class Matrix4
         r[3] = m[12];  r[7] = m[13];  r[11] = m[14];  r[15] = m[15];
 
         return r;
+    }
+
+    /**
+     * Calculates the determinant of the array representation of a matrix.
+     */
+    static #determinantArray(ma)
+    {
+        const a = ma[0], b = ma[1], c = ma[2], d = ma[3];
+	    const e = ma[4], f = ma[5], g = ma[6], h = ma[7];
+		const i = ma[8], j = ma[9], k = ma[10], l = ma[11];
+        const m = ma[12], n = ma[13], o = ma[14], p = ma[15];
+
+        const matA = new Matrix3([
+            f, g, h,
+            j, k, l,
+            n, o, p
+        ]);
+        const detA = matA.determinant();
+
+        const matB = new Matrix3([
+            e, g, h,
+            i, k, l,
+            m, o, p
+        ]);
+        const detB = matB.determinant();
+        
+        const matC = new Matrix3([
+            e, f, h,
+            i, j, l,
+            m, n, p
+        ]);
+        const detC = matC.determinant();
+
+        const matD = new Matrix3([
+            e, f, g,
+            i, j, k,
+            m, n, o
+        ]);
+        const detD = matD.determinant();
+
+        return detA * a - detB * b + detC * c - detD * d;
+    }
+
+    /**
+     * Inverts an array representation of a matrix and returns the result as
+     * a new array.
+     */
+    static #invertArray(ma)
+    {
+        const determinant = Matrix4.#determinantArray(ma);
+
+        if (determinant === 0) {
+            return [
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+            ];
+        }
+
+        const a = ma[0], b = ma[1], c = ma[2], d = ma[3];
+	    const e = ma[4], f = ma[5], g = ma[6], h = ma[7];
+		const i = ma[8], j = ma[9], k = ma[10], l = ma[11];
+        const m = ma[12], n = ma[13], o = ma[14], p = ma[15];
+
+        let x0 = a * f - b * e;
+        let x1 = a * g - c * e;
+        let x2 = a * h - d * e;
+        let x3 = b * g - c * f;
+        let x4 = b * h - d * f;
+        let x5 = c * h - d * g;
+        let x6 = i * n - j * m;
+        let x7 = i * o - k * m;
+        let x8 = i * p - l * m;
+        let x9 = j * o - k * n;
+        let x10 = j * p - l * n;
+        let x11 = k * p - l * o;
+
+        const res = new Array(16);
+        const det = 1.0 / determinant;
+
+        res[0] = (f * x11 - g * x10 + h * x9) * det;
+        res[1] = (c * x10 - b * x11 - d * x9) * det;
+        res[2] = (n * x5 - o * x4 + p * x3) * det;
+        res[3] = (k * x4 - j * x5 - l * x3) * det;
+        res[4] = (g * x8 - e * x11 - h * x7) * det;
+        res[5] = (a * x11 - c * x8 + d * x7) * det;
+        res[6] = (o * x2 - m * x5 - p * x1) * det;
+        res[7] = (i * x5 - k * x2 + l * x1) * det;
+        res[8] = (e * x10 - f * x8 + h * x6) * det;
+        res[9] = (b * x8 - a * x10 - d * x6) * det;
+        res[10] = (m * x4 - n * x2 + p * x0) * det;
+        res[11] = (j * x2 - i * x4 - l * x0) * det;
+        res[12] = (f * x7 - e * x9 - g * x6) * det;
+        res[13] = (a * x9 - b * x7 + c * x6) * det;
+        res[14] = (n * x1 - m * x3 - o * x0) * det;
+        res[15] = (i * x3 - j * x1 + k * x0) * det;
+
+        return res;
     }
 }
 

@@ -6,12 +6,11 @@ import { Vector3 } from '../vector3.js';
 
 /**
  * A simple box geometry class that creates a box with a width, height and
- * depth, as well as faces and uv-coordinates. Is automatically triangulated
- * if not disabled.
+ * depth, as well as faces and uv-coordinates.
  */
 class Box extends Geometry
 {
-    constructor(width = 1, height = 1, depth = 1, triangulate = true)
+    constructor(width = 1, height = 1, depth = 1)
     {
         Box.validateDimension(width, 'width');
         Box.validateDimension(height, 'height');
@@ -20,12 +19,55 @@ class Box extends Geometry
         super();
 
         this.#createBox(width, height, depth);
-
-        if (triangulate === true) {
-            this.triangulate();
-        }
-
         this.calculateVertexNormals();
+    }
+
+    /**
+     * Sets a different color for each face.
+     */
+    setFaceColors(front, right, back, left, top, bottom)
+    {
+        const colors = [
+            // Front face
+            front.clone(),
+            front.clone(),
+            front.clone(),
+            front.clone(),
+            
+            // Right face
+            right.clone(),
+            right.clone(),
+            right.clone(),
+            right.clone(),
+
+            // Back face
+            back.clone(),
+            back.clone(),
+            back.clone(),
+            back.clone(),
+
+            // Left face
+            left.clone(),
+            left.clone(),
+            left.clone(),
+            left.clone(),
+
+            // Top face
+            top.clone(),
+            top.clone(),
+            top.clone(),
+            top.clone(),
+
+            // Bottom face
+            bottom.clone(),
+            bottom.clone(),
+            bottom.clone(),
+            bottom.clone()
+        ];
+
+        for (const color of colors) {
+            this.addVertexColor(color);
+        }
     }
 
     /**
@@ -47,42 +89,62 @@ class Box extends Geometry
      */
     #createBoxVertices(x, y, z)
     {
+        /*
+         * Order of vertex points
+         *   e ---- f
+         *  /|     /|
+         * a ---- b |
+         * | g ---| h
+         * |/     |/
+         * c ---- d
+         */
+
+        const a = new Vector3(-x, y, z);
+        const b = new Vector3(x, y, z);
+        const c = new Vector3(-x, -y, z);
+        const d = new Vector3(x, -y, z);
+
+        const e = new Vector3(-x, y, -z);
+        const f = new Vector3(x, y, -z);
+        const g = new Vector3(-x, -y, -z);
+        const h = new Vector3(x, -y, -z);
+
         const vertices = [
-            // Front face vertices
-            new Vector3(-x, -y, z),  // 0: bottom-left-front
-            new Vector3(x, -y, z),   // 1: bottom-right-front
-            new Vector3(x, y, z),    // 2: top-right-front
-            new Vector3(-x, y, z),   // 3: top-left-front
+            // Front face vertices (cdba)
+            c.clone(), // 0
+            d.clone(), // 1
+            b.clone(), // 2
+            a.clone(), // 3
             
-            // Back face vertices
-            new Vector3(-x, -y, -z), // 4: bottom-left-back
-            new Vector3(x, -y, -z),  // 5: bottom-right-back
-            new Vector3(x, y, -z),   // 6: top-right-back
-            new Vector3(-x, y, -z),  // 7: top-left-back
+            // Right face vertices (dhfb)
+            d.clone(), // 4
+            h.clone(), // 5
+            f.clone(), // 6
+            b.clone(), // 7
 
-            // Left face vertices
-            new Vector3(-x, -y, z),  // 8: bottom-left-front
-            new Vector3(-x, -y, -z), // 9: bottom-left-back
-            new Vector3(-x, y, -z),  // 10: top-left-back
-            new Vector3(-x, y, z),   // 11: top-left-front
+            // Back face vertices (hgef)
+            h.clone(), // 8,
+            g.clone(), // 9,
+            e.clone(), // 10
+            f.clone(), // 11
 
-            // Right face vertices
-            new Vector3(x, -y, z),   // 12: bottom-right-front
-            new Vector3(x, y, z),    // 13: top-right-front
-            new Vector3(x, y, -z),   // 14: top-right-back
-            new Vector3(x, -y, -z),  // 15: bottom-right-back
+            // Left face vertices (gcae)
+            g.clone(), // 12
+            c.clone(), // 13
+            a.clone(), // 14
+            e.clone(), // 15
 
-            // Top face vertices
-            new Vector3(-x, y, z),   // 16: top-left-front
-            new Vector3(x, y, z),    // 17: top-right-front
-            new Vector3(x, y, -z),   // 18: top-right-back
-            new Vector3(-x, y, -z),  // 19: top-left-back
+            // Top face vertices (abfe)
+            a.clone(), // 16
+            b.clone(), // 17
+            f.clone(), // 18
+            e.clone(), // 19
 
-            // Bottom face vertices
-            new Vector3(-x, -y, z),  // 20: bottom-left-front
-            new Vector3(-x, -y, -z), // 21: bottom-left-back
-            new Vector3(x, -y, -z),  // 22: bottom-right-back
-            new Vector3(x, -y, z)    // 23: bottom-right-front
+            // Bottom face vertices (ghdc)
+            g.clone(), // 20
+            h.clone(), // 21
+            d.clone(), // 22
+            c.clone() // 23
         ];
 
         for (const vertex of vertices) {
@@ -96,12 +158,24 @@ class Box extends Geometry
     #createBoxFaces()
     {
         const faces = [
-            new Face([0, 1, 2, 3]), // Front face
-            new Face([5, 4, 7, 6]), // Back face
-            new Face([8, 9, 10, 11]),  // Left face
-            new Face([12, 13, 14, 15]), // Right face
-            new Face([16, 17, 18, 19]), // Top face
-            new Face([20, 21, 22, 23])  // Bottom face
+            // Front face
+            new Face([0, 1, 2]),
+            new Face([0, 2, 3]),
+            // Right face
+            new Face([4, 5, 6]),
+            new Face([4, 6, 7]),
+            // Back face
+            new Face([8, 9, 10]),
+            new Face([8, 10, 11]),
+            // Left face
+            new Face([12, 13, 14]),
+            new Face([12, 14, 15]),
+            // Top face
+            new Face([16, 17, 18]),
+            new Face([16, 18, 19]),
+            // Bottom face
+            new Face([20, 21, 22]),
+            new Face([20, 22, 23])
         ];
 
         // Add faces to geometry
@@ -121,6 +195,12 @@ class Box extends Geometry
             new Uv(1, 0), // 1: bottom-right
             new Uv(1, 1), // 2: top-right
             new Uv(0, 1), // 3: top-left
+
+            // Right face UVs
+            new Uv(0, 0), // 12: bottom-left
+            new Uv(1, 0), // 13: bottom-right
+            new Uv(1, 1), // 14: top-right
+            new Uv(0, 1), // 15: top-left
             
             // Back face UVs
             new Uv(0, 0), // 4: bottom-left
@@ -133,12 +213,6 @@ class Box extends Geometry
             new Uv(1, 0), // 9: bottom-right
             new Uv(1, 1), // 10: top-right
             new Uv(0, 1), // 11: top-left
-
-            // Right face UVs
-            new Uv(0, 0), // 12: bottom-left
-            new Uv(1, 0), // 13: bottom-right
-            new Uv(1, 1), // 14: top-right
-            new Uv(0, 1), // 15: top-left
 
             // Top face UVs
             new Uv(0, 0), // 16: bottom-left

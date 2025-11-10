@@ -1,5 +1,5 @@
 
-import * as VYXEN from '/src/vyxen.js';
+import * as IVE from '/src/illuvision.js';
 
 /**
  * Render a triangle onto the canvas.
@@ -8,50 +8,50 @@ async function main()
 {
     // Configure engine
     const baseUrl = new URL(window.location.href);
-    VYXEN.Engine.setRootPath(baseUrl.origin + '/src/');
+    IVE.Engine.setRootPath(baseUrl.origin + '/src/');
 
     // Init engine
-    const engine = new VYXEN.Engine();
+    const engine = new IVE.Engine();
     engine.setSizeToWindow();
-    engine.setClearColor(VYXEN.Color.GREY);
+    engine.setClearColor(IVE.Color.GREY);
     await engine.initialize();
 
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
     // Create a simple triangle
-    const triangleGeometry = new VYXEN.Triangle(
-        new VYXEN.Vector3(0, 0.5, 0),
-        new VYXEN.Vector3(-0.5, -0.5, 0),
-        new VYXEN.Vector3(0.5, -0.5, 0)
+    const triangleGeometry = new IVE.Triangle(
+        new IVE.Vector3(0, 0.5, 0),
+        new IVE.Vector3(-0.5, -0.5, 0),
+        new IVE.Vector3(0.5, -0.5, 0)
     );
 
     // Define the material to use
-    const triangleMaterial = await VYXEN.BasicMaterial.init({
-        color: VYXEN.Color.MAGENTA
+    const triangleMaterial = new IVE.BasicMaterial({
+        color: IVE.Color.MAGENTA
     });
 
     // Create a mesh from the geometry and material
-    const triangle = new VYXEN.Mesh(triangleGeometry, triangleMaterial);
+    const triangle = new IVE.Mesh(triangleGeometry, triangleMaterial);
 
     // Create a scene node
-    const sceneNode = new VYXEN.SceneNode(triangle);
+    const sceneNode = new IVE.SceneNode(triangle);
 
     // Set the position relative to the origin
-    sceneNode.setPosition(new VYXEN.Vector3(0.5, 0, 0));
+    sceneNode.setPosition(new IVE.Vector3(0.5, 0, 0));
 
     // Scale it by half
-    sceneNode.setScale(new VYXEN.Vector3(0.5, 0.5, 0.5));
+    sceneNode.setScale(new IVE.Vector3(0.5, 0.5, 0.5));
 
     // Create a new Scene and add the node to it
-    const scene = new VYXEN.Scene();
+    const scene = new IVE.Scene();
     scene.addNode(sceneNode);
 
     // Create an orthographic camera
-    const camera = new VYXEN.OrthographicCamera(-1, 1, 1, -1, 0, 10);
+    const camera = new IVE.OrthographicCamera(-1, 1, 1, -1, 0, 10);
     camera.setAspectRatio(engine.getAspectRatio());
-    camera.setPosition(new VYXEN.Vector3(0, 0, -1));
-    camera.setTarget(new VYXEN.Vector3(0, 0, 0));
+    camera.setPosition(new IVE.Vector3(0, 0, -1));
+    camera.setTarget(new IVE.Vector3(0, 0, 0));
 
     await engine.render(scene, camera);
 }

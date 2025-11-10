@@ -126,8 +126,10 @@ class Mesh
             layout.push(VertexAttributes.NORMAL);
         }
 
-        // Add UV coordinates if geometry has them
-        if (this.#geometry.getUvCount() > 0) {
+        // Add UV coordinates if material is configured to use them
+        if (this.#material.getUseUvCoordinates()
+            && this.#geometry.getUvCount() > 0
+        ) {
             layout.push(VertexAttributes.UV);
         }
 

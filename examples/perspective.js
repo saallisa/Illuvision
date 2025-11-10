@@ -1,5 +1,5 @@
 
-import * as VYXEN from '/src/vyxen.js';
+import * as IVE from '/src/illuvision.js';
 
 /**
  * Render a spinning cube and a ground plane onto the canvas.
@@ -9,60 +9,90 @@ async function main()
 {
     // Configure engine
     const baseUrl = new URL(window.location.href);
-    VYXEN.Engine.setRootPath(baseUrl.origin + '/src/');
+    IVE.Engine.setRootPath(baseUrl.origin + '/src/');
 
     // Init engine
-    const engine = new VYXEN.Engine();
+    const engine = new IVE.Engine();
     engine.setSizeToWindow();
-    engine.setClearColor(VYXEN.Color.fromHex('87ceeb')); // sky blue
+    engine.setClearColor(IVE.Color.fromHex('87ceeb')); // sky blue
     await engine.initialize();
 
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
     // Create a simple ground plane
-    const groundGeometry = new VYXEN.Plane(5, 5, 1, 1);
+    const groundGeometry = new IVE.Plane(10, 10, 2, 2);
 
     // Define the material to use
-    const groundMaterial = await VYXEN.BasicMaterial.init({
-        color: VYXEN.Color.GREEN
+    const groundMaterial = new IVE.BasicMaterial({
+        color: IVE.Color.GREEN
     });
 
     // Create a mesh from the geometry and material
-    const ground = new VYXEN.Mesh(groundGeometry, groundMaterial);
+    const ground = new IVE.Mesh(groundGeometry, groundMaterial);
 
     // Create a scene node for the ground
-    const sceneNode = new VYXEN.SceneNode(ground);
-    sceneNode.setPosition(new VYXEN.Vector3(0, 0, 0));
+    const sceneNode = new IVE.SceneNode(ground);
+    sceneNode.setPosition(new IVE.Vector3(0, 0, 0));
 
     // Rotate the scene node so that it covers the ground
     sceneNode.rotateX = 90;
 
     // Create a simple box
-    const boxGeometry = new VYXEN.Box(1, 1, 1);
+    const boxGeometry = new IVE.Box(1, 1, 1);
+    boxGeometry.setFaceColors(
+        IVE.Color.BLUE,
+        IVE.Color.LIME,
+        IVE.Color.YELLOW,
+        IVE.Color.RED,
+        IVE.Color.WHITE,
+        IVE.Color.BLACK
+    );
 
     // Define the material to use
-    const boxMaterial = await VYXEN.BasicMaterial.init({
-        color: VYXEN.Color.BLUE
+    const boxMaterial = new IVE.BasicMaterial({
+        colorMode: IVE.BasicMaterial.VERTEX_COLOR
     });
 
     // Create a mesh from the geometry and material
-    const box = new VYXEN.Mesh(boxGeometry, boxMaterial);
+    const box = new IVE.Mesh(boxGeometry, boxMaterial);
 
     // Create a second scene node for the box
-    const sceneNode2 = new VYXEN.SceneNode(box);
-    sceneNode2.setPosition(new VYXEN.Vector3(0, 1, 0));
+    const sceneNode2 = new IVE.SceneNode(box);
+    sceneNode2.setPosition(new IVE.Vector3(-1, 1, 1));
+
+    // Create a material for a second box using COLOR_BLEND
+    const box2material = new IVE.BasicMaterial({
+        colorMode: IVE.BasicMaterial.COLOR_BLEND,
+        color: IVE.Color.WHITE,
+        colorBlend: 0.25
+    });
+
+    const box2 = new IVE.Mesh(boxGeometry, box2material);
+    const sceneNode3 = new IVE.SceneNode(box2);
+    sceneNode3.setPosition(new IVE.Vector3(1, 1, 1));
+
+    // Create a material for a second box using COLOR_BLEND
+    const box3material = new IVE.BasicMaterial({
+        color: IVE.Color.BLUE
+    });
+
+    const box3 = new IVE.Mesh(boxGeometry, box3material);
+    const sceneNode4 = new IVE.SceneNode(box3);
+    sceneNode4.setPosition(new IVE.Vector3(0, 1, -1));
 
     // Create a new Scene and add the node to it
-    const scene = new VYXEN.Scene();
+    const scene = new IVE.Scene();
     scene.addNode(sceneNode);
     scene.addNode(sceneNode2);
+    scene.addNode(sceneNode3);
+    scene.addNode(sceneNode4);
 
     // Create a perspective camera
-    const camera = new VYXEN.PerspectiveCamera(45, 0.1, 100);
+    const camera = new IVE.PerspectiveCamera(45, 0.1, 100);
     camera.setAspectRatio(engine.getAspectRatio());
-    camera.setTarget(new VYXEN.Vector3(0, 0, 0));
-    camera.setPosition(new VYXEN.Vector3(5, 5, 5));
+    camera.setTarget(new IVE.Vector3(0, 0, 0));
+    camera.setPosition(new IVE.Vector3(5, 5, 5));
 
     // Create the function for the animation loop 
     const animation = function ()
@@ -71,6 +101,14 @@ async function main()
         sceneNode2.rotateX = sceneNode2.rotateX + 0.5;
         sceneNode2.rotateY = sceneNode2.rotateY + 0.5;
         sceneNode2.rotateZ = sceneNode2.rotateZ + 0.5;
+
+        sceneNode3.rotateX = sceneNode3.rotateX - 0.5;
+        sceneNode3.rotateY = sceneNode3.rotateY - 0.5;
+        sceneNode3.rotateZ = sceneNode3.rotateZ - 0.5;
+
+        sceneNode4.rotateX = sceneNode4.rotateX - 0.5;
+        sceneNode4.rotateY = sceneNode4.rotateY + 0.5;
+        sceneNode4.rotateZ = sceneNode4.rotateZ - 0.5;
 
         engine.render(scene, camera);
     }

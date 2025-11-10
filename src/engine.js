@@ -508,7 +508,9 @@ class Engine
                 }]
             },
             primitive: {
-                topology: 'triangle-list'
+                topology: 'triangle-list',
+                frontFace: 'ccw',
+                cullMode: material.getCullMode()
             },
             depthStencil: {
                 depthWriteEnabled: true,
@@ -569,7 +571,7 @@ class Engine
     {
         if (!(engine instanceof Engine)) {
             throw new TypeError(
-                'Engine must be an istance of Engine class.'
+                'Engine must be an instance of Engine class.'
             );
         }
     }

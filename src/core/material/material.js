@@ -13,7 +13,10 @@ class Material
     #id = null;
     #shader = null;
     #color = null;
+    #colorBlend = null;
+    #cullMode = 'none';
     #vertexColors = false;
+    #uvCoordinates = false;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -81,6 +84,34 @@ class Material
     }
 
     /**
+     * Gets the blend factor of the material.
+     */
+    getColorBlend() {
+        return this.#colorBlend;
+    }
+
+    /**
+     * Sets the blend factor to use in this material.
+     */
+    setColorBlend(blend)
+    {
+        if (typeof blend !== 'number' || !isFinite(blend)) {
+            throw new TypeError(
+                'Invalid value for blend: expected a finite number'
+            );
+        }
+
+        if (blend >= 1 || blend <= 0) {
+            throw new TypeError('Blend must be a number between 0 and 1');
+        }
+
+        this.#colorBlend = blend;
+        this.#uniformBuffer.setUniform(
+            'colorBlend', this.#colorBlend, 'f32'
+        );
+    }
+
+    /**
      * Configures the material to use vertex colors instead of uniform colors.
      */
     setUseVertexColor(config)
@@ -98,6 +129,41 @@ class Material
      */
     getUseVertexColor() {
         return this.#vertexColors;
+    }
+
+    /**
+     * Configures the material to use uv coordinates.
+     */
+    setUseUvCoordinates(config)
+    {
+        if (typeof config !== 'boolean') {
+            throw new TypeError('Value must be of type boolean.');
+        }
+
+        this.#uvCoordinates = config;
+    }
+
+    /**
+     * Returns whether a material needs uv coordinates.
+     */
+    getUseUvCoordinates() {
+        return this.#uvCoordinates;
+    }
+
+    /**
+     * Gets the cull mode of this material. Either front, back or none.
+     */
+    getCullMode() {
+        return this.#cullMode;
+    }
+
+    /**
+     * Sets the cull mode of this material. Either front, back or none.
+     */
+    setCullMode(cullMode)
+    {
+        this.#validateCullMode(cullMode);
+        this.#cullMode = cullMode;
     }
 
     /**
@@ -249,6 +315,38 @@ class Material
         if (typeof name !== 'string' || name.trim().length === 0) {
             throw new TypeError('Material name must be a non-empty string');
         }
+    }
+
+    /**
+     * Validates a cull mode.
+     */
+    #validateCullMode(cullMode)
+    {
+        const validModes = [
+            Material.CULL_BACK,
+            Material.CULL_BACK,
+            Material.CULL_FRONT
+        ];
+
+        if (!validModes.includes(cullMode)) {
+            throw new Error(
+                `Invalid face culling mode: ${cullMode}.`
+            );
+        }
+    }
+
+    // Some fake constants containing valid culling modes.
+
+    static get CULL_FRONT() {
+        return 'front';
+    }
+
+    static get CULL_BACK() {
+        return 'back';
+    }
+
+    static get CULL_NONE() {
+        return 'none';
     }
 }
 

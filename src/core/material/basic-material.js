@@ -1,7 +1,7 @@
 
-import { Engine } from '../../engine.js';
+import { BasicShader } from './shaders/basic-shader.js';
+import { Color } from '../color.js';
 import { Material } from './material.js';
-import { ShaderLoader } from '../shader-loader.js';
 
 /**
  * Basic material implementation with simple uniform color support.
@@ -17,25 +17,55 @@ class BasicMaterial extends Material
             super('BasicMaterial');
         }
 
-        if (settings.color) {
-            this.setColor(settings.color);
+        const mode = settings.colorMode ?? BasicMaterial.UNIFORM_COLOR;
+
+        if (mode === BasicMaterial.VERTEX_COLOR ||
+            mode === BasicMaterial.COLOR_BLEND
+        ) {
+            this.setUseVertexColor(true);
+        }
+
+        const shader = BasicShader.createShader(settings.colorMode);
+        this.setShader(shader);
+
+        if (mode === BasicMaterial.COLOR_BLEND) {
+            this.setColorBlend(settings.colorBlend ?? 0.5);
+        }
+
+        if (mode === BasicMaterial.COLOR_BLEND ||
+            mode === BasicMaterial.UNIFORM_COLOR
+        ) {
+            this.setColor(settings.color ?? Color.GREY);
         }
     }
 
     /**
-     * Initializes the basic material.
+     * Ensure that the color mode is a valid option.
      */
-    static async init(settings = {})
+    static validateColorMode(mode)
     {
-        const material = new BasicMaterial(settings);
+        const validModes = [
+            BasicMaterial.VERTEX_COLOR,
+            BasicMaterial.UNIFORM_COLOR,
+            BasicMaterial.COLOR_BLEND
+        ];
 
-        const shader = await ShaderLoader.loadShader(
-            'basic',
-            Engine.getRootPath() + 'core/material/shaders/'
-        );
+        if (!validModes.includes(mode)) {
+            throw new Error(`Invalid color: ${mode}.`);
+        }
+    }
 
-        material.setShader(shader);
-        return material;
+    // A list of color modes
+    static get VERTEX_COLOR() {
+        return 'vertex_color';
+    }
+
+    static get UNIFORM_COLOR() {
+        return 'uniform_color';
+    }
+
+    static get COLOR_BLEND() {
+        return 'color_blend';
     }
 }
 
