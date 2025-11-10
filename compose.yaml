@@ -3,9 +3,7 @@
 # Stop and remove everything with "docker compose down --volumes --rmi all"
 services:
   webserver-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: .
     ports:
       - "80:80"
     healthcheck:
