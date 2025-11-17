@@ -53,6 +53,7 @@ async function main()
     const boxMaterial = new IVE.BasicMaterial({
         colorMode: IVE.BasicMaterial.VERTEX_COLOR
     });
+    boxMaterial.setCullMode(IVE.Material.CULL_BACK);
 
     // Create a mesh from the geometry and material
     const box = new IVE.Mesh(boxGeometry, boxMaterial);
@@ -67,6 +68,7 @@ async function main()
         color: IVE.Color.WHITE,
         colorBlend: 0.25
     });
+    box2material.setCullMode(IVE.Material.CULL_BACK);
 
     const box2 = new IVE.Mesh(boxGeometry, box2material);
     const sceneNode3 = new IVE.SceneNode(box2);
@@ -76,6 +78,7 @@ async function main()
     const box3material = new IVE.BasicMaterial({
         color: IVE.Color.BLUE
     });
+    box3material.setCullMode(IVE.Material.CULL_BACK);
 
     const box3 = new IVE.Mesh(boxGeometry, box3material);
     const sceneNode4 = new IVE.SceneNode(box3);

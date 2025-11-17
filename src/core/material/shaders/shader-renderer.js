@@ -2,7 +2,7 @@
 import { Shader } from '../../shader.js';
 
 /**
- * This is an abstract class that crenders the vertex and fragment shader code
+ * This is an abstract class that renders the vertex and fragment shader code
  * for a material and creates a Shader from it.
  */
 class ShaderRenderer
