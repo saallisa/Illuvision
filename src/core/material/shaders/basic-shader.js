@@ -1,6 +1,6 @@
 
 import { BasicMaterial } from '../basic-material.js';
-import { Shader } from '../../shader.js';
+import { ShaderRenderer } from './shader-renderer.js';
 
 import {
     VERTEX_FUNCTION_COLOR,
@@ -57,12 +57,14 @@ fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
  * This class creates a vertex and fragment shader for the basic material.
  * It can use uniform colors, vertex colors or a blend between both.
  */
-class BasicShader
+class BasicShader extends ShaderRenderer
 {
     #mode;
 
     constructor(mode = BasicMaterial.UNIFORM_COLOR)
     {
+        super();
+        
         BasicMaterial.validateColorMode(mode);
         this.#mode = mode;
     }
@@ -188,17 +190,6 @@ class BasicShader
         }
 
         return '';
-    }
-
-    /**
-     * Creates a shader object from this basic shader renderer.
-     */
-    getShader()
-    {
-        return new Shader(
-            this.renderVertexCode(),
-            this.renderFragmentCode()
-        );
     }
 
     /**

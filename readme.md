@@ -17,10 +17,6 @@ TBA.
 
 This list gives an overview of what is planned for and what is already implemented in the first release.
 
-- [ ] Objects
-  - [x] Geometry
-  - [ ] Lines
-  - [ ] Points
 - [x] Geometries
   - [x] Triangle
   - [x] Plane
@@ -30,9 +26,6 @@ This list gives an overview of what is planned for and what is already implement
   - [ ] Directional light
 - [ ] Materials
   - [x] Basic
-  - [ ] Line
-  - [ ] Point
-  - [x] Ambient
   - [ ] Lambert
 - [x] Cameras
   - [x] Orthographic camera

@@ -323,7 +323,7 @@ class Material
     #validateCullMode(cullMode)
     {
         const validModes = [
-            Material.CULL_BACK,
+            Material.CULL_NONE,
             Material.CULL_BACK,
             Material.CULL_FRONT
         ];
