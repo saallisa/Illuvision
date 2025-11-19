@@ -51,7 +51,7 @@ async function main()
 
     // Define the material to use
     const boxMaterial = new IVE.BasicMaterial({
-        colorMode: IVE.BasicMaterial.VERTEX_COLOR
+        colorMode: IVE.Material.VERTEX_COLOR
     });
     boxMaterial.setCullMode(IVE.Material.CULL_BACK);
 
@@ -64,7 +64,7 @@ async function main()
 
     // Create a material for a second box using COLOR_BLEND
     const box2material = new IVE.BasicMaterial({
-        colorMode: IVE.BasicMaterial.COLOR_BLEND,
+        colorMode: IVE.Material.COLOR_BLEND,
         color: IVE.Color.WHITE,
         colorBlend: 0.25
     });
@@ -74,7 +74,7 @@ async function main()
     const sceneNode3 = new IVE.SceneNode(box2);
     sceneNode3.setPosition(new IVE.Vector3(1, 1, 1));
 
-    // Create a material for a second box using COLOR_BLEND
+    // Create a material for a third box using the uniform color
     const box3material = new IVE.BasicMaterial({
         color: IVE.Color.BLUE
     });
@@ -84,7 +84,7 @@ async function main()
     const sceneNode4 = new IVE.SceneNode(box3);
     sceneNode4.setPosition(new IVE.Vector3(0, 1, -1));
 
-    // Create a new Scene and add the node to it
+    // Create a new Scene and add the nodes to it
     const scene = new IVE.Scene();
     scene.addNode(sceneNode);
     scene.addNode(sceneNode2);

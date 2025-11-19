@@ -1,5 +1,6 @@
 
 import { BasicMaterial } from '../basic-material.js';
+import { Material } from '../material.js';
 import { ShaderRenderer } from './shader-renderer.js';
 
 import {
@@ -61,7 +62,7 @@ class BasicShader extends ShaderRenderer
 {
     #mode;
 
-    constructor(mode = BasicMaterial.UNIFORM_COLOR)
+    constructor(mode = Material.UNIFORM_COLOR)
     {
         super();
         
@@ -76,8 +77,8 @@ class BasicShader extends ShaderRenderer
     {
         let vertexColorLine = '';
         
-        if (this.#mode === BasicMaterial.VERTEX_COLOR
-            || this.#mode === BasicMaterial.COLOR_BLEND
+        if (this.#mode === Material.VERTEX_COLOR
+            || this.#mode === Material.COLOR_BLEND
         ) {
             vertexColorLine = 'output.vertex_color = color;';
         }
@@ -120,21 +121,21 @@ class BasicShader extends ShaderRenderer
         let materialUniformBinding = '';
         let fragmentFunction = '';
 
-        if (this.#mode === BasicMaterial.UNIFORM_COLOR) {
+        if (this.#mode === Material.UNIFORM_COLOR) {
             vertexOutput = VERTEX_OUTPUT_NONE;
             materialUniform = MATERIAL_UNIFORM_COLOR;
             materialUniformBinding = MATERIAL_UNIFORM_BINDING;
             fragmentFunction = FRAGMENT_FUNCTION_UNIFORM;
         }
 
-        if (this.#mode === BasicMaterial.COLOR_BLEND) {
+        if (this.#mode === Material.COLOR_BLEND) {
             vertexOutput = VERTEX_OUTPUT_COLOR;
             materialUniform = MATERIAL_UNIFORM_BLEND;
             materialUniformBinding = MATERIAL_UNIFORM_BINDING;
             fragmentFunction = FRAGMENT_FUNCTION_BLEND;
         }
 
-        if (this.#mode === BasicMaterial.VERTEX_COLOR) {
+        if (this.#mode === Material.VERTEX_COLOR) {
             vertexOutput = VERTEX_OUTPUT_COLOR;
             fragmentFunction = FRAGMENT_FUNCTION_COLOR;
         }
@@ -153,8 +154,8 @@ class BasicShader extends ShaderRenderer
      */
     getVertexOutputStruct()
     {
-        if (this.#mode === BasicMaterial.VERTEX_COLOR
-            || this.#mode === BasicMaterial.COLOR_BLEND
+        if (this.#mode === Material.VERTEX_COLOR
+            || this.#mode === Material.COLOR_BLEND
         ) {
             return VERTEX_OUTPUT_COLOR;
         }
@@ -167,8 +168,8 @@ class BasicShader extends ShaderRenderer
      */
     getVertexFunction()
     {
-        if (this.#mode === BasicMaterial.VERTEX_COLOR
-            || this.#mode === BasicMaterial.COLOR_BLEND
+        if (this.#mode === Material.VERTEX_COLOR
+            || this.#mode === Material.COLOR_BLEND
         ) {
             return VERTEX_FUNCTION_COLOR;
         }
@@ -181,11 +182,11 @@ class BasicShader extends ShaderRenderer
      */
     getMaterialFunction()
     {
-        if (this.#mode === BasicMaterial.UNIFORM_COLOR) {
+        if (this.#mode === Material.UNIFORM_COLOR) {
             return MATERIAL_UNIFORM_COLOR;
         }
 
-        if (this.#mode === BasicMaterial.COLOR_BLEND) {
+        if (this.#mode === Material.COLOR_BLEND) {
             return MATERIAL_UNIFORM_BLEND;
         }
 
