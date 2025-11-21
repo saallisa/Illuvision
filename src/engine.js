@@ -1,7 +1,6 @@
 
 import { Camera } from './core/camera/camera.js';
 import { Color } from './core/color.js';
-import { Loader } from './core/loader.js';
 import { Scene } from './core/scene.js';
 
 /**
