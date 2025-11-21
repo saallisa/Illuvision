@@ -21,9 +21,9 @@ This list gives an overview of what is planned for and what is already implement
   - [x] Triangle
   - [x] Plane
   - [x] Box
-- [ ] Lights
+- [x] Lights
   - [x] Ambient light
-  - [ ] Directional light
+  - [x] Directional light
 - [ ] Materials
   - [x] Basic
   - [ ] Lambert
