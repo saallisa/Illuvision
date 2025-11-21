@@ -8,10 +8,6 @@ import * as IVE from '/src/illuvision.js';
  */
 async function main()
 {
-    // Configure engine
-    const baseUrl = new URL(window.location.href);
-    IVE.Engine.setRootPath(baseUrl.origin + '/src/');
-
     // Init engine
     const engine = new IVE.Engine();
     engine.setSizeToWindow();

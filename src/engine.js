@@ -14,7 +14,6 @@ class Engine
     #height = null;
     #aspectRatio = null;
     #clearColor = null;
-    static #rootPath = '';
 
     // WebGPU properties
     #canvas = null;
@@ -41,22 +40,6 @@ class Engine
         this.#height = 600;
         this.#aspectRatio = this.#width / this.#height;
         this.#clearColor = Color.BLACK;
-    }
-
-    /**
-     * Sets the absolute path to the engine folder. 
-     */
-    static setRootPath(path)
-    {
-        if (typeof path !== 'string') {
-            throw new TypeError('Path must be a string.');
-        }
-
-        if (path.length === 0) {
-            throw new Error('Path may not be an empty string.');
-        }
-
-        Engine.#rootPath = Loader.normalizePath(path);
     }
 
     /**
@@ -112,13 +95,6 @@ class Engine
         await this.#configureContext();
 
         this.#initialized = true;
-    }
-
-    /**
-     * Returns the absolute path to the engine folder
-     */
-    static getRootPath() {
-        return Engine.#rootPath;
     }
 
     /**
