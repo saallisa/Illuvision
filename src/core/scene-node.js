@@ -13,6 +13,7 @@ class SceneNode
     #mesh = null;
     #position = null;
     #scale = null;
+    #camera = null;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -201,12 +202,13 @@ class SceneNode
     /**
      * Compiles the scene node.
      */
-    async compile(device)
+    async compile(device, camera)
     {
         if (this.#compiled) {
             return;
         }
 
+        this.#camera = camera;
         await this.#mesh.compile(device);
         this.#fillUniformBuffer();
         this.#uniformBuffer.compile(device);
@@ -233,7 +235,7 @@ class SceneNode
     /**
      * Updates the scene node's uniform buffer with current values.
      */
-    update(device)
+    update(device, camera)
     {
         if (!this.#compiled) {
             throw new Error(
@@ -241,6 +243,7 @@ class SceneNode
             );
         }
 
+        this.#camera = camera;
         this.#fillUniformBuffer();
         this.#uniformBuffer.updateUniformBuffer(device);
         this.#needsUpdate = false;
@@ -308,10 +311,15 @@ class SceneNode
     #fillUniformBuffer()
     {
         const modelMatrix = this.#getModelMatrix();
+        const viewMatrix = this.#camera.getViewMatrix();
+        const modelViewMatrix = Matrix4.multiply(modelMatrix, viewMatrix);
         const normalMatrix = this.#getNormalMatrix(modelMatrix);
 
         this.#uniformBuffer.setUniform(
             'model-matrix', modelMatrix.toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.setUniform(
+            'model-view-matrix', modelViewMatrix.toArray(), 'mat4x4<f32>'
         );
         this.#uniformBuffer.setUniform(
             'normal-matrix', normalMatrix.toArray(), 'mat3x3<f32>'

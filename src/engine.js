@@ -217,7 +217,7 @@ class Engine
             throw new TypeError('Camera must be an instance of Camera class.');
         }
 
-        await scene.compile(this.#device);
+        await scene.compile(this.#device, camera);
         camera.compile(this.#device);
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
@@ -423,7 +423,7 @@ class Engine
     async #renderNode(node, camera, scene)
     {
         if (node.needsUpdate()) {
-            node.update(this.#device);
+            node.update(this.#device, camera);
         }
 
         const material = node.getMesh().getMaterial();

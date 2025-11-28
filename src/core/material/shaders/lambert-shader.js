@@ -126,8 +126,7 @@ class LambertShader extends ShaderRenderer
             var output : VertexOut;
             
             var position4 = vec4<f32> (position, 1);
-            var world_position = model.model_matrix * position4;
-            var view_position = camera.view * world_position;
+            var view_position = model.model_view_matrix * position4;
             
             output.position = camera.projection * view_position;
             output.vertex_position = (model.model_matrix * position4).xyz;

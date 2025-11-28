@@ -153,7 +153,7 @@ class Scene
     /**
      * Compiles the scene.
      */
-    async compile(device)
+    async compile(device, camera)
     {
         if (this.#compiled) {
             return;
@@ -169,7 +169,7 @@ class Scene
 
         // Compile all nodes
         for (const node of this.#nodes) {
-            await node.compile(device);
+            await node.compile(device, camera);
         }
 
         this.#compiled = true;
