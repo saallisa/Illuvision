@@ -24,9 +24,9 @@ This list gives an overview of what is planned for and what is already implement
 - [x] Lights
   - [x] Ambient light
   - [x] Directional light
-- [ ] Materials
+- [x] Materials
   - [x] Basic
-  - [ ] Lambert
+  - [x] Lambert
 - [x] Cameras
   - [x] Orthographic camera
   - [x] Perspective camera
