@@ -88,6 +88,12 @@ async function main()
         0.7
     );
 
+    // Create ambient light
+    const ambientLight = new IVE.AmbientLight(
+        IVE.Color.WHITE,
+        0.3
+    );
+
     // Create a new Scene and add the nodes and the light to it
     const scene = new IVE.Scene();
     scene.addNode(sceneNode);
@@ -95,12 +101,13 @@ async function main()
     scene.addNode(sceneNode3);
     scene.addNode(sceneNode4);
     scene.addDirectionalLight('sun', directionalLight);
+    scene.addAmbientLight(ambientLight);
 
     // Create a perspective camera
     const camera = new IVE.PerspectiveCamera(45, 0.1, 100);
     camera.setAspectRatio(engine.getAspectRatio());
     camera.setTarget(new IVE.Vector3(0, 0, 0));
-    camera.setPosition(new IVE.Vector3(5, 5, 5));
+    camera.setPosition(new IVE.Vector3(10, 10, 10));
 
     // Create the function for the animation loop 
     const animation = function ()

@@ -95,6 +95,20 @@ class Matrix3
     }
 
     /**
+     * Returns the matrix as an aligned array.
+     */
+    toBufferArray()
+    {
+        const m = this.#elements;
+
+        return [
+            m[0], m[1], m[2], 0,
+			m[3], m[4], m[5], 0,
+			m[6], m[7], m[8], 0
+        ];
+    }
+
+    /**
 	 * Copy the upper 3x3 matrix of the given 4x4 matrix into a new Matrix3.
 	 */
 	static fromMatrix4(matrix)

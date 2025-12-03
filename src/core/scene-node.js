@@ -322,7 +322,7 @@ class SceneNode
             'model-view-matrix', modelViewMatrix.toArray(), 'mat4x4<f32>'
         );
         this.#uniformBuffer.setUniform(
-            'normal-matrix', normalMatrix.toArray(), 'mat3x3<f32>'
+            'normal-matrix', normalMatrix.toBufferArray(), 'mat3x3<f32>'
         );
     }
 
