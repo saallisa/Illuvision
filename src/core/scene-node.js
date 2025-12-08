@@ -11,6 +11,8 @@ import { Vector3 } from './vector3.js';
 class SceneNode
 {
     #mesh = null;
+    #children = [];
+    #parent = null;
     #position = null;
     #scale = null;
     #camera = null;
@@ -47,6 +49,26 @@ class SceneNode
     }
 
     /**
+     * Adds a child node to this scene node.
+     */
+    addChild(node)
+    {
+        if (!(node instanceof SceneNode)) {
+            throw new TypeError('Child must be an instance of SceneNode.');
+        }
+
+        node.#parent = this;
+        this.#children.push(node);
+    }
+
+    /**
+     * Gets all children of a scene node.
+     */
+    getChildren() {
+        return this.#children;
+    }
+
+    /**
      * Sets the scene node's position relative to its parent object.
      */
     setPosition(position)
@@ -54,7 +76,7 @@ class SceneNode
         Vector3.validateInstance(position);
 
         this.#position = position;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -63,7 +85,7 @@ class SceneNode
     updateX(x)
     {
         this.#position.x = x;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -72,7 +94,7 @@ class SceneNode
     updateY(y)
     {
         this.#position.y = y;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -81,7 +103,7 @@ class SceneNode
     updateZ(z)
     {
         this.#position.z = z;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -106,7 +128,7 @@ class SceneNode
         Vector3.validateInstance(scale);
 
         this.#scale = scale;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -122,7 +144,7 @@ class SceneNode
     set rotateX(angle)
     {
         this._rotateX = (angle + 360) % 360;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -138,7 +160,7 @@ class SceneNode
     set rotateY(angle)
     {
         this._rotateY = (angle + 360) % 360;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -154,7 +176,7 @@ class SceneNode
     set rotateZ(angle)
     {
         this._rotateZ = (angle + 360) % 360;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
@@ -214,6 +236,10 @@ class SceneNode
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
 
+        for (const child of this.#children) {
+            await child.compile(device, camera);
+        }
+
         this.#needsUpdate = false;
         this.#compiled = true;
     }
@@ -228,8 +254,14 @@ class SceneNode
     /**
      * Require an update on next rendering.
      */
-    requireUpdate() {
+    requireUpdate()
+    {
         this.#needsUpdate = true;
+
+        // Propagate to children since parent transform changed
+        for (const child of this.#children) {
+            child.requireUpdate();
+        }
     }
 
     /**
@@ -246,7 +278,14 @@ class SceneNode
         this.#camera = camera;
         this.#fillUniformBuffer();
         this.#uniformBuffer.updateUniformBuffer(device);
-        this.#needsUpdate = false;
+
+        for (const child of this.#children) {
+            if (child.needsUpdate()) {
+                child.update(device, camera);
+            }
+        }
+
+        this.requireUpdate();
     }
 
     /**
@@ -254,6 +293,11 @@ class SceneNode
      */
     destroy()
     {
+        // Destroy children first
+        for (const child of this.#children) {
+            child.destroy();
+        }
+
         if (this.#mesh && this.#mesh.isCompiled()) {
             this.#mesh.destroy();
         }
@@ -262,14 +306,15 @@ class SceneNode
         this.#bindGroupLayout = null;
         
         this.#compiled = false;
-        this.#needsUpdate = true;
+        this.requireUpdate();
     }
 
     /**
      * Returns the scene node's model matrix.
      */
-    #getModelMatrix()
+    getModelMatrix()
     {
+        // Local transformation
         const position = Matrix4.createTranslation(
             this.#position.x,
             this.#position.y,
@@ -289,7 +334,15 @@ class SceneNode
             .multiplyOther(rotationY)
             .multiplyOther(rotationZ);
 
-        return rotation.multiplyOther(position).multiplyOther(scale);
+        const matrix = rotation.multiplyOther(position).multiplyOther(scale);
+
+        // Parent transformation applied if needed
+        if (this.#parent) {
+            const parentTransform = this.#parent.getModelMatrix();
+            return matrix.multiplyOther(parentTransform);
+        }
+
+        return matrix;
     }
 
     /**
@@ -310,7 +363,7 @@ class SceneNode
      */
     #fillUniformBuffer()
     {
-        const modelMatrix = this.#getModelMatrix();
+        const modelMatrix = this.getModelMatrix();
         const viewMatrix = this.#camera.getViewMatrix();
         const modelViewMatrix = Matrix4.multiply(modelMatrix, viewMatrix);
         const normalMatrix = this.#getNormalMatrix(modelMatrix);

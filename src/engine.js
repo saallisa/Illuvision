@@ -413,7 +413,25 @@ class Engine
         const nodes = scene.getNodes();
 
         for (const node of nodes) {
+            await this.#renderNodeRecursive(node, camera, scene);
+        }
+    }
+
+    /**
+     * Recursively render a node and all its children.
+     */
+    async #renderNodeRecursive(node, camera, scene)
+    {
+        // Render this node if it has a mesh
+        if (node.getMesh()) {
             await this.#renderNode(node, camera, scene);
+        }
+
+        // Recursively render all children
+        const children = node.getChildren();
+        
+        for (const child of children) {
+            await this.#renderNodeRecursive(child, camera, scene);
         }
     }
 
