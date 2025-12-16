@@ -17,10 +17,10 @@ class BasicMaterial extends Material
             super('BasicMaterial');
         }
 
-        const mode = settings.colorMode ?? BasicMaterial.UNIFORM_COLOR;
+        const mode = settings.colorMode ?? Material.UNIFORM_COLOR;
 
-        if (mode === BasicMaterial.VERTEX_COLOR ||
-            mode === BasicMaterial.COLOR_BLEND
+        if (mode === Material.VERTEX_COLOR ||
+            mode === Material.COLOR_BLEND
         ) {
             this.setUseVertexColor(true);
         }
@@ -28,12 +28,12 @@ class BasicMaterial extends Material
         const shader = BasicShader.createShader(settings.colorMode);
         this.setShader(shader);
 
-        if (mode === BasicMaterial.COLOR_BLEND) {
+        if (mode === Material.COLOR_BLEND) {
             this.setColorBlend(settings.colorBlend ?? 0.5);
         }
 
-        if (mode === BasicMaterial.COLOR_BLEND ||
-            mode === BasicMaterial.UNIFORM_COLOR
+        if (mode === Material.COLOR_BLEND ||
+            mode === Material.UNIFORM_COLOR
         ) {
             this.setColor(settings.color ?? Color.GREY);
         }
@@ -45,27 +45,14 @@ class BasicMaterial extends Material
     static validateColorMode(mode)
     {
         const validModes = [
-            BasicMaterial.VERTEX_COLOR,
-            BasicMaterial.UNIFORM_COLOR,
-            BasicMaterial.COLOR_BLEND
+            Material.VERTEX_COLOR,
+            Material.UNIFORM_COLOR,
+            Material.COLOR_BLEND
         ];
 
         if (!validModes.includes(mode)) {
             throw new Error(`Invalid color: ${mode}.`);
         }
-    }
-
-    // A list of color modes
-    static get VERTEX_COLOR() {
-        return 'vertex_color';
-    }
-
-    static get UNIFORM_COLOR() {
-        return 'uniform_color';
-    }
-
-    static get COLOR_BLEND() {
-        return 'color_blend';
     }
 }
 

@@ -1,5 +1,5 @@
 
-import { BasicMaterial } from '../basic-material.js';
+import { LambertMaterial } from '../lambert-material.js';
 import { Material } from '../material.js';
 import { ShaderRenderer } from './shader-renderer.js';
 
@@ -13,6 +13,13 @@ import {
     CAMERA_UNIFORM_BIND,
     MODEL_UNIFORM_BIND
 } from './parts/common.js';
+
+import {
+    AMBIENT_LIGHT,
+    DIRECTIONAL_LIGHT,
+    AMBIENT_STORAGE_BIND,
+    DIRECTIONAL_STORAGE_BIND
+} from './parts/lights.js';
 
 // Material uniforms
 
@@ -32,33 +39,53 @@ const MATERIAL_UNIFORM_BINDING = /*wgsl*/ `
 
 // Fragment stage functions
 
-const FRAGMENT_FUNCTION_COLOR = /*wgsl*/ `
+const FRAGMENT_FUNCTION_START_COLOR = /*wgsl*/ `
 @fragment
 fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
-    return data.vertex_color;
-}`;
+    var end_color = data.vertex_color;`;
 
-const FRAGMENT_FUNCTION_UNIFORM = /*wgsl*/ `
-@fragment
-fn fragment_main() -> @location(0) vec4<f32> {
-    return material.color;
-}`;
-
-const FRAGMENT_FUNCTION_BLEND = /*wgsl*/ `
+const FRAGMENT_FUNCTION_START_UNIFORM = /*wgsl*/ `
 @fragment
 fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
-    return mix(
+    var end_color = material.color;`;
+
+const FRAGMENT_FUNCTION_START_BLEND = /*wgsl*/ `
+@fragment
+fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
+    var end_color = mix(
         material.color,
         data.vertex_color,
         material.blend
-    );
+    );`;
+
+const FRAGMENT_FUNCTION_END = /*wgsl*/ `
+    var light_result = vec3<f32>(0.0, 0.0, 0.0);
+
+    // Ambient light
+    let ambient = ambient_light.color * ambient_light.intensity;
+    light_result += ambient;
+
+    // Directional lights
+    let lightCount: u32 = arrayLength(&directional_lights);
+    let vertexNormal = normalize(data.vertex_normal);
+
+    for (var i: u32 = 0; i < lightCount; i++) {
+        let light_direction = normalize(directional_lights[i].direction);
+        let light_color = directional_lights[i].color;
+        let light_intensity = directional_lights[i].intensity;
+
+        let diffuse = max(0.0, dot(vertexNormal, light_direction));
+        light_result += light_color * light_intensity * diffuse;
+    }
+    
+    return vec4<f32> (end_color.rgb * light_result, end_color.a);
 }`;
 
 /**
- * This class creates a vertex and fragment shader for the basic material.
+ * This class creates a vertex and fragment shader for the lambert material.
  * It can use uniform colors, vertex colors or a blend between both.
  */
-class BasicShader extends ShaderRenderer
+class LambertShader extends ShaderRenderer
 {
     #mode;
 
@@ -66,7 +93,7 @@ class BasicShader extends ShaderRenderer
     {
         super();
         
-        BasicMaterial.validateColorMode(mode);
+        LambertMaterial.validateColorMode(mode);
         this.#mode = mode;
     }
 
@@ -124,28 +151,34 @@ class BasicShader extends ShaderRenderer
             vertexOutput = VERTEX_OUTPUT_NONE;
             materialUniform = MATERIAL_UNIFORM_COLOR;
             materialUniformBinding = MATERIAL_UNIFORM_BINDING;
-            fragmentFunction = FRAGMENT_FUNCTION_UNIFORM;
+            fragmentFunction = FRAGMENT_FUNCTION_START_UNIFORM;
         }
 
         if (this.#mode === Material.COLOR_BLEND) {
             vertexOutput = VERTEX_OUTPUT_COLOR;
             materialUniform = MATERIAL_UNIFORM_BLEND;
             materialUniformBinding = MATERIAL_UNIFORM_BINDING;
-            fragmentFunction = FRAGMENT_FUNCTION_BLEND;
+            fragmentFunction = FRAGMENT_FUNCTION_START_BLEND;
         }
 
         if (this.#mode === Material.VERTEX_COLOR) {
             vertexOutput = VERTEX_OUTPUT_COLOR;
-            fragmentFunction = FRAGMENT_FUNCTION_COLOR;
+            fragmentFunction = FRAGMENT_FUNCTION_START_COLOR;
         }
 
         return /*wgsl*/ `
         ${vertexOutput}
+    
         ${materialUniform}
+        ${AMBIENT_LIGHT}
+        ${DIRECTIONAL_LIGHT}
         
         ${materialUniformBinding}
+        ${AMBIENT_STORAGE_BIND}
+        ${DIRECTIONAL_STORAGE_BIND}
+
         ${fragmentFunction}
-        `;
+        ${FRAGMENT_FUNCTION_END}`;
     }
 
     /**
@@ -197,11 +230,11 @@ class BasicShader extends ShaderRenderer
      */
     static createShader(mode)
     {
-        const shaderRenderer = new BasicShader(mode);
+        const shaderRenderer = new LambertShader(mode);
         return shaderRenderer.getShader();
     }
 }
 
 export {
-    BasicShader
+    LambertShader
 };

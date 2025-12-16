@@ -348,6 +348,20 @@ class Material
     static get CULL_NONE() {
         return 'none';
     }
+
+    // A list of color modes
+    
+    static get VERTEX_COLOR() {
+        return 'vertex_color';
+    }
+
+    static get UNIFORM_COLOR() {
+        return 'uniform_color';
+    }
+
+    static get COLOR_BLEND() {
+        return 'color_blend';
+    }
 }
 
 export {

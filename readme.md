@@ -9,9 +9,36 @@ Once I reach a stage of development that appears to be useful and error-free,
 I will make the code completely open source.
 In the meantime, I advise against using it for anything other than experimentation.
 
-## How to use
+## Getting started
 
-TBA.
+To install Illuvision, simply download the project as a zip and unpack it. Reename the src directory to something like illuvision or ive and copy it into your js or assets folder.
+
+From there, simply import the classes from the illuvision.js file prefixed with IVE.
+
+```javascript
+import * as IVE from '/path/to/illuvision/illuvision.js';
+```
+
+Before you can render anything you must first initialize the engine.
+
+```javascript
+const engine = new IVE.Engine();
+```
+
+By default the canvas is 800 x 600 px, but you can either set the size to a custom value with ```engine.setSize(width, height)``` or you can set it to the current window size with ```engine.setSizeToWindow()```. The background of your canvas is black by default, but if you’d like to change this, simply call ```engine.setClearColor(color)```. This method expects a color object.
+
+```javascript
+engine.setSizeToWindow(); // or engine.setSize();
+engine.setClearColor(IVE.Color.fromHex('87ceeb')); // sky blue
+```
+
+After configuring the engine it must be initialized.
+
+```javascript
+await engine.initialize();
+```
+
+Now you can get the canvas created and used by the engine with ```engine.getCanvas()```. You must append it to the html document with JavaScript, for example with ```document.body.appendChild(canvas)```.
 
 ## Todo
 
@@ -21,12 +48,12 @@ This list gives an overview of what is planned for and what is already implement
   - [x] Triangle
   - [x] Plane
   - [x] Box
-- [ ] Lights
+- [x] Lights
   - [x] Ambient light
-  - [ ] Directional light
-- [ ] Materials
+  - [x] Directional light
+- [x] Materials
   - [x] Basic
-  - [ ] Lambert
+  - [x] Lambert
 - [x] Cameras
   - [x] Orthographic camera
   - [x] Perspective camera

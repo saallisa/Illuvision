@@ -27,6 +27,7 @@ struct CameraUniforms {
 const MODEL_UNIFORM = /*wgsl*/ `
 struct ModelUniforms {
     model_matrix: mat4x4<f32>,
+    model_view_matrix: mat4x4<f32>,
     normal_matrix: mat3x3<f32>
 }`;
 
