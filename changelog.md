@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Add transparency support to rendering engine
+- Add Timer class for getting delta time
 - Add Getters for left, right, top, bottom, near and far in OrthographicCamera
 - Add Setters for left, right, top, bottom, near and far in OrthographicCamera
 
