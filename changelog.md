@@ -5,7 +5,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
 - Add transparency support to rendering engine
+- Add Getters for left, right, top, bottom, near and far in OrthographicCamera
 
 ## [0.1.1] - 2025-12-29
 

@@ -45,6 +45,48 @@ class OrthographicCamera extends Camera
     }
 
     /**
+     * Returns the left boundary of the orthographic frustum.
+     */
+    getLeft() {
+        return this.#left;
+    }
+
+    /**
+     * Returns the right boundary of the orthographic frustum.
+     */
+    getRight() {
+        return this.#right;
+    }
+
+    /**
+     * Returns the top boundary of the orthographic frustum.
+     */
+    getTop() {
+        return this.#top;
+    }
+
+    /**
+     * Returns the bottom boundary of the orthographic frustum.
+     */
+    getLeft() {
+        return this.#bottom;
+    }
+
+    /**
+     * Returns the near boundary of the orthographic frustum.
+     */
+    getNear() {
+        return this.#near;
+    }
+
+    /**
+     * Returns the far boundary of the orthographic frustum.
+     */
+    getFar() {
+        return this.#far;
+    }
+
+    /**
      * Returns the projection matrix for the orthographic camera.
      */
     getProjectionMatrix()
