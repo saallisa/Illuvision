@@ -52,7 +52,7 @@ class Timer
     update(timestamp = null)
     {
         const currentTime = timestamp ?? performance.now();
-        const rawDeltaTime = (this.#lastTime - currentTime) / 1000;
+        const rawDeltaTime = (currentTime - this.#lastTime) / 1000;
 
         this.#deltaTime = Math.min(rawDeltaTime, this.#maxDeltaTime);
         this.#lastTime = currentTime;
