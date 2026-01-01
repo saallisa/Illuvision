@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 - Add Getters for left, right, top, bottom, near and far in OrthographicCamera
 - Add Setters for left, right, top, bottom, near and far in OrthographicCamera
 
+## [0.1.2] - 2026-01-01
+
+### Fixed
+
+- color.multiLerp() now calculates the blue component correctly
+
 ## [0.1.1] - 2025-12-29
 
 ### Fixed
