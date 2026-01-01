@@ -110,13 +110,22 @@ async function main()
     camera.setTarget(new IVE.Vector3(0, 0, 0));
     camera.setPosition(new IVE.Vector3(10, 10, 10));
 
+    const timer = new IVE.Timer();
+    const rotationSpeed = 15; // 15 degrees per second
+
     // Create the function for the animation loop 
     const animation = function ()
     {
+        // Update timer
+        timer.update();
+
+        // Use delta time for frame-rate independent rotation
+        const deltaRotation = rotationSpeed * timer.getDeltaTime();
+
         // Rotate the scene node
-        sceneNode2.rotateX = sceneNode2.rotateX + 0.5;
-        sceneNode2.rotateY = sceneNode2.rotateY + 0.5;
-        sceneNode2.rotateZ = sceneNode2.rotateZ + 0.5;
+        sceneNode2.rotateX = sceneNode2.rotateX + deltaRotation;
+        sceneNode2.rotateY = sceneNode2.rotateY + deltaRotation;
+        sceneNode2.rotateZ = sceneNode2.rotateZ + deltaRotation;
 
         engine.render(scene, camera);
     }

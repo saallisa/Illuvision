@@ -17,6 +17,7 @@ import { PerspectiveCamera } from './core/camera/perspective-camera.js';
 import { Plane } from './core/geometry/plane.js';
 import { Scene } from './core/scene.js';
 import { SceneNode } from './core/scene-node.js';
+import { Timer } from './core/timer.js';
 import { Triangle } from './core/geometry/triangle.js';
 import { Uv } from './core/uv.js';
 import { Vector3 } from './core/vector3.js';
@@ -40,6 +41,7 @@ export {
     Plane,
     Scene,
     SceneNode,
+    Timer,
     Triangle,
     Uv,
     Vector3
@@ -64,6 +66,7 @@ export default {
     Plane,
     Scene,
     SceneNode,
+    Timer,
     Triangle,
     Uv,
     Vector3
