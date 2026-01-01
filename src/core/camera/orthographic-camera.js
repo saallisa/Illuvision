@@ -162,7 +162,7 @@ class OrthographicCamera extends Camera
 
         if (near >= this.#far) {
             throw new Error(
-                'Near value (${near}) must be smaller than far value.'
+                'Near value must be smaller than far value.'
             );
         }
 
