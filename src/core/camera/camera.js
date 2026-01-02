@@ -14,6 +14,9 @@ class Camera
     #target = null;
     #up = null;
 
+    #viewDirty = true;
+    #viewCache = null;
+
     #uniformBuffer = null;
     #bindGroupLayout = null;
     #bindGroup = null;
@@ -57,7 +60,9 @@ class Camera
     setPosition(position)
     {
         Vector3.validateInstance(position);
+
         this.#position = position;
+        this.#viewDirty = true;
     }
 
     /**
@@ -73,7 +78,9 @@ class Camera
     setTarget(target)
     {
         Vector3.validateInstance(target);
+
         this.#target = target;
+        this.#viewDirty = true;
     }
 
     /**
@@ -86,8 +93,16 @@ class Camera
     /**
      * Returns the view matrix for the camera.
      */
-    getViewMatrix() {
-        return Matrix4.createLookAt(this.#position, this.#target, this.#up);
+    getViewMatrix()
+    {
+        if (this.#viewDirty || this.#viewCache == null) {
+            this.#viewCache = Matrix4.createLookAt(
+                this.#position, this.#target, this.#up
+            );
+            this.#viewDirty = false;
+        }
+
+        return this.#viewCache.clone();
     }
 
     /**
@@ -204,6 +219,9 @@ class Camera
 
         this.#bindGroup = null;
         this.#bindGroupLayout = null;
+
+        this.#viewDirty = true;
+        this.#viewCache = null;
 
         this.#compiled = false;
     }
