@@ -133,6 +133,13 @@ class Matrix4
     }
 
     /**
+     * Creates a copy of this matrix.
+     */
+    clone() {
+        return new Matrix4(Array.from(this.#elements));
+    }
+
+    /**
      * Multiplies two Matrix4 instances.
      */
     static multiply(matrixA, matrixB)
