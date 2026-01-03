@@ -113,6 +113,10 @@ async function main()
     const timer = new IVE.Timer();
     const rotationSpeed = 15; // 15 degrees per second
 
+    // Setup performance monitor
+    const perfMonitor = new IVE.Utils.PerformanceMonitor(timer);
+    document.body.appendChild(perfMonitor.getContainer());
+
     // Create the function for the animation loop 
     const animation = function ()
     {
@@ -127,6 +131,10 @@ async function main()
         sceneNode2.rotateY = sceneNode2.rotateY + deltaRotation;
         sceneNode2.rotateZ = sceneNode2.rotateZ + deltaRotation;
 
+        // Update performance monitor
+        perfMonitor.update();
+
+        // Render scene
         engine.render(scene, camera);
     }
 
