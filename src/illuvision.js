@@ -13,6 +13,7 @@ import { Matrix3 } from './core/matrix3.js';
 import { Matrix4 } from './core/matrix4.js';
 import { Mesh } from './core/mesh.js';
 import { OrthographicCamera } from './core/camera/orthographic-camera.js';
+import { PerformanceMonitor } from './utils/performance-monitor.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
 import { Plane } from './core/geometry/plane.js';
 import { Scene } from './core/scene.js';
@@ -21,6 +22,10 @@ import { Timer } from './core/timer.js';
 import { Triangle } from './core/geometry/triangle.js';
 import { Uv } from './core/uv.js';
 import { Vector3 } from './core/vector3.js';
+
+const Utils = {
+    PerformanceMonitor
+};
 
 export {
     AmbientLight,
@@ -43,6 +48,7 @@ export {
     SceneNode,
     Timer,
     Triangle,
+    Utils,
     Uv,
     Vector3
 }
@@ -68,6 +74,7 @@ export default {
     SceneNode,
     Timer,
     Triangle,
+    Utils,
     Uv,
     Vector3
 }

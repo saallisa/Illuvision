@@ -39,6 +39,18 @@ class Timer
     }
 
     /**
+     * Returns the current frames per second.
+     */
+    getFps()
+    {
+        if (this.#deltaTime > 0) {
+            return Math.round(1 / this.#deltaTime);
+        }
+
+        return 0;
+    }
+
+    /**
      * Resets the timer to its initial state.
      */
     reset() {
