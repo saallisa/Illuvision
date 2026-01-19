@@ -67,6 +67,7 @@ class OrthographicCamera extends Camera
         }
 
         this.#left = left;
+        this._markProjectionDirty();
     }
 
     /**
@@ -92,6 +93,7 @@ class OrthographicCamera extends Camera
         }
 
         this.#right = right;
+        this._markProjectionDirty();
     }
 
     /**
@@ -117,6 +119,7 @@ class OrthographicCamera extends Camera
         }
 
         this.#top = top;
+        this._markProjectionDirty();
     }
 
     /**
@@ -142,6 +145,7 @@ class OrthographicCamera extends Camera
         }
 
         this.#bottom = bottom;
+        this._markProjectionDirty();
     }
 
     /**
@@ -167,6 +171,7 @@ class OrthographicCamera extends Camera
         }
 
         this.#near = near;
+        this._markProjectionDirty();
     }
 
     /**
@@ -192,12 +197,13 @@ class OrthographicCamera extends Camera
         }
 
         this.#far = far;
+        this._markProjectionDirty();
     }
 
     /**
-     * Returns the projection matrix for the orthographic camera.
+     * Calculates the projection matrix for the orthographic camera.
      */
-    getProjectionMatrix()
+    _calculateProjectionMatrix()
     {
         let adjustedLeft = this.#left;
         let adjustedRight = this.#right;

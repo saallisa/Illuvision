@@ -38,6 +38,7 @@ class PerspectiveCamera extends Camera
         }
 
         this.#fov = fov;
+        this._markProjectionDirty();
     }
 
     /**
@@ -61,6 +62,7 @@ class PerspectiveCamera extends Camera
         }
 
         this.#near = near;
+        this._markProjectionDirty();
     }
 
     /**
@@ -80,6 +82,7 @@ class PerspectiveCamera extends Camera
         }
 
         this.#far = far;
+        this._markProjectionDirty();
     }
 
     /**
@@ -90,9 +93,9 @@ class PerspectiveCamera extends Camera
     }
 
     /**
-     * Returns the projection matrix for the perspective camera.
+     * Calculates the projection matrix for the perspective camera.
      */
-    getProjectionMatrix()
+    _calculateProjectionMatrix()
     {
         return Matrix4.createPerspectiveProjection(
             this.#fov,

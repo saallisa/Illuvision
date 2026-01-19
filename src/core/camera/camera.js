@@ -16,6 +16,8 @@ class Camera
 
     #viewDirty = true;
     #viewCache = null;
+    #projectionDirty = true;
+    #projectionCache = null;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -111,9 +113,12 @@ class Camera
      */
     getProjectionMatrix()
     {
-        throw new Error(
-            'getProjectionMatrix must be implemented in subclasses.'
-        );
+        if (this.#projectionDirty || this.#projectionCache == null) {
+            this.#projectionCache = this._calculateProjectionMatrix();
+            this.#projectionDirty = false;
+        }
+
+        return this.#projectionCache.clone();
     }
 
     /**
@@ -223,7 +228,29 @@ class Camera
         this.#viewDirty = true;
         this.#viewCache = null;
 
+        this.#projectionDirty = true;
+        this.#projectionCache = null;
+
         this.#compiled = false;
+    }
+
+    /**
+     * Marks the projection matrix as dirty.
+     * Should be called by subclasses when parameters change.
+     */
+    _markProjectionDirty() {
+        this.#projectionDirty = true;
+    }
+
+    /**
+     * Calculates the projection matrix for the camera.
+     * This is a placeholder method and should be implemented in subclasses.
+     */
+    _calculateProjectionMatrix()
+    {
+        throw new Error(
+            '_calculateProjectionMatrix must be implemented in subclasses.'
+        );
     }
 
     /**
