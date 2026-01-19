@@ -110,6 +110,10 @@ async function main()
     camera.setTarget(new IVE.Vector3(0, 0, 0));
     camera.setPosition(new IVE.Vector3(10, 10, 10));
 
+    // Create camera controller
+    const camController = new IVE.StandardController(camera);
+    camController.start();
+
     const timer = new IVE.Timer();
     const rotationSpeed = 15; // 15 degrees per second
 
@@ -122,6 +126,9 @@ async function main()
     {
         // Update timer
         timer.update();
+
+        // Move camera according to keyboard and mouse input.
+        camController.update(timer);
 
         // Use delta time for frame-rate independent rotation
         const deltaRotation = rotationSpeed * timer.getDeltaTime();
