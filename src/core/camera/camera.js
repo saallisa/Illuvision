@@ -24,6 +24,8 @@ class Camera
     #bindGroup = null;
     #compiled = false;
 
+    #viewChangeListeners = [];
+
     constructor()
     {
         if (this.constructor === Camera) {
@@ -47,6 +49,7 @@ class Camera
         }
 
         this.#aspectRatio = aspectRatio;
+        this._markProjectionDirty();
     }
 
     /**
@@ -64,7 +67,7 @@ class Camera
         Vector3.validateInstance(position);
 
         this.#position = position;
-        this.#viewDirty = true;
+        this.#markViewDirty();
     }
 
     /**
@@ -82,7 +85,7 @@ class Camera
         Vector3.validateInstance(target);
 
         this.#target = target;
-        this.#viewDirty = true;
+        this.#markViewDirty();
     }
 
     /**
@@ -231,7 +234,34 @@ class Camera
         this.#projectionDirty = true;
         this.#projectionCache = null;
 
+        this.#viewChangeListeners = [];
+
         this.#compiled = false;
+    }
+
+    /**
+     * Adds a listener that gets called when the view matrix changes.
+     * The listener receives the camera instance as parameter.
+     */
+    addViewChangeListener(listener)
+    {
+        if (typeof listener !== 'function') {
+            throw new TypeError('Listener must be a function.');
+        }
+
+        this.#viewChangeListeners.push(listener);
+    }
+
+    /**
+     * Removes a previously added view change listener.
+     */
+    removeViewChangeListener(listener)
+    {
+        const index = this.#viewChangeListeners.indexOf(listener);
+
+        if (index !== -1) {
+            this.#viewChangeListeners.splice(index, 1);
+        }
     }
 
     /**
@@ -276,6 +306,29 @@ class Camera
                 }
             }]
         });
+    }
+
+    /**
+     * Marks the view matrix as dirty and notifies listeners.
+     */
+    #markViewDirty()
+    {
+        this.#viewDirty = true;
+        this.#notifyViewChangeListeners();
+    }
+
+    /**
+     * Notifies all registered listeners about a view change.
+     */
+    #notifyViewChangeListeners()
+    {
+        for (const listener of this.#viewChangeListeners) {
+            try {
+                listener(this);
+            } catch (error) {
+                console.error('Error in view change listener:', error);
+            }
+        }
     }
 }
 

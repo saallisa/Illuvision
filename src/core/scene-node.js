@@ -285,7 +285,7 @@ class SceneNode
             }
         }
 
-        this.requireUpdate();
+        this.#needsUpdate = false;
     }
 
     /**

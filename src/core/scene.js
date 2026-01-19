@@ -15,6 +15,7 @@ class Scene
     #nodes = [];
     #ambientLights = [];
     #directionalLights = new Map();
+    #camera = null;
 
     #uniformBuffer = null;
     #storageBuffer = null;
@@ -22,10 +23,15 @@ class Scene
     #bindGroup = null;
     #compiled = false;
 
+    #viewChangeListener = null;
+
     constructor()
     {
         this.#uniformBuffer = new UniformBuffer();
         this.#storageBuffer = new StorageBuffer(DirectionalLight.LAYOUT, 10);
+
+        // Create bound listener function for camera view changes
+        this.#viewChangeListener = this.#onCameraViewChange.bind(this);
     }
 
     /**
@@ -161,6 +167,20 @@ class Scene
 
         Engine.validateDevice(device);
 
+        // Register listener for camera view changes
+        if (this.#camera !== camera) {
+            // Unregister from old camera if exists
+            if (this.#camera) {
+                this.#camera.removeViewChangeListener(
+                    this.#viewChangeListener
+                );
+            }
+            
+            // Register to new camera
+            this.#camera = camera;
+            camera.addViewChangeListener(this.#viewChangeListener);
+        }
+
         this.#fillUniformBuffer();
         this.#fillStorageBuffer();
         this.#uniformBuffer.compile(device);
@@ -180,6 +200,12 @@ class Scene
      */
     destroy()
     {
+        // Unregister from camera events
+        if (this.#camera) {
+            this.#camera.removeViewChangeListener(this.#viewChangeListener);
+            this.#camera = null;
+        }
+
         // Destroy all nodes
         for (const node of this.#nodes) {
             node.destroy();
@@ -250,6 +276,36 @@ class Scene
             Color.multiLerp(colors, weights),
             intensity
         );
+    }
+
+    /**
+     * Callback for when the camera view changes.
+     * Automatically marks all nodes as needing an update.
+     */
+    #onCameraViewChange()
+    {
+        if (!this.#compiled) {
+            return;
+        }
+
+        // Mark all nodes as needing update
+        for (const node of this.#nodes) {
+            this.#updateNodeForCameraChange(node);
+        }
+    }
+
+    /**
+     * Recursively marks a node and all its children as needing an update.
+     */
+    #updateNodeForCameraChange(node)
+    {
+        node.requireUpdate();
+
+        const children = node.getChildren();
+
+        for (const child of children) {
+            this.#updateNodeForCameraChange(child);
+        }
     }
 
     /**
