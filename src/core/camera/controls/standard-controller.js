@@ -122,11 +122,11 @@ class StandardController
         }
 
         if (this.#actions.up) {
-            // TODO: Move upwards
+            this.#moveUp(timer);
         }
 
         if (this.#actions.down) {
-            // TODO: Move downwards
+            this.#moveDown(timer);
         }
     }
 
@@ -237,6 +237,50 @@ class StandardController
         );
         this.#camera.setTarget(
             Vector3.subtract(this.#camera.getTarget(), movement)
+        );
+    }
+
+    /**
+     * Moves the camera 90 degrees upwards from the direction it is facing.
+     * Updates the position and target.
+     */
+    #moveUp(timer)
+    {
+        const speed = 5;
+        const distance = speed * timer.getDeltaTime();
+
+        const movement = Vector3.multiplyScalar(
+            this.#camera.getUp(),
+            distance
+        );
+
+        this.#camera.setPosition(
+            Vector3.subtract(this.#camera.getPosition(), movement)
+        );
+        this.#camera.setTarget(
+            Vector3.subtract(this.#camera.getTarget(), movement)
+        );
+    }
+
+    /**
+     * Moves the camera 90 degrees downwards from the direction it is facing.
+     * Updates the position and target.
+     */
+    #moveDown(timer)
+    {
+        const speed = 5;
+        const distance = speed * timer.getDeltaTime();
+
+        const movement = Vector3.multiplyScalar(
+            this.#camera.getUp(),
+            distance
+        );
+
+        this.#camera.setPosition(
+            Vector3.add(this.#camera.getPosition(), movement)
+        );
+        this.#camera.setTarget(
+            Vector3.add(this.#camera.getTarget(), movement)
         );
     }
 }
