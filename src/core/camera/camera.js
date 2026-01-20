@@ -96,6 +96,24 @@ class Camera
     }
 
     /**
+     * Set the up direction of the camera.
+     */
+    setUp(up)
+    {
+        Vector3.validateInstance(up);
+
+        this.#up = up;
+        this.#markViewDirty();
+    }
+
+    /**
+     * Returns the current up direction of the camera.
+     */
+    getUp() {
+        return this.#up;
+    }
+
+    /**
      * Returns the view matrix for the camera.
      */
     getViewMatrix()
