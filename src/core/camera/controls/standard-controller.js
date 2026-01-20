@@ -1,7 +1,7 @@
 
+import { Camera } from '../camera.js';
 import { Timer } from '../../timer.js';
 import { Vector3 } from '../../vector3.js';
-import { Camera } from '../camera.js';
 
 /**
  * Controls camera movement with mouse and keyboard input.
@@ -9,7 +9,8 @@ import { Camera } from '../camera.js';
 class StandardController
 {
     #camera = null;
-    #cameraDirection = null;
+    #cameraForward = null;
+    #cameraRight = null;
 
     #boundHandlers = {
         keydown: null,
@@ -58,10 +59,19 @@ class StandardController
         }
 
         this.#camera = camera;
-        this.#cameraDirection = Vector3.subtract(
-            this.#camera.getPosition(),
-            this.#camera.getTarget()
+
+        // Calculate current forward and right vectors
+        this.#cameraForward = Vector3.subtract(
+            this.#camera.getTarget(),
+            this.#camera.getPosition()
         );
+        this.#cameraForward.normalize();
+
+        this.#cameraRight = Vector3.cross(
+            this.#cameraForward,
+            this.#camera.getUp()
+        );
+        this.#cameraRight.normalize();
 
         // Bind event handlers
         this.#boundHandlers.keydown = this.#handleKeyDown.bind(this);
@@ -104,18 +114,18 @@ class StandardController
         }
 
         if (this.#actions.left) {
-            // TODO: Move left
+            this.#moveLeft(timer);
         }
 
         if (this.#actions.right) {
-            // TODO: Move right
+            this.#moveRight(timer);
         }
 
-        if (this.#actions.up === true) {
+        if (this.#actions.up) {
             // TODO: Move upwards
         }
 
-        if (this.#actions.down === true) {
+        if (this.#actions.down) {
             // TODO: Move downwards
         }
     }
@@ -150,11 +160,32 @@ class StandardController
      */
     #moveForward(timer)
     {
-        const speed = 0.5;
+        const speed = 5;
         const distance = speed * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
-            this.#cameraDirection, distance
+            this.#cameraForward, distance
+        );
+
+        this.#camera.setPosition(
+            Vector3.subtract(this.#camera.getPosition(), movement)
+        );
+        this.#camera.setTarget(
+            Vector3.subtract(this.#camera.getTarget(), movement)
+        );
+    }
+
+    /**
+     * Moves the camera from current direction it is facing.
+     * Updates the position and target.
+     */
+    #moveBackward(timer)
+    {
+        const speed = 5;
+        const distance = speed * timer.getDeltaTime();
+
+        const movement = Vector3.multiplyScalar(
+            this.#cameraForward, distance
         );
 
         this.#camera.setPosition(
@@ -166,16 +197,39 @@ class StandardController
     }
 
     /**
-     * Moves the camera from current direction it is facing.
+     * Moves the camera 90 degrees to the left of the direction it is facing.
      * Updates the position and target.
      */
-    #moveBackward(timer)
+    #moveLeft(timer)
     {
-        const speed = 0.5;
+        const speed = 5;
         const distance = speed * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
-            this.#cameraDirection, distance
+            this.#cameraRight,
+            distance
+        );
+
+        this.#camera.setPosition(
+            Vector3.add(this.#camera.getPosition(), movement)
+        );
+        this.#camera.setTarget(
+            Vector3.add(this.#camera.getTarget(), movement)
+        );
+    }
+
+    /**
+     * Moves the camera 90 degrees to the right of the direction it is facing.
+     * Updates the position and target.
+     */
+    #moveRight(timer)
+    {
+        const speed = 5;
+        const distance = speed * timer.getDeltaTime();
+
+        const movement = Vector3.multiplyScalar(
+            this.#cameraRight,
+            distance
         );
 
         this.#camera.setPosition(
