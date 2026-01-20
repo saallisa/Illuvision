@@ -228,7 +228,7 @@ class Matrix4
     }
 
     /**
-     * Convenience method for creating a rotation x matrix.
+     * Convenience method for creating a rotation y matrix.
      */
     static createRotateY(angle)
     {
