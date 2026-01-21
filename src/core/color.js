@@ -158,7 +158,7 @@ class Color
 
             red += color.red * weights[index];
             green += color.green * weights[index];
-            blue += color.green * weights[index];
+            blue += color.blue * weights[index];
             alpha += color.alpha * weights[index];
         });
 

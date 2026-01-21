@@ -3,69 +3,35 @@
 
 [![DeepScan grade](https://deepscan.io/api/teams/27485/projects/30515/branches/980824/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=27485&pid=30515&bid=980824)
 
-This is an unfinished and experimental 3D rendering engine for WebGPU only.
-It is free of dependencies and is coded in plain JavaScript.
-Once I reach a stage of development that appears to be useful and error-free,
-I will make the code completely open source.
-In the meantime, I advise against using it for anything other than experimentation.
+A lightweight, dependency-free 3D rendering engine for WebGPU, written in pure JavaScript.
+This is an experimental project under active development. The API is subject to change, and you may encounter bugs. Use in production environments is not recommended at this time.
 
-## Getting started
+## Requirements
 
-To install Illuvision, simply download the project as a zip and unpack it. Reename the src directory to something like illuvision or ive and copy it into your js or assets folder.
+* A browser with WebGPU support
+* Experience with HTML and JavaScript
+* Basic understanding of 3D graphics
 
-From there, simply import the classes from the illuvision.js file prefixed with IVE.
+**Warning:** As WebGPU is a cutting-edge web standard that is still being rolled out across browsers, Illuvision isn't supported in every browser or on every plaform, yet.
+Check [this page](https://caniuse.com/webgpu) for current browser support.
 
-```javascript
-import * as IVE from '/path/to/illuvision/illuvision.js';
-```
+## Installation
 
-Before you can render anything you must first initialize the engine.
-
-```javascript
-const engine = new IVE.Engine();
-```
-
-By default the canvas is 800 x 600 px, but you can either set the size to a custom value with ```engine.setSize(width, height)``` or you can set it to the current window size with ```engine.setSizeToWindow()```. The background of your canvas is black by default, but if you’d like to change this, simply call ```engine.setClearColor(color)```. This method expects a color object.
+1. Download the project as a ZIP file and extract it
+2. Copy the `src` directory to your project
+3. Rename it to something like `illuvision` or `ive`
+4. Import the engine in your JavaScript files
 
 ```javascript
-engine.setSizeToWindow(); // or engine.setSize();
-engine.setClearColor(IVE.Color.fromHex('87ceeb')); // sky blue
+import * as IVE from './path/to/illuvision/illuvision.js';
 ```
 
-After configuring the engine it must be initialized.
+## Contributing
 
-```javascript
-await engine.initialize();
-```
+While I'm primarily developing this project for learning purposes, contributions are welcome:
 
-Now you can get the canvas created and used by the engine with ```engine.getCanvas()```. You must append it to the html document with JavaScript, for example with ```document.body.appendChild(canvas)```.
+- **Bug Reports**: Create an issue with reproduction steps
+- **Bug Fixes**: PRs for issues tagged "help wanted" are appreciated
+- **Feedback**: Share your experience using the engine
 
-## Todo
-
-This list gives an overview of what is planned for and what is already implemented in the first release.
-
-- [x] Geometries
-  - [x] Triangle
-  - [x] Plane
-  - [x] Box
-- [x] Lights
-  - [x] Ambient light
-  - [x] Directional light
-- [x] Materials
-  - [x] Basic
-  - [x] Lambert
-- [x] Cameras
-  - [x] Orthographic camera
-  - [x] Perspective camera
-- [x] Scene
-  - [x] Meshes
-  - [x] Scene Nodes
-- [x] Rendering
-
-More features will be added in later releases.
-
-## Contribution guide
-
-As I currently use this project mainly for learning purposes, I'd like to implement most of its features myself.
-If, by any chance, you decide to use this library and find any bugs, please feel free to create an issue.
-Sometimes I will mark bugs with the "help wanted" tag. You are welcome to propose a solution by creating a pull request.
+Please note that feature implementations will mostly be done by me to preserve the learning aspect of the project.

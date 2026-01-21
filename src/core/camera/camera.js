@@ -177,8 +177,11 @@ class Camera
             );
         }
         
-        this.#aspectRatio.setUniform(
-            'matrix', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
+        this.#uniformBuffer.setUniform(
+            'projection', this.getProjectionMatrix().toArray(), 'mat4x4<f32>'
+        );
+        this.#uniformBuffer.setUniform(
+            'view', this.getViewMatrix().toArray(), 'mat4x4<f32>'
         );
         this.#uniformBuffer.updateUniformBuffer(device);
     }
