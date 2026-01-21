@@ -102,30 +102,66 @@ class StandardController
         // Calculate current forward and right vectors
         this.#calculateCameraDirections();
 
+        // Movement intent
+        const movement = new Vector3(0, 0, 0);
+        let distance = 0;
+
         // Keyboard movements
         if (this.#actions.forward) {
-            this.#moveForward(timer);
+            distance = this.#speed.x * timer.getDeltaTime();
+
+            movement.subtract(
+                Vector3.multiplyScalar(this.#cameraForward, distance)
+            );
         }
 
         if (this.#actions.backward) {
-            this.#moveBackward(timer);
+            distance = this.#speed.x * timer.getDeltaTime();
+
+            movement.add(
+                Vector3.multiplyScalar(this.#cameraForward, distance)
+            );
         }
 
         if (this.#actions.left) {
-            this.#moveLeft(timer);
+            distance = this.#speed.y * timer.getDeltaTime();
+
+            movement.add(
+                Vector3.multiplyScalar(this.#cameraRight, distance)
+            );
         }
 
         if (this.#actions.right) {
-            this.#moveRight(timer);
+            distance = this.#speed.y * timer.getDeltaTime();
+
+            movement.subtract(
+                Vector3.multiplyScalar(this.#cameraRight, distance)
+            );
         }
 
         if (this.#actions.up) {
-            this.#moveUp(timer);
+            distance = this.#speed.z * timer.getDeltaTime();
+
+            movement.subtract(
+                Vector3.multiplyScalar(this.#camera.getUp(), distance)
+            );
         }
 
         if (this.#actions.down) {
-            this.#moveDown(timer);
+            distance = this.#speed.z * timer.getDeltaTime();
+
+            movement.add(
+                Vector3.multiplyScalar(this.#camera.getUp(), distance)
+            );
         }
+
+        // Update position and target
+        this.#camera.setPosition(
+            Vector3.add(this.#camera.getPosition(), movement)
+        );
+        this.#camera.setTarget(
+            Vector3.add(this.#camera.getTarget(), movement)
+        );
     }
 
     /**
@@ -170,130 +206,6 @@ class StandardController
         if (action) {
             this.#actions[action] = false;
         }
-    }
-
-    /**
-     * Moves the camera in the current direction it is facing.
-     * Updates the position and target.
-     */
-    #moveForward(timer)
-    {
-        const distance = this.#speed.x * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#cameraForward, distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.subtract(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.subtract(this.#camera.getTarget(), movement)
-        );
-    }
-
-    /**
-     * Moves the camera from current direction it is facing.
-     * Updates the position and target.
-     */
-    #moveBackward(timer)
-    {
-        const distance = this.#speed.x * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#cameraForward, distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.add(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.add(this.#camera.getTarget(), movement)
-        );
-    }
-
-    /**
-     * Moves the camera 90 degrees to the left of the direction it is facing.
-     * Updates the position and target.
-     */
-    #moveLeft(timer)
-    {
-        const distance = this.#speed.y * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#cameraRight,
-            distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.add(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.add(this.#camera.getTarget(), movement)
-        );
-    }
-
-    /**
-     * Moves the camera 90 degrees to the right of the direction it is facing.
-     * Updates the position and target.
-     */
-    #moveRight(timer)
-    {
-        const distance = this.#speed.y * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#cameraRight,
-            distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.subtract(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.subtract(this.#camera.getTarget(), movement)
-        );
-    }
-
-    /**
-     * Moves the camera 90 degrees upwards from the direction it is facing.
-     * Updates the position and target.
-     */
-    #moveUp(timer)
-    {
-        const distance = this.#speed.z * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#camera.getUp(),
-            distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.subtract(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.subtract(this.#camera.getTarget(), movement)
-        );
-    }
-
-    /**
-     * Moves the camera 90 degrees downwards from the direction it is facing.
-     * Updates the position and target.
-     */
-    #moveDown(timer)
-    {
-        const distance = this.#speed.z * timer.getDeltaTime();
-
-        const movement = Vector3.multiplyScalar(
-            this.#camera.getUp(),
-            distance
-        );
-
-        this.#camera.setPosition(
-            Vector3.add(this.#camera.getPosition(), movement)
-        );
-        this.#camera.setTarget(
-            Vector3.add(this.#camera.getTarget(), movement)
-        );
     }
 }
 
