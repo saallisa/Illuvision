@@ -8,6 +8,7 @@ import { Vector3 } from '../../vector3.js';
  */
 class StandardController
 {
+    #speed = new Vector3(5, 5, 5);
     #camera = null;
     #cameraForward = null;
     #cameraRight = null;
@@ -50,7 +51,7 @@ class StandardController
         'KeyE': 'down'
     };
 
-    constructor(camera)
+    constructor(camera, options = {})
     {
         if (!(camera instanceof Camera)) {
             throw new TypeError(
@@ -60,18 +61,11 @@ class StandardController
 
         this.#camera = camera;
 
-        // Calculate current forward and right vectors
-        this.#cameraForward = Vector3.subtract(
-            this.#camera.getTarget(),
-            this.#camera.getPosition()
-        );
-        this.#cameraForward.normalize();
-
-        this.#cameraRight = Vector3.cross(
-            this.#cameraForward,
-            this.#camera.getUp()
-        );
-        this.#cameraRight.normalize();
+        // Evaluate options
+        if (options.speed) {
+            Vector3.validateInstance(options.speed);
+            this.#speed = options.speed;
+        }
 
         // Bind event handlers
         this.#boundHandlers.keydown = this.#handleKeyDown.bind(this);
@@ -105,6 +99,10 @@ class StandardController
             throw new Error('Timer must be a valid timer instance.')
         };
 
+        // Calculate current forward and right vectors
+        this.#calculateCameraDirections();
+
+        // Keyboard movements
         if (this.#actions.forward) {
             this.#moveForward(timer);
         }
@@ -128,6 +126,26 @@ class StandardController
         if (this.#actions.down) {
             this.#moveDown(timer);
         }
+    }
+
+    /**
+     * Calculates the current forward and right of the camera.
+     */
+    #calculateCameraDirections()
+    {
+        // Forward vector
+        this.#cameraForward = Vector3.subtract(
+            this.#camera.getTarget(),
+            this.#camera.getPosition()
+        );
+        this.#cameraForward.normalize();
+
+        // Right vector
+        this.#cameraRight = Vector3.cross(
+            this.#cameraForward,
+            this.#camera.getUp()
+        );
+        this.#cameraRight.normalize();
     }
 
     /**
@@ -160,8 +178,7 @@ class StandardController
      */
     #moveForward(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.x * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#cameraForward, distance
@@ -181,8 +198,7 @@ class StandardController
      */
     #moveBackward(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.x * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#cameraForward, distance
@@ -202,8 +218,7 @@ class StandardController
      */
     #moveLeft(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.y * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#cameraRight,
@@ -224,8 +239,7 @@ class StandardController
      */
     #moveRight(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.y * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#cameraRight,
@@ -246,8 +260,7 @@ class StandardController
      */
     #moveUp(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.z * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#camera.getUp(),
@@ -268,8 +281,7 @@ class StandardController
      */
     #moveDown(timer)
     {
-        const speed = 5;
-        const distance = speed * timer.getDeltaTime();
+        const distance = this.#speed.z * timer.getDeltaTime();
 
         const movement = Vector3.multiplyScalar(
             this.#camera.getUp(),
