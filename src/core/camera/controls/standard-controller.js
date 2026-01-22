@@ -61,10 +61,9 @@ class StandardController
 
         this.#camera = camera;
 
-        // Evaluate options
+        // Set options
         if (options.speed) {
-            Vector3.validateInstance(options.speed);
-            this.#speed = options.speed;
+            this.speed = options.speed;
         }
 
         // Bind event handlers
@@ -162,6 +161,22 @@ class StandardController
         this.#camera.setTarget(
             Vector3.add(this.#camera.getTarget(), movement)
         );
+    }
+
+    /**
+     * Get's the current movement speed.
+     */
+    get speed() {
+        return this.#speed;
+    }
+
+    /**
+     * Set's a new movement speed.
+     */
+    set speed(speed)
+    {
+        Vector3.validateInstance(speed);
+        this.#speed = speed;
     }
 
     /**
