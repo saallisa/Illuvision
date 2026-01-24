@@ -61,6 +61,11 @@ class Engine
 
         if (this.#canvas) {
             this.#updateCanvasSize();
+
+            // Recreate depth texture to update depth texture size
+            if (this.#initialized) {
+                this.#createDepthTextureView();
+            }
         }
     }
 
