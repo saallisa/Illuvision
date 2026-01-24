@@ -3,6 +3,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-01-24
+
+### Fixed
+
+- Canvas resizing after initializing no longer results in a black canvas
+
 ## [0.1.2] - 2026-01-01
 
 ### Fixed
