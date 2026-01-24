@@ -15,6 +15,11 @@ async function main()
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
+    // Add resize events
+    window.addEventListener('resize', function () {
+        engine.setSizeToWindow();
+    });
+
     // Create a simple plane
     const planeGeometry = new IVE.Plane(1, 1, 1, 1);
 
