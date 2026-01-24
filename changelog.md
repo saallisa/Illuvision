@@ -8,11 +8,18 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Transparency support in rendering engine
+
+#### Core
+
 - Timer class for getting delta time
 - Getters for left, right, top, bottom, near and far in OrthographicCamera
 - Setters for left, right, top, bottom, near and far in OrthographicCamera
 - Ability to add or remove event listeners to camera class that are notified whenever the camera's view changes
 - StandardController camera controller supporting movement via keyboard input
+
+#### Utility
+
+- Performance monitor for displaying current fps rate
 
 ## [0.1.2] - 2026-01-01
 
