@@ -16,6 +16,7 @@ import { OrthographicCamera } from './core/camera/orthographic-camera.js';
 import { PerformanceMonitor } from './utils/performance-monitor.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
 import { Plane } from './core/geometry/plane.js';
+import { Quaternion } from './core/quaternion.js';
 import { Scene } from './core/scene.js';
 import { SceneNode } from './core/scene-node.js';
 import { StandardController } from './core/camera/controls/standard-controller.js';
@@ -45,6 +46,7 @@ export {
     OrthographicCamera,
     PerspectiveCamera,
     Plane,
+    Quaternion,
     Scene,
     SceneNode,
     StandardController,
@@ -72,6 +74,7 @@ export default {
     OrthographicCamera,
     PerspectiveCamera,
     Plane,
+    Quaternion,
     Scene,
     SceneNode,
     StandardController,
