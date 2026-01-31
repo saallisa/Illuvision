@@ -23,6 +23,7 @@ class Camera
     #bindGroupLayout = null;
     #bindGroup = null;
     #compiled = false;
+    #needsUpdate = false;
 
     #viewChangeListeners = [];
 
@@ -225,6 +226,7 @@ class Camera
             'view', this.getViewMatrix().toArray(), 'mat4x4<f32>'
         );
         this.#uniformBuffer.updateUniformBuffer(device);
+        this.#needsUpdate = false;
     }
 
     /**
@@ -232,6 +234,13 @@ class Camera
      */
     isCompiled() {
         return this.#compiled;
+    }
+
+    /**
+     * Returns if the camera needs an update.
+     */
+    needsUpdate() {
+        return this.#needsUpdate;
     }
 
     /**
@@ -283,11 +292,14 @@ class Camera
     }
 
     /**
-     * Marks the projection matrix as dirty.
+     * Marks the projection matrix as dirty and schedules an update for the
+     * camera.
      * Should be called by subclasses when parameters change.
      */
-    _markProjectionDirty() {
+    _markProjectionDirty()
+    {
         this.#projectionDirty = true;
+        this.#needsUpdate = true;
     }
 
     /**
@@ -327,11 +339,13 @@ class Camera
     }
 
     /**
-     * Marks the view matrix as dirty and notifies listeners.
+     * Marks the view matrix as dirty, schedules an update for the
+     * camera and notifies listeners.
      */
     #markViewDirty()
     {
         this.#viewDirty = true;
+        this.#needsUpdate = true;
         this.#notifyViewChangeListeners();
     }
 

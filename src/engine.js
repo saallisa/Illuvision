@@ -224,6 +224,12 @@ class Engine
 
         await scene.compile(this.#device, camera);
         camera.compile(this.#device);
+        
+        // Update camera if needed before rendering
+        if (camera.needsUpdate()) {
+            camera.update(this.#device);
+        }
+        
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
         this.#renderPass.setBindGroup(1, scene.getBindGroup());
