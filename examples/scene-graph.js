@@ -17,11 +17,6 @@ async function main()
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
-    // Add resize events
-    window.addEventListener('resize', function () {
-        engine.setSizeToWindow();
-    });
-
     // Create a simple ground plane
     const groundGeometry = new IVE.Plane(10, 10, 2, 2);
 
@@ -152,6 +147,12 @@ async function main()
 
     // Set the animation loop
     engine.setAnimationLoop(animation);
+
+    // Add resize events
+    window.addEventListener('resize', function () {
+        engine.setSizeToWindow();
+        camera.setAspectRatio(engine.getAspectRatio());
+    });
 }
 
 main();
