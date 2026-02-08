@@ -113,7 +113,11 @@ async function main()
     // Create camera controller
     const camController = new IVE.StandardController(camera);
     camController.start();
+    engine.getCanvas().onclick = function () {
+        camController.pointerLock(engine);
+    }
 
+    // Setup timing
     const timer = new IVE.Timer();
     const rotationSpeed = 15; // 15 degrees per second
 
