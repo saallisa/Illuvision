@@ -112,9 +112,7 @@ class StandardController
         Engine.validateEngine(engine);
 
         this.#canvas = engine.getCanvas();
-        this.#canvas.requestPointerLock({
-            unadjustedMovement: true,
-        });
+        this.#canvas.requestPointerLock();
 
         document.addEventListener('mousemove', this.#boundHandlers.mousemove);
     }
