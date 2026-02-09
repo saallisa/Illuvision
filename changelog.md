@@ -15,7 +15,8 @@ All notable changes to this project will be documented in this file.
 - Getters for left, right, top, bottom, near and far in OrthographicCamera
 - Setters for left, right, top, bottom, near and far in OrthographicCamera
 - Ability to add or remove event listeners to camera class that are notified whenever the camera's view changes
-- StandardController camera controller supporting movement via keyboard input
+- StandardController camera controller supporting movement via keyboard and mouse input
+- Quaternion math class
 
 #### Utility
 
