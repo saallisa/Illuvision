@@ -52,6 +52,32 @@ class Quaternion
     }
 
     /**
+     * Calculates the magnitude of this quaternion.
+     */
+    magnitude()
+    {
+        return Math.sqrt(
+            this.x * this.x + this.y * this.y
+            + this.z * this.z + this.w * this.w
+        );
+    }
+
+    /**
+     * Normalizes this quaternion directly.
+     */
+    normalize()
+    {
+        const magnitude = this.magnitude();
+
+        if (mag > 0) {
+            this.x = this.x / magnitude;
+            this.y = this.y / magnitude;
+            this.z = this.z / magnitude;
+            this.w = this.w / magnitude;
+        }
+    }
+
+    /**
      * Converts this quaternion to an array representation.
      */
     toArray() {
@@ -148,6 +174,27 @@ class Quaternion
             result[1],
             result[2],
             result[3]
+        );
+    }
+
+    /**
+     * Returns a normalized copy of this quaternion.
+     */
+    static normalize(quaternion)
+    {
+        Quaternion.validateInstance(quaternion);
+
+        const magnitude = quaternion.magnitude();
+        
+        if (magnitude === 0) {
+            return new Quaternion(0, 0, 0, 0);
+        }
+        
+        return new Quaternion(
+            quaternion.x / magnitude,
+            quaternion.y / magnitude,
+            quaternion.z / magnitude,
+            quaternion.w / magnitude
         );
     }
 
