@@ -1,4 +1,7 @@
 
+import { Matrix3 } from './matrix3.js';
+import { Matrix4 } from './matrix4.js';
+
 /**
  * Represents a quaternion and allows various operations.
  */
@@ -82,6 +85,31 @@ class Quaternion
      */
     toArray() {
         return [this.x, this.y, this.z, this.w];
+    }
+
+    /**
+     * Converts this quaternion into a rotation matrix for Matrix3
+     */
+    toMatrix3()
+    {
+        return new Matrix3(
+            this.#toMatrixArray()
+        );
+    }
+
+    /**
+     * Converts this quaternion into a rotation matrix for Matrix4
+     */
+    toMatrix4()
+    {
+        const m = this.#toMatrixArray();
+
+        return new Matrix4(
+            m[0], m[1], m[2], 0,
+            m[3], m[4], m[5], 0,
+            m[6], m[7], m[8], 0,
+            0, 0, 0, 1
+        );
     }
 
     /**
@@ -206,6 +234,40 @@ class Quaternion
         if (!(value instanceof Quaternion)) {
             throw new Error('Value must be an instance of Quaternion.');
         }
+    }
+
+    /**
+     * Converts this quaternion into a rotation matrix. The resulting
+     * matrix is returned as an array.
+     */
+    #toMatrixArray()
+    {
+        let matrix = [];
+
+        const xx2 = 2 * this.x * this.x;
+        const yy2 = 2 * this.y * this.y;
+        const zz2 = 2 * this.z * this.z;
+
+        const xy2 = 2 * this.x * this.y;
+        const xz2 = 2 * this.x * this.z;
+
+        const yz2 = 2 * this.y * this.z;
+
+        const wx2 = 2 * this.w * this.x;
+        const wy2 = 2 * this.w * this.y;
+        const wz2 = 2 * this.w * this.z;
+
+        matrix[0] = 1 - yy2 - zz2;
+        matrix[1] = xy2 - wz2;
+        matrix[2] = xz2 + wy2;
+        matrix[3] = xy2 + wz2;
+        matrix[4] = 1 - xx2 - zz2;
+        matrix[5] = yz2 - wx2;
+        matrix[6] = xz2 - wy2;
+        matrix[7] = yz2 + wx2;
+        matrix[8] = 1 - xx2 - yy2;
+
+        return matrix;
     }
 
     /**
