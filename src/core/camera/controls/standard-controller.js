@@ -300,6 +300,7 @@ class StandardController
 
         if (action) {
             this.#actions[action] = true;
+            event.preventDefault();
         }
     }
 
