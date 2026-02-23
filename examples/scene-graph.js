@@ -110,19 +110,53 @@ async function main()
     camera.setTarget(new IVE.Vector3(0, 0, 0));
     camera.setPosition(new IVE.Vector3(10, 10, 10));
 
+    // Create camera controller
+    const camController = new IVE.StandardController(camera);
+    camController.start();
+    engine.getCanvas().onclick = function () {
+        camController.pointerLock(engine);
+    }
+
+    // Setup timing
+    const timer = new IVE.Timer();
+    const rotationSpeed = 15; // 15 degrees per second
+
+    // Setup performance monitor
+    const perfMonitor = new IVE.Utils.PerformanceMonitor(timer);
+    document.body.appendChild(perfMonitor.getContainer());
+
     // Create the function for the animation loop 
     const animation = function ()
     {
-        // Rotate the scene node
-        sceneNode2.rotateX = sceneNode2.rotateX + 0.5;
-        sceneNode2.rotateY = sceneNode2.rotateY + 0.5;
-        sceneNode2.rotateZ = sceneNode2.rotateZ + 0.5;
+        // Update timer
+        timer.update();
 
+        // Move camera according to keyboard and mouse input.
+        camController.update(timer);
+
+        // Use delta time for frame-rate independent rotation
+        const deltaRotation = rotationSpeed * timer.getDeltaTime();
+
+        // Rotate the scene node
+        sceneNode2.rotateX = sceneNode2.rotateX + deltaRotation;
+        sceneNode2.rotateY = sceneNode2.rotateY + deltaRotation;
+        sceneNode2.rotateZ = sceneNode2.rotateZ + deltaRotation;
+
+        // Update performance monitor
+        perfMonitor.update();
+
+        // Render scene
         engine.render(scene, camera);
     }
 
     // Set the animation loop
     engine.setAnimationLoop(animation);
+
+    // Add resize events
+    window.addEventListener('resize', function () {
+        engine.setSizeToWindow();
+        camera.setAspectRatio(engine.getAspectRatio());
+    });
 }
 
 main();

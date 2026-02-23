@@ -14,10 +14,18 @@ class Camera
     #target = null;
     #up = null;
 
+    #viewDirty = true;
+    #viewCache = null;
+    #projectionDirty = true;
+    #projectionCache = null;
+
     #uniformBuffer = null;
     #bindGroupLayout = null;
     #bindGroup = null;
     #compiled = false;
+    #needsUpdate = false;
+
+    #viewChangeListeners = [];
 
     constructor()
     {
@@ -42,6 +50,7 @@ class Camera
         }
 
         this.#aspectRatio = aspectRatio;
+        this._markProjectionDirty();
     }
 
     /**
@@ -57,7 +66,9 @@ class Camera
     setPosition(position)
     {
         Vector3.validateInstance(position);
+
         this.#position = position;
+        this.#markViewDirty();
     }
 
     /**
@@ -73,7 +84,9 @@ class Camera
     setTarget(target)
     {
         Vector3.validateInstance(target);
+
         this.#target = target;
+        this.#markViewDirty();
     }
 
     /**
@@ -84,10 +97,36 @@ class Camera
     }
 
     /**
+     * Set the up direction of the camera.
+     */
+    setUp(up)
+    {
+        Vector3.validateInstance(up);
+
+        this.#up = up;
+        this.#markViewDirty();
+    }
+
+    /**
+     * Returns the current up direction of the camera.
+     */
+    getUp() {
+        return this.#up;
+    }
+
+    /**
      * Returns the view matrix for the camera.
      */
-    getViewMatrix() {
-        return Matrix4.createLookAt(this.#position, this.#target, this.#up);
+    getViewMatrix()
+    {
+        if (this.#viewDirty || this.#viewCache == null) {
+            this.#viewCache = Matrix4.createLookAt(
+                this.#position, this.#target, this.#up
+            );
+            this.#viewDirty = false;
+        }
+
+        return this.#viewCache.clone();
     }
 
     /**
@@ -96,9 +135,12 @@ class Camera
      */
     getProjectionMatrix()
     {
-        throw new Error(
-            'getProjectionMatrix must be implemented in subclasses.'
-        );
+        if (this.#projectionDirty || this.#projectionCache == null) {
+            this.#projectionCache = this._calculateProjectionMatrix();
+            this.#projectionDirty = false;
+        }
+
+        return this.#projectionCache.clone();
     }
 
     /**
@@ -184,6 +226,7 @@ class Camera
             'view', this.getViewMatrix().toArray(), 'mat4x4<f32>'
         );
         this.#uniformBuffer.updateUniformBuffer(device);
+        this.#needsUpdate = false;
     }
 
     /**
@@ -191,6 +234,13 @@ class Camera
      */
     isCompiled() {
         return this.#compiled;
+    }
+
+    /**
+     * Returns if the camera needs an update.
+     */
+    needsUpdate() {
+        return this.#needsUpdate;
     }
 
     /**
@@ -205,7 +255,62 @@ class Camera
         this.#bindGroup = null;
         this.#bindGroupLayout = null;
 
+        this.#viewDirty = true;
+        this.#viewCache = null;
+
+        this.#projectionDirty = true;
+        this.#projectionCache = null;
+
+        this.#viewChangeListeners = [];
+
         this.#compiled = false;
+    }
+
+    /**
+     * Adds a listener that gets called when the view matrix changes.
+     * The listener receives the camera instance as parameter.
+     */
+    addViewChangeListener(listener)
+    {
+        if (typeof listener !== 'function') {
+            throw new TypeError('Listener must be a function.');
+        }
+
+        this.#viewChangeListeners.push(listener);
+    }
+
+    /**
+     * Removes a previously added view change listener.
+     */
+    removeViewChangeListener(listener)
+    {
+        const index = this.#viewChangeListeners.indexOf(listener);
+
+        if (index !== -1) {
+            this.#viewChangeListeners.splice(index, 1);
+        }
+    }
+
+    /**
+     * Marks the projection matrix as dirty and schedules an update for the
+     * camera.
+     * Should be called by subclasses when parameters change.
+     */
+    _markProjectionDirty()
+    {
+        this.#projectionDirty = true;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Calculates the projection matrix for the camera.
+     * This is a placeholder method and should be implemented in subclasses.
+     */
+    _calculateProjectionMatrix()
+    {
+        throw new Error(
+            '_calculateProjectionMatrix must be implemented in subclasses.'
+        );
     }
 
     /**
@@ -231,6 +336,31 @@ class Camera
                 }
             }]
         });
+    }
+
+    /**
+     * Marks the view matrix as dirty, schedules an update for the
+     * camera and notifies listeners.
+     */
+    #markViewDirty()
+    {
+        this.#viewDirty = true;
+        this.#needsUpdate = true;
+        this.#notifyViewChangeListeners();
+    }
+
+    /**
+     * Notifies all registered listeners about a view change.
+     */
+    #notifyViewChangeListeners()
+    {
+        for (const listener of this.#viewChangeListeners) {
+            try {
+                listener(this);
+            } catch (error) {
+                console.error('Error in view change listener:', error);
+            }
+        }
     }
 }
 

@@ -224,6 +224,12 @@ class Engine
 
         await scene.compile(this.#device, camera);
         camera.compile(this.#device);
+        
+        // Update camera if needed before rendering
+        if (camera.needsUpdate()) {
+            camera.update(this.#device);
+        }
+        
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
         this.#renderPass.setBindGroup(1, scene.getBindGroup());
@@ -502,7 +508,19 @@ class Engine
             fragment: {
                 module: shader.getFragmentModule(),
                 targets: [{
-                    format: this.#format
+                    format: this.#format,
+                    blend: {
+                        color: {
+                            srcFactor: 'src-alpha',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add'
+                        },
+                        alpha: {
+                            srcFactor: 'one',
+                            dstFactor: 'one-minus-src-alpha',
+                            operation: 'add'
+                        }
+                    }
                 }]
             },
             primitive: {

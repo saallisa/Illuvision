@@ -15,6 +15,11 @@ async function main()
     // Add canvas to page
     document.body.appendChild(engine.getCanvas());
 
+    // Add resize events
+    window.addEventListener('resize', function () {
+        engine.setSizeToWindow();
+    });
+
     // Create a simple triangle
     const triangleGeometry = new IVE.Triangle(
         new IVE.Vector3(0, 0.5, 0),

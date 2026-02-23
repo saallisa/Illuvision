@@ -133,6 +133,13 @@ class Matrix4
     }
 
     /**
+     * Creates a copy of this matrix.
+     */
+    clone() {
+        return new Matrix4(Array.from(this.#elements));
+    }
+
+    /**
      * Multiplies two Matrix4 instances.
      */
     static multiply(matrixA, matrixB)
@@ -221,7 +228,7 @@ class Matrix4
     }
 
     /**
-     * Convenience method for creating a rotation x matrix.
+     * Convenience method for creating a rotation y matrix.
      */
     static createRotateY(angle)
     {
