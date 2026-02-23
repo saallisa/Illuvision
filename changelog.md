@@ -17,6 +17,8 @@ All notable changes to this project will be documented in this file.
 - Ability to add or remove event listeners to camera class that are notified whenever the camera's view changes
 - StandardController camera controller supporting movement via keyboard and mouse input
 - Quaternion math class
+- Add transformMatrix3 and transformMatrix3Other to Vector3
+- Add createRotateX, createRotateY, createRotateZ to Matrix3
 
 #### Utility
 
