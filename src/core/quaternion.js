@@ -104,12 +104,12 @@ class Quaternion
     {
         const m = this.#toMatrixArray();
 
-        return new Matrix4(
+        return new Matrix4([
             m[0], m[1], m[2], 0,
             m[3], m[4], m[5], 0,
             m[6], m[7], m[8], 0,
             0, 0, 0, 1
-        );
+        ]);
     }
 
     /**
