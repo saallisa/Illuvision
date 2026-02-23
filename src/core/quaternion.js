@@ -82,6 +82,31 @@ class Quaternion
     }
 
     /**
+     * Conjugates this quaternion directly.
+     */
+    conjugate()
+    {
+        this.x = -this.x;
+        this.y = -this.y;
+        this.z = -this.z;
+        // this.w stays the same
+    }
+
+    /**
+     * Calculates the conjugate of this quaternion and returns the result as a
+     * new Quaternion.
+     */
+    conjugateOther()
+    {
+        return new Quaternion(
+            -this.x,
+            -this.y,
+            -this.z,
+            this.w
+        );
+    }
+
+    /**
      * Converts this quaternion to an array representation.
      */
     toArray() {
