@@ -1,4 +1,6 @@
 
+import { Matrix3 } from './matrix3.js';
+
 /**
  * This class provides comprehensive vector operations for three dimensional
  * graphics programming.
@@ -96,6 +98,24 @@ class Vector3
     }
 
     /**
+     * Transforms this vector by using a 3x3 matrix
+     */
+    transformMatrix3(matrix)
+    {
+        Matrix3.validateInstance(matrix);
+
+        const m = matrix.toArray();
+
+        const newX = this.x * m[0] + this.y * m[3] + this.z * m[6];
+        const newY = this.x * m[1] + this.y * m[4] + this.z * m[7];
+        const newZ = this.x * m[2] + this.y * m[5] + this.z * m[8];
+
+        this.x = newX;
+        this.y = newY;
+        this.z = newZ;
+    }
+
+    /**
      * Add another vector to this one and return the result as a new vector.
      */
     addOther(other) {
@@ -137,6 +157,23 @@ class Vector3
         const z = this.z * scalar;
 
         return new Vector3(x, y, z);
+    }
+
+    /**
+     * Transforms this vector by using a 3x3 matrix and return the result as
+     * a new vector.
+     */
+    transformMatrix3Other(matrix)
+    {
+        Matrix3.validateInstance(matrix);
+
+        const m = matrix.toArray();
+
+        const newX = this.x * m[0] + this.y * m[3] + this.z * m[6];
+        const newY = this.x * m[1] + this.y * m[4] + this.z * m[7];
+        const newZ = this.x * m[2] + this.y * m[5] + this.z * m[8];
+
+        return new Vector3(newX, newY, newZ);
     }
 
     /**
@@ -239,6 +276,17 @@ class Vector3
         Vector3.validateInstance(vectorB);
 
         return vectorA.subtractOther(vectorB).length();
+    }
+
+    /**
+     * Transforms a vector with a 3x3 matrix and returns the result as a new
+     * vector.
+     */
+    static transformMatrix3(vector, matrix)
+    {
+        Vector3.validateInstance(vector);
+
+        return vector.transformMatrix3Other(matrix);
     }
 
     /**
