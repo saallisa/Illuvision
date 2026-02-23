@@ -1,6 +1,7 @@
 
 import { Matrix3 } from './matrix3.js';
 import { Matrix4 } from './matrix4.js';
+import { Vector3 } from './vector3.js';
 
 /**
  * Represents a quaternion and allows various operations.
@@ -181,6 +182,26 @@ class Quaternion
     {
         Quaternion.#validateComponent(w, 'w');
         this._w = w;
+    }
+
+    /**
+     * Creates a quaternion from axis and angle information.
+     */
+    static fromAxisAngle(axis, angle)
+    {
+        Vector3.validateInstance(axis);
+
+        const radian = angle * Math.PI / 180;
+        const halfRadian = radian / 2;
+
+        const sin = Math.sin(halfRadian);
+
+        return new Quaternion(
+            sin * axis.x,
+            sin * axis.y,
+            sin * axis.z,
+            Math.cos(halfRadian)
+        );
     }
 
     /**
