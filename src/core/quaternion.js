@@ -107,6 +107,35 @@ class Quaternion
     }
 
     /**
+     * Inverts this quaternion directly.
+     */
+    inverse()
+    {
+        const inverse = this.#inverseArray();
+
+        this.x = inverse[0];
+        this.y = inverse[1];
+        this.z = inverse[2];
+        this.w = inverse[3];
+    }
+
+    /**
+     * Calculates the inverse of this quaternion and returns the result as a
+     * new Quaternion.
+     */
+    inverseOther()
+    {
+        const inverse = this.#inverseArray();
+
+        return new Quaternion(
+            inverse[0],
+            inverse[1],
+            inverse[2],
+            inverse[3]
+        );
+    }
+
+    /**
      * Converts this quaternion to an array representation.
      */
     toArray() {
@@ -314,6 +343,28 @@ class Quaternion
         matrix[8] = 1 - xx2 - yy2;
 
         return matrix;
+    }
+
+    /**
+     * Inverts this quaternion and returns the result as an array.
+     */
+    #inverseArray()
+    {
+        const magSquared = this.x * this.x + this.y * this.y + 
+            this.z * this.z + this.w * this.w;
+
+        if (magSquared !== 0) {
+            return [0, 0, 0, 0];
+        }
+
+        const invMagSquared = 1.0 / magSquared;
+
+        return [
+            -this.x * invMagSquared,
+            -this.y * invMagSquared,
+            -this.z * invMagSquared,
+            this.w * invMagSquared
+        ];
     }
 
     /**
