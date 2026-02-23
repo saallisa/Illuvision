@@ -18,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - StandardController camera controller supporting movement via keyboard and mouse input
 - Quaternion math class
 - Add transformMatrix3 and transformMatrix3Other to Vector3
+- Add transformQuaternion and transformQuaternionOther to Vector3
 - Add createRotateX, createRotateY, createRotateZ to Matrix3
 
 #### Utility

@@ -1,5 +1,6 @@
 
 import { Matrix3 } from './matrix3.js';
+import { Quaternion } from './quaternion.js';
 
 /**
  * This class provides comprehensive vector operations for three dimensional
@@ -116,6 +117,29 @@ class Vector3
     }
 
     /**
+     * Transforms this vector by using a Quaternion.
+     */
+    transformQuaternion(quaternion)
+    {
+        Quaternion.validateInstance(quaternion);
+
+        const qx = quaternion.x;
+        const qy = quaternion.y;
+        const qz = quaternion.z;
+        const qw = quaternion.w;
+
+        // Calculate the cross product of the quaternion vector and this vector
+        const tx = 2 * (qy * this.z - qz * this.y);
+        const ty = 2 * (qz * this.x - qx * this.z);
+        const tz = 2 * (qx * this.y - qy * this.x);
+
+        // Apply the final formula
+        this.x = this.x + qw * tx + (qy * tz - qz * ty);
+        this.y = this.y + qw * ty + (qz * tx - qx * tz);
+        this.z = this.z + qw * tz + (qx * ty - qy * tx);
+    }
+
+    /**
      * Add another vector to this one and return the result as a new vector.
      */
     addOther(other) {
@@ -174,6 +198,32 @@ class Vector3
         const newZ = this.x * m[2] + this.y * m[5] + this.z * m[8];
 
         return new Vector3(newX, newY, newZ);
+    }
+
+    /**
+     * Transforms this vector by using a Quaternion and return the result as
+     * a new vector.
+     */
+    transformQuaternionOther(quaternion)
+    {
+        Quaternion.validateInstance(quaternion);
+
+        const qx = quaternion.x;
+        const qy = quaternion.y;
+        const qz = quaternion.z;
+        const qw = quaternion.w;
+
+        // Calculate the cross product of the quaternion vector and this vector
+        const tx = 2 * (qy * this.z - qz * this.y);
+        const ty = 2 * (qz * this.x - qx * this.z);
+        const tz = 2 * (qx * this.y - qy * this.x);
+
+        // Apply the final formula
+        new Vector3(
+            this.x + qw * tx + (qy * tz - qz * ty), // x
+            this.y + qw * ty + (qz * tx - qx * tz), // y
+            this.z + qw * tz + (qx * ty - qy * tx)  // z
+        );
     }
 
     /**
@@ -287,6 +337,17 @@ class Vector3
         Vector3.validateInstance(vector);
 
         return vector.transformMatrix3Other(matrix);
+    }
+
+    /**
+     * Transforms a vector with a quaternion and returns the result as a new
+     * vector.
+     */
+    static transformQuaternion(vector, quaternion)
+    {
+        Vector3.validateInstance(vector);
+
+        return vector.transformQuaternionOther(quaternion);
     }
 
     /**
