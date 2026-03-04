@@ -1,7 +1,6 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
-import { Uv } from '../uv.js';
 import { Vector3 } from '../vector3.js';
 
 /**
@@ -105,8 +104,7 @@ class Plane extends Geometry
                 const u = column * uStep;
                 const v = row * vStep;
                 
-                const uv = new Uv(u, v);
-                this.addUvCoordinate(uv);
+                this.addUvCoordinate(u, v);
             }
         }
     }

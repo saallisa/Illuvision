@@ -22,7 +22,6 @@ import { SceneNode } from './core/scene-node.js';
 import { StandardController } from './core/camera/controls/standard-controller.js';
 import { Timer } from './core/timer.js';
 import { Triangle } from './core/geometry/triangle.js';
-import { Uv } from './core/uv.js';
 import { Vector3 } from './core/vector3.js';
 
 const Utils = {
@@ -53,7 +52,6 @@ export {
     Timer,
     Triangle,
     Utils,
-    Uv,
     Vector3
 }
 
@@ -81,6 +79,5 @@ export default {
     Timer,
     Triangle,
     Utils,
-    Uv,
     Vector3
 }
