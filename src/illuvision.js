@@ -1,5 +1,6 @@
 
 import { AmbientLight } from './core/light/ambient-light.js';
+import { Angle } from './core/angle.js';
 import { BasicMaterial } from './core/material/basic-material.js';
 import { Box } from './core/geometry/box.js';
 import { Color } from './core/color.js';
@@ -30,6 +31,7 @@ const Utils = {
 
 export {
     AmbientLight,
+    Angle,
     BasicMaterial,
     Box,
     Color,
@@ -57,6 +59,7 @@ export {
 
 export default {
     AmbientLight,
+    Angle,
     BasicMaterial,
     Box,
     Color,

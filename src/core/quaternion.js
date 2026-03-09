@@ -1,4 +1,5 @@
 
+import { Angle } from './angle.js';
 import { Matrix3 } from './matrix3.js';
 import { Matrix4 } from './matrix4.js';
 import { Vector3 } from './vector3.js';
@@ -244,10 +245,9 @@ class Quaternion
     static fromAxisAngle(axis, angle)
     {
         Vector3.validateInstance(axis);
+        Angle.validateInstance(angle);
 
-        const radian = angle * Math.PI / 180;
-        const halfRadian = radian / 2;
-
+        const halfRadian = angle.radians / 2;
         const sin = Math.sin(halfRadian);
 
         return new Quaternion(

@@ -1,4 +1,5 @@
 
+import { Angle } from './angle.js';
 import { Matrix3 } from './matrix3.js';
 import { Matrix4 } from './matrix4.js';
 import { Mesh } from './mesh.js';
@@ -327,9 +328,9 @@ class SceneNode
             this.#scale.z
         );
 
-        const rotationX = Matrix4.createRotateX(this.rotateX);
-        const rotationY = Matrix4.createRotateY(this.rotateY);
-        const rotationZ = Matrix4.createRotateZ(this.rotateZ);
+        const rotationX = Matrix4.createRotateX(Angle.fromDegrees(this.rotateX));
+        const rotationY = Matrix4.createRotateY(Angle.fromDegrees(this.rotateY));
+        const rotationZ = Matrix4.createRotateZ(Angle.fromDegrees(this.rotateZ));
         const rotation = rotationX
             .multiplyOther(rotationY)
             .multiplyOther(rotationZ);
