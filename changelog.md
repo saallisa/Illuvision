@@ -3,6 +3,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-03-04
+
+## Fixed
+
+- Vector3.transformQuaternionOther now not only calculates but also returns the result
+- Quaternion.normalize, Quaternion.inverse and Quaternion.inverseOther no longer return wrong results
+
 ## [0.2.0] - 2026-02-23
 
 ### Added

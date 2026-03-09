@@ -73,7 +73,7 @@ class Quaternion
     {
         const magnitude = this.magnitude();
 
-        if (mag > 0) {
+        if (magnitude > 0) {
             this.x = this.x / magnitude;
             this.y = this.y / magnitude;
             this.z = this.z / magnitude;
@@ -353,7 +353,7 @@ class Quaternion
         const magSquared = this.x * this.x + this.y * this.y + 
             this.z * this.z + this.w * this.w;
 
-        if (magSquared !== 0) {
+        if (magSquared === 0) {
             return [0, 0, 0, 0];
         }
 

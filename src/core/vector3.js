@@ -219,7 +219,7 @@ class Vector3
         const tz = 2 * (qx * this.y - qy * this.x);
 
         // Apply the final formula
-        new Vector3(
+        return new Vector3(
             this.x + qw * tx + (qy * tz - qz * ty), // x
             this.y + qw * ty + (qz * tx - qx * tz), // y
             this.z + qw * tz + (qx * ty - qy * tx)  // z
