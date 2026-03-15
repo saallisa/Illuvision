@@ -3,7 +3,7 @@ import { Matrix3 } from './matrix3.js';
 import { Quaternion } from './quaternion.js';
 
 /**
- * This class provides comprehensive vector operations for three dimensional
+ * This class provides comprehensive vector operations for three-dimensional
  * graphics programming.
  */
 class Vector3
