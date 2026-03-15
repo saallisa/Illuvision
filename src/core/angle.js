@@ -30,7 +30,8 @@ class Angle
     /**
      * Sets the angle in degrees.
      */
-    set degrees(degrees) {
+    set degrees(degrees)
+    {
         Angle.#validateAngle(degrees);
         this.#angleInDegrees = degrees;
     }
@@ -38,7 +39,8 @@ class Angle
     /**
      * Sets the angle in radians.
      */
-    set radians(radians) {
+    set radians(radians)
+    {
         Angle.#validateAngle(radians);
         this.#angleInDegrees = Angle.radiansToDegrees(radians);
     }
@@ -48,6 +50,13 @@ class Angle
      */
     get radians() {
         return Angle.degreesToRadians(this.#angleInDegrees);
+    }
+
+    /**
+     * Normalizes this angle directly.
+     */
+    normalize() {
+        this.#angleInDegrees = Angle.normalizeDegrees(this.#angleInDegrees);
     }
 
     /**
@@ -79,9 +88,26 @@ class Angle
     }
 
     /**
+     * Normalizes degrees to range 0 to 360.
+     */
+    static normalizeDegrees(angle) {
+        return ((angle % 360) + 360) % 360;
+    }
+
+    /**
+     * Normalizes radians to range 0 to 2 * Pi.
+     */
+    static normalizeRadians(angle)
+    {
+        const turn = 2 * Math.PI;
+        return ((angle % turn) + turn) % turn;
+    }
+
+    /**
      * Validates that a value is a valid Angle.
      */
-    static validateInstance(value) {
+    static validateInstance(value)
+    {
         if (!(value instanceof Angle)) {
             throw new TypeError('Value must be an instance of Angle.');
         }
@@ -90,7 +116,8 @@ class Angle
     /**
      * Validates that a value is a finite number, which is necessary for angles.
      */
-    static #validateAngle(angle) {
+    static #validateAngle(angle)
+    {
         if (typeof angle !== 'number' || !isFinite(angle)) {
             throw new Error('Angle must be a finite number');
         }
