@@ -104,6 +104,44 @@ class Angle
     }
 
     /**
+     * Linearly interpolates between two angles, taking the shortest path.
+     */
+    static lerp(angle1, angle2, t)
+    {
+        Angle.validateInstance(angle1);
+        Angle.validateInstance(angle2);
+        
+        if (typeof t !== 'number' || !isFinite(t)) {
+            throw new Error('Interpolation factor t must be a finite number');
+        }
+
+        if (t < 0 || t > 1) {
+            throw new RangeError(
+                'Invalid interpolation factor t: must be between 0 and 1'
+            );
+        }
+        
+        // Get normalized angles in degrees
+        let start = Angle.normalizeDegrees(angle1.degrees);
+        let end = Angle.normalizeDegrees(angle2.degrees);
+        
+        const difference = Math.abs(end - start);
+
+        if (difference > 180) {
+            if (end > start) {
+                start += 360;
+            } else {
+                end += 360;
+            }
+        }
+
+        const result = Angle.fromDegrees(start + (end - start) * amount);
+        result.normalize();
+
+        return result;
+    }
+
+    /**
      * Validates that a value is a valid Angle.
      */
     static validateInstance(value)
