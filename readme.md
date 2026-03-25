@@ -1,6 +1,6 @@
 # Illuvision Engine
 
-<img src="https://github.com/saallisa/saallisa/blob/main/Illuvision_Logo_Green.png?raw=true" width="150">
+<img src="https://github.com/saallisa/saallisa/blob/main/logo-banner.png?raw=true">
 
 [![DeepScan grade](https://deepscan.io/api/teams/27485/projects/30515/branches/980824/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=27485&pid=30515&bid=980824)
 
