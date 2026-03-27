@@ -1,7 +1,7 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
-import { Vector3 } from '../vector3.js';
+import { Vector3 } from '../math/vector3.js';
 
 /**
  * A simple box geometry class that creates a box with a width, height and

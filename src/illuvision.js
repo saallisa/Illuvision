@@ -1,6 +1,6 @@
 
 import { AmbientLight } from './core/light/ambient-light.js';
-import { Angle } from './core/angle.js';
+import { Angle } from './core/math/angle.js';
 import { BasicMaterial } from './core/material/basic-material.js';
 import { Box } from './core/geometry/box.js';
 import { Color } from './core/color.js';
@@ -10,20 +10,20 @@ import { Face } from './core/face.js';
 import { Geometry } from './core/geometry/geometry.js';
 import { LambertMaterial } from './core/material/lambert-material.js';
 import { Material } from './core/material/material.js';
-import { Matrix3 } from './core/matrix3.js';
-import { Matrix4 } from './core/matrix4.js';
+import { Matrix3 } from './core/math/matrix3.js';
+import { Matrix4 } from './core/math/matrix4.js';
 import { Mesh } from './core/mesh.js';
 import { OrthographicCamera } from './core/camera/orthographic-camera.js';
 import { PerformanceMonitor } from './utils/performance-monitor.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
 import { Plane } from './core/geometry/plane.js';
-import { Quaternion } from './core/quaternion.js';
+import { Quaternion } from './core/math/quaternion.js';
 import { Scene } from './core/scene.js';
 import { SceneNode } from './core/scene-node.js';
 import { StandardController } from './core/camera/controls/standard-controller.js';
 import { Timer } from './core/timer.js';
 import { Triangle } from './core/geometry/triangle.js';
-import { Vector3 } from './core/vector3.js';
+import { Vector3 } from './core/math/vector3.js';
 
 const Utils = {
     PerformanceMonitor

@@ -1,7 +1,7 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
-import { Vector3 } from '../vector3.js';
+import { Vector3 } from '../math/vector3.js';
 
 /**
  * A simple triangle geometry class that creates a triangle from three vertices.

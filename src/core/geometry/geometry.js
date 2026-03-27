@@ -2,7 +2,7 @@
 import { Face } from '../face.js';
 import { IndexBuffer } from '../buffer/index-buffer.js';
 import { Object } from '../object.js';
-import { Vector3 } from '../vector3.js';
+import { Vector3 } from '../math/vector3.js';
 import { VertexAttributes } from '../vertex-attributes.js';
 import { VertexBuffer } from '../buffer/vertex-buffer.js';
 

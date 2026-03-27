@@ -1,8 +1,8 @@
 
 import { Engine } from '../../engine.js';
 import { UniformBuffer } from '../buffer/uniform-buffer.js';
-import { Matrix4 } from '../matrix4.js';
-import { Vector3 } from '../vector3.js';
+import { Matrix4 } from '../math/matrix4.js';
+import { Vector3 } from '../math/vector3.js';
 
 /**
  * Camera class for managing camera properties and transformations.
