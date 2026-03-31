@@ -1,17 +1,17 @@
 
-import { Engine } from '../../engine.js';
+import { Engine } from '../../../engine.js';
 
 /**
- * Manages WebGPU texture buffers for storing texture data.
+ * Manages WebGPU textures for storing texture data.
  */
-class TextureBuffer
+class Texture
 {
     #textureWidth = 0;
     #textureHeight = 0;
     #textureData = null;
 
     #compiled = false;
-    #textureBuffer = null;
+    #texture = null;
 
     constructor(width, height, data)
     {
@@ -42,28 +42,28 @@ class TextureBuffer
     }
 
     /**
-     * Gets the GPU texture buffer.
+     * Gets the GPU texture.
      */
-    getGpuTextureBuffer()
+    getGpuTexture()
     {
         if (!this.#compiled) {
              throw new Error(
-                'Texture must be compiled before accessing texture buffer!'
+                'Texture must be compiled before accessing texture!'
             );
         }
 
-        return this.#textureBuffer;
+        return this.#texture;
     }
 
     /**
-     * Returns if the texture buffer is compiled.
+     * Returns if the texture is compiled.
      */
     isCompiled() {
         return this.#compiled;
     }
 
     /**
-     * Compiles the texture into a WebGPU texture buffer.
+     * Compiles the texture into a WebGPU texture.
      */
     compile(device)
     {
@@ -77,25 +77,25 @@ class TextureBuffer
     }
 
     /**
-     * Destroys the texture buffer and releases GPU resources.
+     * Destroys the texture and releases GPU resources.
      */
     destroy()
     {
-        if (this.#textureBuffer) {
-            this.#textureBuffer.destroy();
-            this.#textureBuffer = null;
+        if (this.#texture) {
+            this.#texture.destroy();
+            this.#texture = null;
         }
 
         this.#compiled = false;
     }
 
     /**
-     * Creates a texture buffer with the specified width and height.
+     * Creates a texture with the specified width and height.
      */
     #createTexture(device)
     {
-        // Create the texture buffer
-        this.#textureBuffer =device.createTexture({
+        // Create the texture
+        this.#texture = device.createTexture({
             size: [this.#textureWidth, this.#textureHeight],
             format: 'rgba8unorm',
             usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
@@ -103,17 +103,20 @@ class TextureBuffer
 
         // Write initial data if available
         if (this.#textureData.byteLength > 0) {
-            device.queue.writeTexture(this.#textureBuffer, this.#textureData, {
-                bytesPerRow: this.#textureWidth * 4,
-                rowsPerImage: this.#textureHeight
-            }, {
-                width: this.#textureWidth,
-                height: this.#textureHeight
-            });
+            device.queue.writeTexture({
+                    texture: this.#texture
+                }, this.#textureData, {
+                    bytesPerRow: this.#textureWidth * 4,
+                    rowsPerImage: this.#textureHeight
+                }, {
+                    width: this.#textureWidth,
+                    height: this.#textureHeight
+                }
+            );
         }
     }
 }
 
 export {
-    TextureBuffer
+    Texture
 };
