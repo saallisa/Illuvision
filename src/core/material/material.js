@@ -273,15 +273,7 @@ class Material
 
         this.#compiled = false;
     }
-
-    /**
-     * Abstract method for initializing this material. Must be implemented
-     * by the concrete implementation of this class.
-     */
-    static async init(settings = {}) {
-        throw new Error('Method init not implemented!');
-    }
-
+    
     /**
      * Creates the bind group layout.
      */
