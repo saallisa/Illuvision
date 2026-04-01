@@ -1,5 +1,5 @@
 
-import { Engine } from '../../../engine.js';
+import { Engine } from '../../engine.js';
 
 /**
  * Manages WebGPU textures for storing texture data.
@@ -113,6 +113,16 @@ class Texture
                     height: this.#textureHeight
                 }
             );
+        }
+    }
+
+    /**
+     * Validates that an object is a Texture instance.
+     */
+    static validateInstance(value)
+    {
+        if (!(value instanceof Texture)) {
+            throw new TypeError('Expected an instance of Texture.');
         }
     }
 }
