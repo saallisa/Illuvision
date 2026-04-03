@@ -12,9 +12,13 @@ class Texture
 
     #compiled = false;
     #texture = null;
+    #textureView = null;
 
     constructor(width, height, data)
     {
+        this.#validateDimension(width, 'width');
+        this.#validateDimension(height, 'height');
+
         this.#textureWidth = width;
         this.#textureHeight = height;
         this.#textureData = data;
@@ -56,6 +60,20 @@ class Texture
     }
 
     /**
+     * Returns the GPU texture view.
+     */
+    getGpuTextureView()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Texture must be compiled before accessing texture view!'
+            );
+        }
+
+        return this.#textureView;
+    }
+
+    /**
      * Returns if the texture is compiled.
      */
     isCompiled() {
@@ -86,6 +104,7 @@ class Texture
             this.#texture = null;
         }
 
+        this.#textureView = null;
         this.#compiled = false;
     }
 
@@ -112,6 +131,26 @@ class Texture
                     width: this.#textureWidth,
                     height: this.#textureHeight
                 }
+            );
+        }
+
+        this.#textureView = this.#texture.createView();
+    }
+
+    /**
+     * Validates that a texture dimension is a positive number.
+     */
+    #validateDimension(value, dimensionName)
+    {
+        if (typeof value !== 'number' || !isFinite(value)) {
+            throw new TypeError(
+                `${dimensionName} must be a finite number.`
+            );
+        }
+
+        if (value <= 0) {
+            throw new RangeError(
+                `${dimensionName} must be a positive number.`
             );
         }
     }
