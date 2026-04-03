@@ -1,5 +1,6 @@
 
 import { Texture } from './texture.js';
+import { Sampler } from './sampler.js';
 
 /**
  * Describes a texture attachment that contains both a texture and sampler.
@@ -7,13 +8,16 @@ import { Texture } from './texture.js';
 class TextureAttachment
 {
     #texture = null;
+    #sampler = null;
     #compiled = false;
 
-    constructor(texture)
+    constructor(texture, sampler)
     {
         Texture.validateInstance(texture);
+        Sampler.validateInstance(sampler);
 
         this.#texture = texture;
+        this.#sampler = sampler;
     }
 
     /**
@@ -24,7 +28,14 @@ class TextureAttachment
     }
 
     /**
-     * Compiles the texture attachment by compiling the underlying ressources.
+     * Gets the sampler associated with this attachment.
+     */
+    getSampler() {
+        return this.#sampler;
+    }
+
+    /**
+     * Compiles the texture attachment by compiling the underlying resources.
      */
     compile(device)
     {
@@ -38,7 +49,15 @@ class TextureAttachment
             );
         }
 
+        if (!this.#sampler) {
+            throw new Error(
+                'Need to set a sampler before compilation!'
+            );
+        }
+
         this.#texture.compile(device);
+        this.#sampler.compile(device);
+
         this.#compiled = true;
     }
 
@@ -56,6 +75,10 @@ class TextureAttachment
     {
         if (this.#texture.isCompiled()) {
             this.#texture.destroy();
+        }
+
+        if (this.#sampler.isCompiled()) {
+            this.#sampler.destroy();
         }
 
         this.#compiled = false;

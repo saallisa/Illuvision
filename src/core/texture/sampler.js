@@ -182,6 +182,16 @@ class Sampler
         }
     }
 
+    /**
+     * Validates that an object is a Sampler instance.
+     */
+    static validateInstance(value)
+    {
+        if (!(value instanceof Sampler)) {
+            throw new TypeError('Expected an instance of Sampler.');
+        }
+    }
+
     // Some fake constants containing valid address U and V modes.
 
     static get CLAMP_TO_EDGE() {
