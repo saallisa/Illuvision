@@ -389,6 +389,24 @@ class Material
     static get COLOR_BLEND() {
         return 'color_blend';
     }
+
+    // A list of texture modes
+
+    static get TEXTURE_RAW() {
+        return 'texture_raw';
+    }
+
+    static get TEXTURE_TINT() {
+        return 'texture_tint';
+    }
+
+    static get TEXTURE_VERTEX() {
+        return 'texture_vertex';
+    }
+
+    static get TEXTURE_BLEND() {
+        return 'texture_blend';
+    }
 }
 
 export {

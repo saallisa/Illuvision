@@ -9,6 +9,25 @@ struct VertexOut {
     @location(2) vertex_color: vec4<f32>
 }`;
 
+const VERTEX_OUTPUT_UV = /*wgsl*/ `
+struct VertexOut {
+    @builtin(position) position: vec4<f32>,
+    @location(0) vertex_position: vec3<f32>,
+    @location(1) vertex_normal: vec3<f32>,
+    @location(2) vertex_uv: vec2<f32>
+}
+`;
+
+const VERTEX_OUTPUT_UV_COLOR = /*wgsl*/ `
+struct VertexOut {
+    @builtin(position) position: vec4<f32>,
+    @location(0) vertex_position: vec3<f32>,
+    @location(1) vertex_normal: vec3<f32>,
+    @location(2) vertex_uv: vec2<f32>,
+    @location(3) vertex_color: vec4<f32>
+}
+`;
+
 const VERTEX_OUTPUT_NONE = /*wgsl*/ `
 struct VertexOut {
     @builtin(position) position: vec4<f32>,
@@ -37,6 +56,10 @@ const CAMERA_UNIFORM_BIND = /*wgsl*/ `
 const MODEL_UNIFORM_BIND = /*wgsl*/ `
 @group(3) @binding(0) var<uniform> model: ModelUniforms;`;
 
+const TEXTURE_BIND= /*wgsl*/ `
+group(4) binding(0) var mat_texture: texture_2d<f32>;
+group(4) binding(1) var mat_sampler: sampler;`;
+
 // Vertex stage function signatures
 
 const VERTEX_FUNCTION_COLOR = /*wgsl*/ `
@@ -45,6 +68,23 @@ fn vertex_main(
     @location(0) position: vec3<f32>,
     @location(1) normal: vec3<f32>,
     @location(2) color: vec4<f32>
+) -> VertexOut {`;
+
+const VERTEX_FUNCTION_UV = /*wgsl*/ `
+@vertex
+fn vertex_main(
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>
+) -> VertexOut {`;
+
+const VERTEX_FUNCTION_UV_COLOR = /*wgsl*/ `
+@vertex
+fn vertex_main(
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>,
+    @location(3) color: vec4<f32>
 ) -> VertexOut {`;
 
 const VERTEX_FUNCTION_NONE =  /*wgsl*/ `
@@ -56,11 +96,16 @@ fn vertex_main(
 
 export {
     VERTEX_OUTPUT_COLOR,
+    VERTEX_OUTPUT_UV,
+    VERTEX_OUTPUT_UV_COLOR,
     VERTEX_OUTPUT_NONE,
     VERTEX_FUNCTION_COLOR,
+    VERTEX_FUNCTION_UV,
+    VERTEX_FUNCTION_UV_COLOR,
     VERTEX_FUNCTION_NONE,
     CAMERA_UNIFORM,
     MODEL_UNIFORM,
     CAMERA_UNIFORM_BIND,
-    MODEL_UNIFORM_BIND
+    MODEL_UNIFORM_BIND,
+    TEXTURE_BIND
 };
