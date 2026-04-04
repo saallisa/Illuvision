@@ -41,10 +41,34 @@ async function main()
     groundGeometry.calculateFaceNormals();
     groundGeometry.calculateVertexNormals();
 
-    // Define the material to use
-    const groundMaterial = new IVE.LambertMaterial({
-        color: IVE.Color.fromHex('228b22')
+    // Create a simple raw pixel texture
+    const _ = IVE.Color.lerp(IVE.Color.fromHex('89a334'), IVE.Color.BLACK, 0.3).toIntArray();
+    const b = IVE.Color.fromHex('89a334').toIntArray();
+    const y = IVE.Color.fromHex('ddcbb7').toIntArray();
+
+    const textureData = new Uint8Array([
+        b, _, _, _, _,
+        _, y, y, y, _,
+        _, y, _, _, _,
+        _, y, y, _, _,
+        _, y, _, _, _,
+    ].flat());
+
+    const texture = new IVE.Texture(5, 5, textureData);
+
+    // Create a standard sampler to use with the texture
+    const sampler = new IVE.Sampler({
+        magFilter: IVE.Sampler.LINEAR,
+        minFilter: IVE.Sampler.LINEAR
     });
+    const textureAttachment = new IVE.TextureAttachment(texture, sampler);
+
+    // Define the ground material
+    const groundMaterial = new IVE.BasicMaterial({
+        colorMode: IVE.Material.TEXTURE_RAW
+    });
+    groundMaterial.setTextureAttachment(textureAttachment);
+    groundMaterial.setUseTexture(true);
 
     // Create a mesh from the geometry and material
     const ground = new IVE.Mesh(groundGeometry, groundMaterial);
