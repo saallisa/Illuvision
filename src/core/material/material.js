@@ -267,12 +267,14 @@ class Material
 
         // Only compile texture when texture use is required
         if (this.#texture) {
-            if (!this.#texture) {
+            if (!this.#textureAttachment) {
                 throw new Error(
                     'Need to set a texture attachment before '
                     + 'compilation!'
                 );
             }
+
+            this.#textureAttachment.compile(device);
         }
         
         this.#shader.compile(device);
