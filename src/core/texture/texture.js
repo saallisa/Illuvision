@@ -117,7 +117,9 @@ class Texture
         this.#texture = device.createTexture({
             size: [this.#textureWidth, this.#textureHeight],
             format: 'rgba8unorm',
-            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
+            usage: GPUTextureUsage.TEXTURE_BINDING |
+                GPUTextureUsage.COPY_DST |
+                GPUTextureUsage.RENDER_ATTACHMENT
         });
 
         // Write initial data if available

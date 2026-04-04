@@ -5,8 +5,12 @@ import { ShaderRenderer } from './shader-renderer.js';
 
 import {
     VERTEX_FUNCTION_COLOR,
+    VERTEX_FUNCTION_UV,
+    VERTEX_FUNCTION_UV_COLOR,
     VERTEX_FUNCTION_NONE,
     VERTEX_OUTPUT_COLOR,
+    VERTEX_OUTPUT_UV,
+    VERTEX_OUTPUT_UV_COLOR,
     VERTEX_OUTPUT_NONE,
     CAMERA_UNIFORM,
     MODEL_UNIFORM,
@@ -29,6 +33,12 @@ struct MaterialUniforms {
 
 const MATERIAL_UNIFORM_BINDING = /*wgsl*/ `
 @group(2) @binding(0) var<uniform> material: MaterialUniforms;`;
+
+// Texture bindings
+
+const TEXTURE_BIND = /*wgsl*/ `
+@group(2) @binding(1) var mat_sampler: sampler;
+@group(2) @binding(2) var mat_texture: texture_2d<f32>;`;
 
 // Fragment stage functions
 
@@ -54,6 +64,12 @@ fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
     );
 }`;
 
+const FRAGMENT_FUNCTION_TEXTURE = /*wgsl*/ `
+@fragment
+fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
+    return textureSample(mat_texture, mat_sampler, data.vertex_uv);
+}`;
+
 /**
  * This class creates a vertex and fragment shader for the basic material.
  * It can use uniform colors, vertex colors or a blend between both.
@@ -76,11 +92,16 @@ class BasicShader extends ShaderRenderer
     renderVertexCode()
     {
         let vertexColorLine = '';
+        let vertexUvLine = '';
         
         if (this.#mode === Material.VERTEX_COLOR
             || this.#mode === Material.COLOR_BLEND
         ) {
             vertexColorLine = 'output.vertex_color = color;';
+        }
+
+        if (this.#mode === Material.TEXTURE_RAW) {
+            vertexUvLine = 'output.vertex_uv = uv;';
         }
 
         const vertexOutput = this.getVertexOutputStruct();
@@ -105,6 +126,7 @@ class BasicShader extends ShaderRenderer
             output.vertex_position = (model.model_matrix * position4).xyz;
             output.vertex_normal = model.normal_matrix * normal;
             ${vertexColorLine}
+            ${vertexUvLine}
         
             return output;
         }`;
@@ -118,6 +140,7 @@ class BasicShader extends ShaderRenderer
         let vertexOutput = '';
         let materialUniform = '';
         let materialUniformBinding = '';
+        let textureBinding = '';
         let fragmentFunction = '';
 
         if (this.#mode === Material.UNIFORM_COLOR) {
@@ -139,11 +162,20 @@ class BasicShader extends ShaderRenderer
             fragmentFunction = FRAGMENT_FUNCTION_COLOR;
         }
 
+        if (this.#mode === Material.TEXTURE_RAW) {
+            vertexOutput = VERTEX_OUTPUT_UV;
+            materialUniform = MATERIAL_UNIFORM_COLOR;
+            materialUniformBinding = MATERIAL_UNIFORM_BINDING;
+            textureBinding = TEXTURE_BIND;
+            fragmentFunction = FRAGMENT_FUNCTION_TEXTURE;
+        }
+
         return /*wgsl*/ `
         ${vertexOutput}
         ${materialUniform}
         
         ${materialUniformBinding}
+        ${textureBinding}
         ${fragmentFunction}
         `;
     }
@@ -153,13 +185,19 @@ class BasicShader extends ShaderRenderer
      */
     getVertexOutputStruct()
     {
-        if (this.#mode === Material.VERTEX_COLOR
-            || this.#mode === Material.COLOR_BLEND
-        ) {
-            return VERTEX_OUTPUT_COLOR;
+        let vertexOutput = '';
+
+        switch (this.#mode) {
+            case Material.VERTEX_COLOR: vertexOutput = VERTEX_OUTPUT_COLOR;
+                break;
+            case Material.COLOR_BLEND: vertexOutput = VERTEX_OUTPUT_COLOR;
+                break;
+            case Material.TEXTURE_RAW: vertexOutput = VERTEX_OUTPUT_UV;
+                break;
+            default: vertexOutput = VERTEX_OUTPUT_NONE;
         }
-        
-        return VERTEX_OUTPUT_NONE;
+
+        return vertexOutput;
     }
 
     /**
@@ -167,29 +205,19 @@ class BasicShader extends ShaderRenderer
      */
     getVertexFunction()
     {
-        if (this.#mode === Material.VERTEX_COLOR
-            || this.#mode === Material.COLOR_BLEND
-        ) {
-            return VERTEX_FUNCTION_COLOR;
+        let vertexFunction = '';
+
+        switch (this.#mode) {
+            case Material.VERTEX_COLOR: vertexFunction = VERTEX_FUNCTION_COLOR;
+                break;
+            case Material.COLOR_BLEND: vertexFunction = VERTEX_FUNCTION_COLOR;
+                break;
+            case Material.TEXTURE_RAW: vertexFunction = VERTEX_FUNCTION_UV;
+                break;
+            default: vertexFunction = VERTEX_FUNCTION_NONE;
         }
 
-        return VERTEX_FUNCTION_NONE;
-    }
-
-    /**
-     * Finds the right fragment function to use in the fragment shader.
-     */
-    getMaterialFunction()
-    {
-        if (this.#mode === Material.UNIFORM_COLOR) {
-            return MATERIAL_UNIFORM_COLOR;
-        }
-
-        if (this.#mode === Material.COLOR_BLEND) {
-            return MATERIAL_UNIFORM_BLEND;
-        }
-
-        return '';
+        return vertexFunction;
     }
 
     /**

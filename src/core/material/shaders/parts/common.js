@@ -56,10 +56,6 @@ const CAMERA_UNIFORM_BIND = /*wgsl*/ `
 const MODEL_UNIFORM_BIND = /*wgsl*/ `
 @group(3) @binding(0) var<uniform> model: ModelUniforms;`;
 
-const TEXTURE_BIND= /*wgsl*/ `
-group(4) binding(0) var mat_texture: texture_2d<f32>;
-group(4) binding(1) var mat_sampler: sampler;`;
-
 // Vertex stage function signatures
 
 const VERTEX_FUNCTION_COLOR = /*wgsl*/ `
@@ -106,6 +102,5 @@ export {
     CAMERA_UNIFORM,
     MODEL_UNIFORM,
     CAMERA_UNIFORM_BIND,
-    MODEL_UNIFORM_BIND,
-    TEXTURE_BIND
+    MODEL_UNIFORM_BIND
 };

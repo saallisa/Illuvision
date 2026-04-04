@@ -473,10 +473,6 @@ class Engine
                 node.getBindGroupLayout(),
             ];
 
-            if (material.getUseTexture()) {
-                pipelineGroups.push(material.getTexture().getBindGroupLayout());
-            }
-
             pipeline = await this.#createRenderPipeline(
                 vertices, material, pipelineGroups
             );
@@ -486,10 +482,6 @@ class Engine
         this.#renderPass.setPipeline(pipeline);
         this.#renderPass.setBindGroup(2, material.getBindGroup());
         this.#renderPass.setBindGroup(3, node.getBindGroup());
-
-        if (material.getUseTexture()) {
-            this.#renderPass.setBindGroup(4, material.getTexture().getBindGroup());
-        }
 
         this.#renderPass.setVertexBuffer(0, vertices.getGpuVertexBuffer());
         this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), 'uint16');

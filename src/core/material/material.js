@@ -274,7 +274,8 @@ class Material
                 );
             }
 
-            this.#textureAttachment.compile(device);
+            this.#textureAttachment.getTexture().compile(device);
+            this.#textureAttachment.getSampler().compile(device);
         }
         
         this.#shader.compile(device);
@@ -314,23 +315,51 @@ class Material
      */
     #createBindGroup(device)
     {
-        this.#bindGroupLayout = device.createBindGroupLayout({
-            entries: [{
-                binding: 0,
+        // Bind group layout
+        let bindGroupLayoutEntries = [{
+            binding: 0,
+            visibility: GPUShaderStage.FRAGMENT,
+            buffer: {},
+        }];
+
+        if (this.#texture) {
+            bindGroupLayoutEntries.push({
+                binding: 1,
                 visibility: GPUShaderStage.FRAGMENT,
-                buffer: {},
-            }]
+                sampler: {},
+            }, {
+                binding: 2,
+                visibility: GPUShaderStage.FRAGMENT,
+                texture: {},
+            });
+        }
+
+        this.#bindGroupLayout = device.createBindGroupLayout({
+            entries: bindGroupLayoutEntries
         });
+
+        // Bind group
+        let bindGroupEntries = [{
+            binding: 0,
+            resource: {
+                buffer: this.#uniformBuffer.getUniformBuffer()
+            }
+        }];
+
+        if (this.#texture) {
+            bindGroupEntries.push({
+                binding: 1,
+                resource: this.#textureAttachment.getSampler().getGpuSampler()
+            }, {
+                binding: 2,
+                resource: this.#textureAttachment.getTexture().getGpuTextureView()
+            });
+        }
 
         this.#bindGroup = device.createBindGroup({
             label: this.#name + '-material',
             layout: this.#bindGroupLayout,
-            entries: [{
-                binding: 0,
-                resource: {
-                    buffer: this.#uniformBuffer.getUniformBuffer()
-                }
-            }]
+            entries: bindGroupEntries
         });
     }
 

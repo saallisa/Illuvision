@@ -18,9 +18,12 @@ import { PerformanceMonitor } from './utils/performance-monitor.js';
 import { PerspectiveCamera } from './core/camera/perspective-camera.js';
 import { Plane } from './core/geometry/plane.js';
 import { Quaternion } from './core/math/quaternion.js';
+import { Sampler } from './core/texture/sampler.js';
 import { Scene } from './core/scene.js';
 import { SceneNode } from './core/scene-node.js';
 import { StandardController } from './core/camera/controls/standard-controller.js';
+import { Texture } from './core/texture/texture.js';
+import { TextureAttachment } from './core/texture/texture-attachment.js';
 import { Timer } from './core/timer.js';
 import { Triangle } from './core/geometry/triangle.js';
 import { Vector3 } from './core/math/vector3.js';
@@ -48,9 +51,12 @@ export {
     PerspectiveCamera,
     Plane,
     Quaternion,
+    Sampler,
     Scene,
     SceneNode,
     StandardController,
+    Texture,
+    TextureAttachment,
     Timer,
     Triangle,
     Utils,
@@ -76,9 +82,12 @@ export default {
     PerspectiveCamera,
     Plane,
     Quaternion,
+    Sampler,
     Scene,
     SceneNode,
     StandardController,
+    Texture,
+    TextureAttachment,
     Timer,
     Triangle,
     Utils,
