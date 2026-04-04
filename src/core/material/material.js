@@ -2,6 +2,7 @@
 import { Color } from '../color.js';
 import { Engine } from '../../engine.js';
 import { Shader } from '../shader.js';
+import { TextureAttachment} from '../texture/texture-attachment.js';
 import { UniformBuffer } from '../buffer/uniform-buffer.js';
 
 /**
@@ -11,12 +12,13 @@ class Material
 {
     #name = null;
     #id = null;
+    #textureAttachment = null;
     #shader = null;
     #color = null;
     #colorBlend = null;
     #cullMode = 'none';
     #vertexColors = false;
-    #uvCoordinates = false;
+    #texture = false;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -132,22 +134,22 @@ class Material
     }
 
     /**
-     * Configures the material to use uv coordinates.
+     * Configures the material to use a texture.
      */
-    setUseUvCoordinates(config)
+    setUseTexture(config)
     {
         if (typeof config !== 'boolean') {
             throw new TypeError('Value must be of type boolean.');
         }
 
-        this.#uvCoordinates = config;
+        this.#texture = config;
     }
 
     /**
-     * Returns whether a material needs uv coordinates.
+     * Returns whether a material should use a texture attachment.
      */
-    getUseUvCoordinates() {
-        return this.#uvCoordinates;
+    getUseTexture() {
+        return this.#texture;
     }
 
     /**
@@ -164,6 +166,27 @@ class Material
     {
         this.#validateCullMode(cullMode);
         this.#cullMode = cullMode;
+    }
+
+    /**
+     * Gets the texture attachment associated with this material.
+     */
+    getTextureAttachment() {
+        return this.#textureAttachment;
+    }
+
+    /**
+     * Sets the texture attachment for this material.
+     */
+    setTextureAttachment(textureAttachment)
+    {
+        if (!(textureAttachment instanceof TextureAttachment)) {
+            throw new TypeError(
+                'Texture attachment must be a valid TextureAttachment instance.'
+            );
+        }
+
+        this.#textureAttachment = textureAttachment;
     }
 
     /**
@@ -242,6 +265,16 @@ class Material
 
         Engine.validateDevice(device);
 
+        // Only compile texture when texture use is required
+        if (this.#texture) {
+            if (!this.#texture) {
+                throw new Error(
+                    'Need to set a texture attachment before '
+                    + 'compilation!'
+                );
+            }
+        }
+        
         this.#shader.compile(device);
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
