@@ -466,13 +466,19 @@ class Engine
         if (this.#pipelines.has(pipelineKey)) {
             pipeline = this.#pipelines.get(pipelineKey);
         } else {
+            const pipelineGroups = [
+                camera.getBindGroupLayout(),
+                scene.getBindGroupLayout(),
+                material.getBindGroupLayout(),
+                node.getBindGroupLayout(),
+            ];
+
+            if (material.getUseTexture()) {
+                pipelineGroups.push(material.getTexture().getBindGroupLayout());
+            }
+
             pipeline = await this.#createRenderPipeline(
-                vertices, material, [
-                    camera.getBindGroupLayout(),
-                    scene.getBindGroupLayout(),
-                    material.getBindGroupLayout(),
-                    node.getBindGroupLayout(),
-                ]
+                vertices, material, pipelineGroups
             );
             this.#pipelines.set(pipelineKey, pipeline);
         }
@@ -480,6 +486,10 @@ class Engine
         this.#renderPass.setPipeline(pipeline);
         this.#renderPass.setBindGroup(2, material.getBindGroup());
         this.#renderPass.setBindGroup(3, node.getBindGroup());
+
+        if (material.getUseTexture()) {
+            this.#renderPass.setBindGroup(4, material.getTexture().getBindGroup());
+        }
 
         this.#renderPass.setVertexBuffer(0, vertices.getGpuVertexBuffer());
         this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), 'uint16');
