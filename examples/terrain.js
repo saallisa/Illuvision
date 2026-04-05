@@ -47,11 +47,11 @@ async function main()
     const y = IVE.Color.fromHex('ddcbb7').toIntArray();
 
     const textureData = new Uint8Array([
-        b, _, _, _, _,
-        _, y, y, y, _,
-        _, y, _, _, _,
+        b, _, b, _, y,
         _, y, y, _, _,
-        _, y, _, _, _,
+        _, _, _, y, _,
+        _, y, b, _, _,
+        _, y, _, _, b,
     ].flat());
 
     const texture = new IVE.Texture(5, 5, textureData);
@@ -64,7 +64,7 @@ async function main()
     const textureAttachment = new IVE.TextureAttachment(texture, sampler);
 
     // Define the ground material
-    const groundMaterial = new IVE.BasicMaterial({
+    const groundMaterial = new IVE.LambertMaterial({
         colorMode: IVE.Material.TEXTURE_RAW
     });
     groundMaterial.setTextureAttachment(textureAttachment);
@@ -153,6 +153,12 @@ async function main()
 
     // Set the animation loop
     engine.setAnimationLoop(animation);
+
+    // Add resize events
+    window.addEventListener('resize', function () {
+        engine.setSizeToWindow();
+        camera.setAspectRatio(engine.getAspectRatio());
+    });
 }
 
 main();
