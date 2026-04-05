@@ -29,7 +29,7 @@ async function main()
     document.body.appendChild(engine.getCanvas());
 
     // Create a simple ground plane
-    const groundGeometry = new IVE.Plane(500, 500, 100, 100);
+    const groundGeometry = new IVE.Plane(500, 500, 250, 250);
 
     const vertCount = groundGeometry.getVertexCount();
     const positions = groundGeometry.getVertices();
