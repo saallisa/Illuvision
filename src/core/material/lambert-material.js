@@ -47,11 +47,12 @@ class LambertMaterial extends Material
         const validModes = [
             Material.VERTEX_COLOR,
             Material.UNIFORM_COLOR,
-            Material.COLOR_BLEND
+            Material.COLOR_BLEND,
+            Material.TEXTURE_RAW
         ];
 
         if (!validModes.includes(mode)) {
-            throw new Error(`Invalid color: ${mode}.`);
+            throw new Error(`Invalid color mode: ${mode}.`);
         }
     }
 }
