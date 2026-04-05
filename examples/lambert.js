@@ -2,6 +2,18 @@
 import * as IVE from '/src/illuvision.js';
 
 /**
+ * Creates a scene node with a single mesh, material and position and
+ * returns the new scene node.
+ */
+function createSceneNode(geometry, material, position)
+{
+    const mesh = new IVE.Mesh(geometry, material);
+    const node = new IVE.SceneNode(mesh);
+    node.setPosition(position);
+    return node;
+}
+
+/**
  * Render a spinning cube and a ground plane onto the canvas.
  * Use lambert material and ambient and directional light in this scene.
  * In this example, use a perspective camera.
@@ -20,20 +32,21 @@ async function main()
     // Create a simple ground plane
     const groundGeometry = new IVE.Plane(10, 10, 2, 2);
 
-    // Define the material to use
+    // Define the material to use for the ground
     const groundMaterial = new IVE.BasicMaterial({
+        colorMode: IVE.Material.UNIFORM_COLOR,
         color: IVE.Color.GREEN
     });
+    
+    // Create a scene node with the ground
+    const ground = createSceneNode(
+        groundGeometry,
+        groundMaterial,
+        new IVE.Vector3(0, 0, 0)
+    );
 
-    // Create a mesh from the geometry and material
-    const ground = new IVE.Mesh(groundGeometry, groundMaterial);
-
-    // Create a scene node for the ground
-    const sceneNode = new IVE.SceneNode(ground);
-    sceneNode.setPosition(new IVE.Vector3(0, 0, 0));
-
-    // Rotate the scene node so that it covers the ground
-    sceneNode.rotateX = 90;
+    // Rotate the ground so that it sits horizontally
+    ground.rotateX = 90;
 
     // Create a simple box
     const boxGeometry = new IVE.Box(1, 1, 1);
@@ -46,40 +59,85 @@ async function main()
         IVE.Color.BLACK
     );
 
-    // Define the material to use
-    const boxMaterial = new IVE.LambertMaterial({
+    // Define a material that uses the vertex colors
+    const vertexMaterial = new IVE.LambertMaterial({
         colorMode: IVE.Material.VERTEX_COLOR
     });
-    boxMaterial.setCullMode(IVE.Material.CULL_BACK);
+    vertexMaterial.setCullMode(IVE.Material.CULL_BACK);
 
-    // Create a mesh from the geometry and material
-    const box = new IVE.Mesh(boxGeometry, boxMaterial);
-
-    // Create a second scene node for the box
-    const sceneNode2 = new IVE.SceneNode(box);
-    sceneNode2.setPosition(new IVE.Vector3(-1, 1, 1));
-
-    // Create a material for a second box using COLOR_BLEND
-    const box2material = new IVE.LambertMaterial({
+    // Define a material that uses a blend between uniform and vertex colors
+    const blendMaterial = new IVE.LambertMaterial({
         colorMode: IVE.Material.COLOR_BLEND,
         color: IVE.Color.WHITE,
         colorBlend: 0.25
     });
-    box2material.setCullMode(IVE.Material.CULL_BACK);
+    blendMaterial.setCullMode(IVE.Material.CULL_BACK);
 
-    const box2 = new IVE.Mesh(boxGeometry, box2material);
-    const sceneNode3 = new IVE.SceneNode(box2);
-    sceneNode3.setPosition(new IVE.Vector3(1, 1, 1));
-
-    // Create a material for a third box using the uniform color
-    const box3material = new IVE.LambertMaterial({
+    // Create a material that uses the uniform colors
+    const uniformMaterial = new IVE.LambertMaterial({
         color: IVE.Color.BLUE
     });
-    box3material.setCullMode(IVE.Material.CULL_BACK);
+    uniformMaterial.setCullMode(IVE.Material.CULL_BACK);
 
-    const box3 = new IVE.Mesh(boxGeometry, box3material);
-    const sceneNode4 = new IVE.SceneNode(box3);
-    sceneNode4.setPosition(new IVE.Vector3(0, 1, -1));
+    // Create colors to use in a raw pixel texture
+    const _ = IVE.Color.YELLOW.toIntArray();
+    const b = IVE.Color.lerp(IVE.Color.RED, IVE.Color.YELLOW, 0.7).toIntArray();
+    const y = IVE.Color.lerp(IVE.Color.GREEN, IVE.Color.YELLOW, 0.8).toIntArray();
+
+    // Create the raw pixel texture data
+    const textureData = new Uint8Array([
+        b, _, _, _, _,
+        _, y, y, y, _,
+        _, y, _, _, _,
+        _, y, y, _, _,
+        _, y, _, _, _,
+    ].flat());
+
+    // Create a raw pixel texture
+    const texture = new IVE.Texture(5, 5, textureData);
+    const sampler = new IVE.Sampler();
+    const textureAttachment = new IVE.TextureAttachment(texture, sampler);
+
+    // Create a material that uses the texture
+    const textureMaterial = new IVE.LambertMaterial({
+        colorMode: IVE.Material.TEXTURE_RAW
+    });
+    textureMaterial.setTextureAttachment(textureAttachment);
+    textureMaterial.setUseTexture(true);
+    textureMaterial.setCullMode(IVE.Material.CULL_BACK);
+    
+    // Create for boxes for each material
+    const vertexColorBox = createSceneNode(
+        boxGeometry,
+        vertexMaterial,
+        new IVE.Vector3(-1, 1, 1)
+    );
+
+    const uniformColorBox = createSceneNode(
+        boxGeometry,
+        uniformMaterial,
+        new IVE.Vector3(-1, 1, -1)
+    );
+
+    const blendColorBox = createSceneNode(
+        boxGeometry,
+        blendMaterial,
+        new IVE.Vector3(1, 1, -1)
+    );
+
+    const textureBox = createSceneNode(
+        boxGeometry,
+        textureMaterial,
+        new IVE.Vector3(1, 1, 1)
+    );
+
+    // Create a new Scene and add the nodes to it
+    const scene = new IVE.Scene();
+    scene.addNode(ground);
+    scene.addNode(vertexColorBox);
+    scene.addNode(uniformColorBox);
+    scene.addNode(blendColorBox);
+    scene.addNode(textureBox);
 
     // Create directional light
     const directionalLight = new IVE.DirectionalLight(
@@ -93,13 +151,8 @@ async function main()
         IVE.Color.WHITE,
         0.3
     );
-
-    // Create a new Scene and add the nodes and the light to it
-    const scene = new IVE.Scene();
-    scene.addNode(sceneNode);
-    scene.addNode(sceneNode2);
-    scene.addNode(sceneNode3);
-    scene.addNode(sceneNode4);
+    
+    // Add the lights to the scene
     scene.addDirectionalLight('sun', directionalLight);
     scene.addAmbientLight(ambientLight);
 
@@ -113,17 +166,21 @@ async function main()
     const animation = function ()
     {
         // Rotate the cube
-        sceneNode2.rotateX = sceneNode2.rotateX + 0.5;
-        sceneNode2.rotateY = sceneNode2.rotateY + 0.5;
-        sceneNode2.rotateZ = sceneNode2.rotateZ + 0.5;
+        vertexColorBox.rotateX = vertexColorBox.rotateX + 0.5;
+        vertexColorBox.rotateY = vertexColorBox.rotateY + 0.5;
+        vertexColorBox.rotateZ = vertexColorBox.rotateZ + 0.5;
 
-        sceneNode3.rotateX = sceneNode3.rotateX - 0.5;
-        sceneNode3.rotateY = sceneNode3.rotateY - 0.5;
-        sceneNode3.rotateZ = sceneNode3.rotateZ - 0.5;
+        uniformColorBox.rotateX = uniformColorBox.rotateX - 0.5;
+        uniformColorBox.rotateY = uniformColorBox.rotateY - 0.5;
+        uniformColorBox.rotateZ = uniformColorBox.rotateZ - 0.5;
 
-        sceneNode4.rotateX = sceneNode4.rotateX - 0.5;
-        sceneNode4.rotateY = sceneNode4.rotateY + 0.5;
-        sceneNode4.rotateZ = sceneNode4.rotateZ - 0.5;
+        blendColorBox.rotateX = blendColorBox.rotateX - 0.5;
+        blendColorBox.rotateY = blendColorBox.rotateY + 0.5;
+        blendColorBox.rotateZ = blendColorBox.rotateZ - 0.5;
+
+        textureBox.rotateX = textureBox.rotateX + 0.5;
+        textureBox.rotateY = textureBox.rotateY - 0.5;
+        textureBox.rotateZ = textureBox.rotateZ + 0.5;
 
         engine.render(scene, camera);
     }
