@@ -6,11 +6,9 @@ import { ShaderRenderer } from './shader-renderer.js';
 import {
     VERTEX_FUNCTION_COLOR,
     VERTEX_FUNCTION_UV,
-    VERTEX_FUNCTION_UV_COLOR,
     VERTEX_FUNCTION_NONE,
     VERTEX_OUTPUT_COLOR,
     VERTEX_OUTPUT_UV,
-    VERTEX_OUTPUT_UV_COLOR,
     VERTEX_OUTPUT_NONE,
     CAMERA_UNIFORM,
     MODEL_UNIFORM,
@@ -18,27 +16,12 @@ import {
     MODEL_UNIFORM_BIND
 } from './parts/common.js';
 
-// Material uniforms
-
-const MATERIAL_UNIFORM_COLOR = /*wgsl*/ `
-struct MaterialUniforms {
-    color: vec4<f32>
-}`;
-
-const MATERIAL_UNIFORM_BLEND = /*wgsl*/ `
-struct MaterialUniforms {
-    color: vec4<f32>,
-    blend: f32
-}`;
-
-const MATERIAL_UNIFORM_BINDING = /*wgsl*/ `
-@group(2) @binding(0) var<uniform> material: MaterialUniforms;`;
-
-// Texture bindings
-
-const TEXTURE_BIND = /*wgsl*/ `
-@group(2) @binding(1) var mat_sampler: sampler;
-@group(2) @binding(2) var mat_texture: texture_2d<f32>;`;
+import {
+    MATERIAL_UNIFORM_COLOR,
+    MATERIAL_UNIFORM_BLEND,
+    MATERIAL_UNIFORM_BINDING,
+    TEXTURE_BIND
+} from './parts/materials.js';
 
 // Fragment stage functions
 
