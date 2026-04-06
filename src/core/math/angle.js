@@ -110,35 +110,22 @@ class Angle
     {
         Angle.validateInstance(angle1);
         Angle.validateInstance(angle2);
-        
-        if (typeof t !== 'number' || !isFinite(t)) {
-            throw new Error('Interpolation factor t must be a finite number');
-        }
+        Angle.#validateTFactor(t);
 
-        if (t < 0 || t > 1) {
-            throw new RangeError(
-                'Invalid interpolation factor t: must be between 0 and 1'
-            );
-        }
-        
-        // Get normalized angles in degrees
-        let start = Angle.normalizeDegrees(angle1.degrees);
-        let end = Angle.normalizeDegrees(angle2.degrees);
-        
-        const difference = Math.abs(end - start);
+        const result = Angle.#lerpDegreesRaw(angle1.degrees, angle2.degrees, t);
+        return Angle.fromDegrees(result);
+    }
 
-        if (difference > 180) {
-            if (end > start) {
-                start += 360;
-            } else {
-                end += 360;
-            }
-        }
+    /**
+     * Linearly interpolates between two angles in degrees, taking the shortest path.
+     */
+    static lerpDegrees(angle1, angle2, t)
+    {
+        Angle.#validateAngle(angle1);
+        Angle.#validateAngle(angle2);
+        Angle.#validateTFactor(t);
 
-        const result = Angle.fromDegrees(start + (end - start) * amount);
-        result.normalize();
-
-        return result;
+        return Angle.#lerpDegreesRaw(angle1, angle2, t);
     }
 
     /**
@@ -159,6 +146,45 @@ class Angle
         if (typeof angle !== 'number' || !isFinite(angle)) {
             throw new Error('Angle must be a finite number');
         }
+    }
+
+    /**
+     * Validates that the interpolation factor t is a number between 0 and 1.
+     */
+    static #validateTFactor(t)
+    {
+        if (typeof t !== 'number' || !isFinite(t)) {
+            throw new Error('Interpolation factor t must be a finite number');
+        }
+
+        if (t < 0 || t > 1) {
+            throw new RangeError(
+                'Invalid interpolation factor t: must be between 0 and 1'
+            );
+        }
+    }
+
+    /**
+     * Linearly interpolates between two angles in degrees, taking the shortest path.
+     */
+    static #lerpDegreesRaw(angle1, angle2, t)
+    {
+        // Get normalized angles in degrees
+        let start = Angle.normalizeDegrees(angle1);
+        let end = Angle.normalizeDegrees(angle2);
+
+        const difference = Math.abs(end - start);
+
+        if (difference > 180) {
+            if (end > start) {
+                start += 360;
+            } else {
+                end += 360;
+            }
+        }
+
+        const result = start + (end - start) * t;
+        return Angle.normalizeDegrees(result);
     }
 
     // Fake constants returning valid angle units of measurement
