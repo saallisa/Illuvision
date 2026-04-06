@@ -34,7 +34,7 @@ async function main()
     const vertCount = groundGeometry.getVertexCount();
     const positions = groundGeometry.getVertices();
 
-    for (var i = 0; i < vertCount; i++) {
+    for (let i = 0; i < vertCount; i++) {
         positions[i].z = terrain(positions[i].x, positions[i].y) / 5;
     }
 
