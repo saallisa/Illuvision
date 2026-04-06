@@ -484,7 +484,7 @@ class Engine
         this.#renderPass.setBindGroup(3, node.getBindGroup());
 
         this.#renderPass.setVertexBuffer(0, vertices.getGpuVertexBuffer());
-        this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), 'uint16');
+        this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), indices.getIndexFormat());
         this.#renderPass.drawIndexed(indices.getIndexCount());
     }
 

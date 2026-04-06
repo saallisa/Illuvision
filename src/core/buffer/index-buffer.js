@@ -9,6 +9,7 @@ class IndexBuffer
 {
     #buffer;
     #indexCount;
+    #indexFormat = 'uint16';
 
     #device = null;
     #compiled = false;
@@ -18,13 +19,24 @@ class IndexBuffer
     {
         this.#buffer = indices;
         this.#indexCount = indexCount;
+
+        this.#indexFormat = this.#indexCount > 65535
+            ? 'uint32'
+            : 'uint16';
     }
 
     /**
-     * Gets the Uint16Array buffer containing face indices.
+     * Gets the Uint16Array or Uint32Array buffer containing face indices.
      */
     getIndexBuffer() {
         return this.#buffer;
+    }
+
+    /**
+     * Gets the format of the index buffer.
+     */
+    getIndexFormat() {
+        return this.#indexFormat;
     }
 
     /**
@@ -99,7 +111,13 @@ class IndexBuffer
         });
 
         const mappedBuffer = this.#gpuBuffer.getMappedRange();
-        new Uint16Array(mappedBuffer).set(this.#buffer);
+
+        if (this.#indexFormat === 'uint32') {
+            new Uint32Array(mappedBuffer).set(this.#buffer);
+        } else {
+            new Uint16Array(mappedBuffer).set(this.#buffer);
+        }
+
         this.#gpuBuffer.unmap();
     }
 }

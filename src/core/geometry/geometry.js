@@ -1,10 +1,9 @@
-
-import { Face } from '../face.js';
-import { IndexBuffer } from '../buffer/index-buffer.js';
-import { Object } from '../object.js';
-import { Vector3 } from '../math/vector3.js';
-import { VertexAttributes } from '../vertex-attributes.js';
-import { VertexBuffer } from '../buffer/vertex-buffer.js';
+import {Face} from '../face.js';
+import {IndexBuffer} from '../buffer/index-buffer.js';
+import {Object} from '../object.js';
+import {Vector3} from '../math/vector3.js';
+import {VertexAttributes} from '../vertex-attributes.js';
+import {VertexBuffer} from '../buffer/vertex-buffer.js';
 
 /**
  * A minimal yet extensible Geometry class that stores vertices, faces and
@@ -218,15 +217,13 @@ class Geometry extends Object
         this.#prepareGeometryData(layout);
         const buffer = this.#writeGeometryData(componentInfo, stride);
 
-        const vertexBuffer = new VertexBuffer(
+        return new VertexBuffer(
             buffer,
             Array.from(layout),
             stride,
             offsets,
             this.getVertexCount()
         );
-
-        return vertexBuffer;
     }
 
     /**
@@ -421,7 +418,10 @@ class Geometry extends Object
         }
 
         // Create the index buffer
-        const indexBuffer = new Uint16Array(totalIndices);
+        const indexBuffer = totalIndices > 65535
+            ? new Uint32Array(totalIndices)
+            : new Uint16Array(totalIndices);
+
         let bufferIndex = 0;
 
         // Fill the index buffer with face indices
