@@ -129,6 +129,32 @@ class Angle
     }
 
     /**
+     * Linearly interpolates between two angles in radians, taking the shortest path.
+     */
+    static lerpRadians(angle1, angle2, t)
+    {
+        Angle.#validateAngle(angle1);
+        Angle.#validateAngle(angle2);
+        Angle.#validateTFactor(t);
+
+        let start = Angle.normalizeRadians(angle1);
+        let end = Angle.normalizeRadians(angle2);
+
+        const difference = Math.abs(end - start);
+
+        if (difference > Math.PI) {
+            if (end > start) {
+                start += 2 * Math.PI;
+            } else {
+                end += 2 * Math.PI;
+            }
+        }
+
+        const result = start + (end - start) * t;
+        return Angle.normalizeRadians(result);
+    }
+
+    /**
      * Validates that a value is a valid Angle.
      */
     static validateInstance(value)
