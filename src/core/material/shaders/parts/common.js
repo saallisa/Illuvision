@@ -9,6 +9,25 @@ struct VertexOut {
     @location(2) vertex_color: vec4<f32>
 }`;
 
+const VERTEX_OUTPUT_UV = /*wgsl*/ `
+struct VertexOut {
+    @builtin(position) position: vec4<f32>,
+    @location(0) vertex_position: vec3<f32>,
+    @location(1) vertex_normal: vec3<f32>,
+    @location(2) vertex_uv: vec2<f32>
+}
+`;
+
+const VERTEX_OUTPUT_UV_COLOR = /*wgsl*/ `
+struct VertexOut {
+    @builtin(position) position: vec4<f32>,
+    @location(0) vertex_position: vec3<f32>,
+    @location(1) vertex_normal: vec3<f32>,
+    @location(2) vertex_uv: vec2<f32>,
+    @location(3) vertex_color: vec4<f32>
+}
+`;
+
 const VERTEX_OUTPUT_NONE = /*wgsl*/ `
 struct VertexOut {
     @builtin(position) position: vec4<f32>,
@@ -47,6 +66,23 @@ fn vertex_main(
     @location(2) color: vec4<f32>
 ) -> VertexOut {`;
 
+const VERTEX_FUNCTION_UV = /*wgsl*/ `
+@vertex
+fn vertex_main(
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>
+) -> VertexOut {`;
+
+const VERTEX_FUNCTION_UV_COLOR = /*wgsl*/ `
+@vertex
+fn vertex_main(
+    @location(0) position: vec3<f32>,
+    @location(1) normal: vec3<f32>,
+    @location(2) uv: vec2<f32>,
+    @location(3) color: vec4<f32>
+) -> VertexOut {`;
+
 const VERTEX_FUNCTION_NONE =  /*wgsl*/ `
 @vertex
 fn vertex_main(
@@ -56,8 +92,12 @@ fn vertex_main(
 
 export {
     VERTEX_OUTPUT_COLOR,
+    VERTEX_OUTPUT_UV,
+    VERTEX_OUTPUT_UV_COLOR,
     VERTEX_OUTPUT_NONE,
     VERTEX_FUNCTION_COLOR,
+    VERTEX_FUNCTION_UV,
+    VERTEX_FUNCTION_UV_COLOR,
     VERTEX_FUNCTION_NONE,
     CAMERA_UNIFORM,
     MODEL_UNIFORM,

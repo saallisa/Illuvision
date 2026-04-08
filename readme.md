@@ -13,7 +13,7 @@ This is an experimental project under active development. The API is subject to 
 * Experience with HTML and JavaScript
 * Basic understanding of 3D graphics
 
-**Warning:** As WebGPU is a cutting-edge web standard that is still being rolled out across browsers, Illuvision isn't supported in every browser or on every plaform, yet.
+**Warning:** As WebGPU is a cutting-edge web standard that is still being rolled out across browsers, Illuvision isn't supported in every browser or on every platform, yet.
 Check [this page](https://caniuse.com/webgpu) for current browser support.
 
 ## Installation
@@ -26,6 +26,15 @@ Check [this page](https://caniuse.com/webgpu) for current browser support.
 ```javascript
 import * as IVE from './path/to/illuvision/illuvision.js';
 ```
+
+## Examples
+
+In the \examples directory of this repository you can find examples showing you
+
+* How to render the simple "Hello Triangle" (triangle.js)
+* How to render spinning cubes and a plane using different material settings (lambert.js)
+* How to render a group of objects using SceneNode (scene-graph.js)
+* How to use the StandardController to move around in a simple 3D world (terrain.js).
 
 ## Contributing
 

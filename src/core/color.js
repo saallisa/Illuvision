@@ -124,6 +124,32 @@ class Color
     }
 
     /**
+     * Returns the color as an array with values from 0 to 255.
+     */
+    toIntArray()
+    {
+        return [
+            Math.round(this.red * 255),
+            Math.round(this.green * 255),
+            Math.round(this.blue * 255),
+            Math.round(this.alpha * 255)
+        ];
+    }
+
+    /**
+     * Returns the color as an array with values from 0 to 255 with
+     * only red, green and blue without the alpha value.
+     */
+    toRgbIntArray()
+    {
+        return [
+            Math.round(this.red * 255),
+            Math.round(this.green * 255),
+            Math.round(this.blue * 255)
+        ];
+    }
+
+    /**
      * Linear interpolation from one color towards another color.
      * Returns a new Color instance without modifying the originals.
      */

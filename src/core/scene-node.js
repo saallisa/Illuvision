@@ -1,9 +1,10 @@
 
-import { Matrix3 } from './matrix3.js';
-import { Matrix4 } from './matrix4.js';
+import { Angle } from './math/angle.js';
+import { Matrix3 } from './math/matrix3.js';
+import { Matrix4 } from './math/matrix4.js';
 import { Mesh } from './mesh.js';
 import { UniformBuffer } from './buffer/uniform-buffer.js';
-import { Vector3 } from './vector3.js';
+import { Vector3 } from './math/vector3.js';
 
 /**
  * Represents an object node in a scene.
@@ -327,9 +328,9 @@ class SceneNode
             this.#scale.z
         );
 
-        const rotationX = Matrix4.createRotateX(this.rotateX);
-        const rotationY = Matrix4.createRotateY(this.rotateY);
-        const rotationZ = Matrix4.createRotateZ(this.rotateZ);
+        const rotationX = Matrix4.createRotateX(Angle.fromDegrees(this.rotateX));
+        const rotationY = Matrix4.createRotateY(Angle.fromDegrees(this.rotateY));
+        const rotationZ = Matrix4.createRotateZ(Angle.fromDegrees(this.rotateZ));
         const rotation = rotationX
             .multiplyOther(rotationY)
             .multiplyOther(rotationZ);

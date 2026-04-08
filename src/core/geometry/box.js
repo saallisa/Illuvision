@@ -1,8 +1,7 @@
 
 import { Face } from '../face.js';
 import { Geometry } from './geometry.js';
-import { Uv } from '../uv.js';
-import { Vector3 } from '../vector3.js';
+import { Vector3 } from '../math/vector3.js';
 
 /**
  * A simple box geometry class that creates a box with a width, height and
@@ -189,47 +188,41 @@ class Box extends Geometry
      */
     #createBoxUv()
     {
-        const uvCoordinates = [
             // Front face UVs
-            new Uv(0, 0), // 0: bottom-left
-            new Uv(1, 0), // 1: bottom-right
-            new Uv(1, 1), // 2: top-right
-            new Uv(0, 1), // 3: top-left
+            this.addUvCoordinate(0, 0); // 0: bottom-left
+            this.addUvCoordinate(1, 0); // 1: bottom-right
+            this.addUvCoordinate(1, 1); // 2: top-right
+            this.addUvCoordinate(0, 1); // 3: top-left
 
             // Right face UVs
-            new Uv(0, 0), // 12: bottom-left
-            new Uv(1, 0), // 13: bottom-right
-            new Uv(1, 1), // 14: top-right
-            new Uv(0, 1), // 15: top-left
+            this.addUvCoordinate(0, 0); // 12: bottom-left
+            this.addUvCoordinate(1, 0); // 13: bottom-right
+            this.addUvCoordinate(1, 1); // 14: top-right
+            this.addUvCoordinate(0, 1); // 15: top-left
             
             // Back face UVs
-            new Uv(0, 0), // 4: bottom-left
-            new Uv(1, 0), // 5: bottom-right
-            new Uv(1, 1), // 6: top-right
-            new Uv(0, 1), // 7: top-left
-
+            this.addUvCoordinate(0, 0); // 4: bottom-left
+            this.addUvCoordinate(1, 0); // 5: bottom-right
+            this.addUvCoordinate(1, 1); // 6: top-right
+            this.addUvCoordinate(0, 1); // 7: top-left
+            
             // Left face UVs
-            new Uv(0, 0), // 8: bottom-left
-            new Uv(1, 0), // 9: bottom-right
-            new Uv(1, 1), // 10: top-right
-            new Uv(0, 1), // 11: top-left
+            this.addUvCoordinate(0, 0); // 8: bottom-left
+            this.addUvCoordinate(1, 0); // 9: bottom-right
+            this.addUvCoordinate(1, 1); // 10: top-right
+            this.addUvCoordinate(0, 1); // 11: top-left
 
             // Top face UVs
-            new Uv(0, 0), // 16: bottom-left
-            new Uv(1, 0), // 17: bottom-right
-            new Uv(1, 1), // 18: top-right
-            new Uv(0, 1), // 19: top-left
+            this.addUvCoordinate(0, 0); // 16: bottom-left
+            this.addUvCoordinate(1, 0); // 17: bottom-right
+            this.addUvCoordinate(1, 1); // 18: top-right
+            this.addUvCoordinate(0, 1); // 19: top-left
 
             // Bottom face UVs
-            new Uv(0, 0), // 20: bottom-left
-            new Uv(1, 0), // 21: bottom-right
-            new Uv(1, 1), // 22: top-right
-            new Uv(0, 1)  // 23: top-left
-        ];
-
-        for (const uv of uvCoordinates) {
-            this.addUvCoordinate(uv);
-        }
+            this.addUvCoordinate(0, 0); // 20: bottom-left
+            this.addUvCoordinate(1, 0); // 21: bottom-right
+            this.addUvCoordinate(1, 1); // 22: top-right
+            this.addUvCoordinate(0, 1); // 23: top-left
     }
 }
 

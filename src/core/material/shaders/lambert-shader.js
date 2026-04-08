@@ -5,8 +5,10 @@ import { ShaderRenderer } from './shader-renderer.js';
 
 import {
     VERTEX_FUNCTION_COLOR,
+    VERTEX_FUNCTION_UV,
     VERTEX_FUNCTION_NONE,
     VERTEX_OUTPUT_COLOR,
+    VERTEX_OUTPUT_UV,
     VERTEX_OUTPUT_NONE,
     CAMERA_UNIFORM,
     MODEL_UNIFORM,
@@ -21,21 +23,12 @@ import {
     DIRECTIONAL_STORAGE_BIND
 } from './parts/lights.js';
 
-// Material uniforms
-
-const MATERIAL_UNIFORM_COLOR = /*wgsl*/ `
-struct MaterialUniforms {
-    color: vec4<f32>
-}`;
-
-const MATERIAL_UNIFORM_BLEND = /*wgsl*/ `
-struct MaterialUniforms {
-    color: vec4<f32>,
-    blend: f32
-}`;
-
-const MATERIAL_UNIFORM_BINDING = /*wgsl*/ `
-@group(2) @binding(0) var<uniform> material: MaterialUniforms;`;
+import {
+    MATERIAL_UNIFORM_COLOR,
+    MATERIAL_UNIFORM_BLEND,
+    MATERIAL_UNIFORM_BINDING,
+    TEXTURE_BIND
+} from './parts/materials.js';
 
 // Fragment stage functions
 
@@ -57,6 +50,11 @@ fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
         data.vertex_color,
         material.blend
     );`;
+
+const FRAGMENT_FUNCTION_START_TEXTURE = /*wgsl*/ `
+@fragment
+fn fragment_main(data: VertexOut) -> @location(0) vec4<f32> {
+    var end_color = textureSample(mat_texture, mat_sampler, data.vertex_uv);`;
 
 const FRAGMENT_FUNCTION_END = /*wgsl*/ `
     var light_result = vec3<f32>(0.0, 0.0, 0.0);
@@ -103,11 +101,16 @@ class LambertShader extends ShaderRenderer
     renderVertexCode()
     {
         let vertexColorLine = '';
+        let vertexUvLine = '';
         
         if (this.#mode === Material.VERTEX_COLOR
             || this.#mode === Material.COLOR_BLEND
         ) {
             vertexColorLine = 'output.vertex_color = color;';
+        }
+
+        if (this.#mode === Material.TEXTURE_RAW) {
+            vertexUvLine = 'output.vertex_uv = uv;';
         }
 
         const vertexOutput = this.getVertexOutputStruct();
@@ -132,6 +135,7 @@ class LambertShader extends ShaderRenderer
             output.vertex_position = (model.model_matrix * position4).xyz;
             output.vertex_normal = model.normal_matrix * normal;
             ${vertexColorLine}
+            ${vertexUvLine}
         
             return output;
         }`;
@@ -145,6 +149,7 @@ class LambertShader extends ShaderRenderer
         let vertexOutput = '';
         let materialUniform = '';
         let materialUniformBinding = '';
+        let textureBinding = '';
         let fragmentFunction = '';
 
         if (this.#mode === Material.UNIFORM_COLOR) {
@@ -166,6 +171,14 @@ class LambertShader extends ShaderRenderer
             fragmentFunction = FRAGMENT_FUNCTION_START_COLOR;
         }
 
+        if (this.#mode === Material.TEXTURE_RAW) {
+            vertexOutput = VERTEX_OUTPUT_UV;
+            materialUniform = MATERIAL_UNIFORM_COLOR;
+            materialUniformBinding = MATERIAL_UNIFORM_BINDING;
+            textureBinding = TEXTURE_BIND;
+            fragmentFunction = FRAGMENT_FUNCTION_START_TEXTURE;
+        }
+
         return /*wgsl*/ `
         ${vertexOutput}
     
@@ -174,6 +187,7 @@ class LambertShader extends ShaderRenderer
         ${DIRECTIONAL_LIGHT}
         
         ${materialUniformBinding}
+        ${textureBinding}
         ${AMBIENT_STORAGE_BIND}
         ${DIRECTIONAL_STORAGE_BIND}
 
@@ -186,13 +200,19 @@ class LambertShader extends ShaderRenderer
      */
     getVertexOutputStruct()
     {
-        if (this.#mode === Material.VERTEX_COLOR
-            || this.#mode === Material.COLOR_BLEND
-        ) {
-            return VERTEX_OUTPUT_COLOR;
+        let vertexOutput = '';
+
+        switch (this.#mode) {
+            case Material.VERTEX_COLOR: vertexOutput = VERTEX_OUTPUT_COLOR;
+                break;
+            case Material.COLOR_BLEND: vertexOutput = VERTEX_OUTPUT_COLOR;
+                break;
+            case Material.TEXTURE_RAW: vertexOutput = VERTEX_OUTPUT_UV;
+                break;
+            default: vertexOutput = VERTEX_OUTPUT_NONE;
         }
-        
-        return VERTEX_OUTPUT_NONE;
+
+        return vertexOutput;
     }
 
     /**
@@ -200,29 +220,19 @@ class LambertShader extends ShaderRenderer
      */
     getVertexFunction()
     {
-        if (this.#mode === Material.VERTEX_COLOR
-            || this.#mode === Material.COLOR_BLEND
-        ) {
-            return VERTEX_FUNCTION_COLOR;
+        let vertexFunction = '';
+
+        switch (this.#mode) {
+            case Material.VERTEX_COLOR: vertexFunction = VERTEX_FUNCTION_COLOR;
+                break;
+            case Material.COLOR_BLEND: vertexFunction = VERTEX_FUNCTION_COLOR;
+                break;
+            case Material.TEXTURE_RAW: vertexFunction = VERTEX_FUNCTION_UV;
+                break;
+            default: vertexFunction = VERTEX_FUNCTION_NONE;
         }
 
-        return VERTEX_FUNCTION_NONE;
-    }
-
-    /**
-     * Finds the right fragment function to use in the fragment shader.
-     */
-    getMaterialFunction()
-    {
-        if (this.#mode === Material.UNIFORM_COLOR) {
-            return MATERIAL_UNIFORM_COLOR;
-        }
-
-        if (this.#mode === Material.COLOR_BLEND) {
-            return MATERIAL_UNIFORM_BLEND;
-        }
-
-        return '';
+        return vertexFunction;
     }
 
     /**

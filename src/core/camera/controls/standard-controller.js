@@ -2,7 +2,7 @@
 import { Camera } from '../camera.js';
 import { Engine } from '../../../engine.js';
 import { Timer } from '../../timer.js';
-import { Vector3 } from '../../vector3.js';
+import { Vector3 } from '../../math/vector3.js';
 
 /**
  * Controls camera movement with mouse and keyboard input.

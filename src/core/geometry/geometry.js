@@ -1,11 +1,9 @@
-
-import { Face } from '../face.js';
-import { IndexBuffer } from '../buffer/index-buffer.js';
-import { Object } from '../object.js';
-import { Uv } from '../uv.js';
-import { Vector3 } from '../vector3.js';
-import { VertexAttributes } from '../vertex-attributes.js';
-import { VertexBuffer } from '../buffer/vertex-buffer.js';
+import {Face} from '../face.js';
+import {IndexBuffer} from '../buffer/index-buffer.js';
+import {Object} from '../object.js';
+import {Vector3} from '../math/vector3.js';
+import {VertexAttributes} from '../vertex-attributes.js';
+import {VertexBuffer} from '../buffer/vertex-buffer.js';
 
 /**
  * A minimal yet extensible Geometry class that stores vertices, faces and
@@ -116,13 +114,12 @@ class Geometry extends Object
     /**
      * Adds a uv coordinate to the geometry.
      */
-    addUvCoordinate(uv)
+    addUvCoordinate(u, v)
     {
-        if (!(uv instanceof Uv)) {
-            throw new TypeError('Expected a Uv instance.');
-        }
+        this.#validateUvComponent(u, 'u');
+        this.#validateUvComponent(v, 'v');
 
-        this.#uvs.push(uv.clone());
+        this.#uvs.push(u, v);
     }
 
     /**
@@ -220,15 +217,13 @@ class Geometry extends Object
         this.#prepareGeometryData(layout);
         const buffer = this.#writeGeometryData(componentInfo, stride);
 
-        const vertexBuffer = new VertexBuffer(
+        return new VertexBuffer(
             buffer,
             Array.from(layout),
             stride,
             offsets,
             this.getVertexCount()
         );
-
-        return vertexBuffer;
     }
 
     /**
@@ -423,7 +418,10 @@ class Geometry extends Object
         }
 
         // Create the index buffer
-        const indexBuffer = new Uint16Array(totalIndices);
+        const indexBuffer = totalIndices > 65535
+            ? new Uint32Array(totalIndices)
+            : new Uint16Array(totalIndices);
+
         let bufferIndex = 0;
 
         // Fill the index buffer with face indices
@@ -523,11 +521,30 @@ class Geometry extends Object
     }
 
     /**
+     * Validates that a single UV component is in the range 0-1.
+     */
+    #validateUvComponent(value, componentName)
+    {
+        if (typeof value !== 'number' || !isFinite(value)) {
+            throw new TypeError(
+                `Invalid value for ${componentName}: expected a finite number`
+            );
+        }
+
+        if (value < 0 || value > 1) {
+            throw new RangeError(
+                `Invalid value for ${componentName}: must be between 0 and 1`
+            );
+        }
+    }
+
+    /**
      * Validates that UV coordinates match vertex count.
      */
     #validateUvCount()
     {
-        if (this.#uvs.length !== this.getVertexCount()) {
+        const uvCount = this.#uvs.length / 2;
+        if (uvCount !== this.getVertexCount()) {
             throw new Error('UV coordinate count must match vertex count.');
         }
     }
@@ -603,10 +620,8 @@ class Geometry extends Object
      */
     #writeUvData(buffer, offset, vertexIndex)
     {
-        const uv = this.#uvs[vertexIndex];
-
-        buffer[offset] = uv.u;
-        buffer[offset + 1] = uv.v;
+        buffer[offset] = this.#uvs[vertexIndex * 2];
+        buffer[offset + 1] = this.#uvs[vertexIndex * 2 + 1];
     }
 
     /**

@@ -1,6 +1,6 @@
 
 import { Color } from '../color.js';
-import { Vector3 } from '../vector3.js';
+import { Vector3 } from '../math/vector3.js';
 import { Light } from './light.js';
 
 /**

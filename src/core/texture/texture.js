@@ -1,0 +1,173 @@
+
+import { Engine } from '../../engine.js';
+
+/**
+ * Manages WebGPU textures for storing texture data.
+ */
+class Texture
+{
+    #textureWidth = 0;
+    #textureHeight = 0;
+    #textureData = null;
+
+    #compiled = false;
+    #texture = null;
+    #textureView = null;
+
+    constructor(width, height, data)
+    {
+        this.#validateDimension(width, 'width');
+        this.#validateDimension(height, 'height');
+
+        this.#textureWidth = width;
+        this.#textureHeight = height;
+        this.#textureData = data;
+    }
+
+    /**
+     * Gets the width of the texture.
+     */
+    getTextureWidth() {
+        return this.#textureWidth;
+    }
+
+    /**
+     * Gets the height of the texture.
+     */
+    getTextureHeight() {
+        return this.#textureHeight;
+    }
+
+    /**
+     * Gets the raw texture data as an Uint8Array.
+     */
+    getTextureData() {
+        return this.#textureData;
+    }
+
+    /**
+     * Gets the GPU texture.
+     */
+    getGpuTexture()
+    {
+        if (!this.#compiled) {
+             throw new Error(
+                'Texture must be compiled before accessing texture!'
+            );
+        }
+
+        return this.#texture;
+    }
+
+    /**
+     * Returns the GPU texture view.
+     */
+    getGpuTextureView()
+    {
+        if (!this.#compiled) {
+            throw new Error(
+                'Texture must be compiled before accessing texture view!'
+            );
+        }
+
+        return this.#textureView;
+    }
+
+    /**
+     * Returns if the texture is compiled.
+     */
+    isCompiled() {
+        return this.#compiled;
+    }
+
+    /**
+     * Compiles the texture into a WebGPU texture.
+     */
+    compile(device)
+    {
+        if (this.#compiled) {
+            return;
+        }
+
+        Engine.validateDevice(device);
+        this.#createTexture(device);
+        this.#compiled = true;
+    }
+
+    /**
+     * Destroys the texture and releases GPU resources.
+     */
+    destroy()
+    {
+        if (this.#texture) {
+            this.#texture.destroy();
+            this.#texture = null;
+        }
+
+        this.#textureView = null;
+        this.#compiled = false;
+    }
+
+    /**
+     * Creates a texture with the specified width and height.
+     */
+    #createTexture(device)
+    {
+        // Create the texture
+        this.#texture = device.createTexture({
+            size: [this.#textureWidth, this.#textureHeight],
+            format: 'rgba8unorm',
+            usage: GPUTextureUsage.TEXTURE_BINDING |
+                GPUTextureUsage.COPY_DST |
+                GPUTextureUsage.RENDER_ATTACHMENT
+        });
+
+        // Write initial data if available
+        if (this.#textureData.byteLength > 0) {
+            device.queue.writeTexture({
+                    texture: this.#texture
+                }, this.#textureData, {
+                    bytesPerRow: this.#textureWidth * 4,
+                    rowsPerImage: this.#textureHeight
+                }, {
+                    width: this.#textureWidth,
+                    height: this.#textureHeight
+                }
+            );
+        }
+
+        this.#textureView = this.#texture.createView();
+    }
+
+    /**
+     * Validates that a texture dimension is a positive number.
+     */
+    #validateDimension(value, dimensionName)
+    {
+        if (typeof value !== 'number' || !isFinite(value)) {
+            throw new TypeError(
+                `${dimensionName} must be a finite number.`
+            );
+        }
+
+        if (value <= 0) {
+            throw new RangeError(
+                `${dimensionName} must be a positive number.`
+            );
+        }
+    }
+
+    /**
+     * Validates that an object is a Texture instance.
+     */
+    static validateInstance(value)
+    {
+        if (!(value instanceof Texture)) {
+            throw new TypeError('Expected an instance of Texture.');
+        }
+    }
+}
+
+export {
+    Texture
+};

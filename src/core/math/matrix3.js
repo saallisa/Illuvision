@@ -1,4 +1,5 @@
 
+import { Angle } from './angle.js';
 import { Matrix4 } from './matrix4.js';
 
 /**
@@ -129,10 +130,10 @@ class Matrix3
      */
     static createRotateX(angle)
     {
-        const radian = angle * Math.PI / 180;
+        Angle.validateInstance(angle);
 
-        const cos = Math.cos(radian);
-        const sin = Math.sin(radian);
+        const cos = Math.cos(angle.radians);
+        const sin = Math.sin(angle.radians);
 
         return new Matrix3([
             1, 0, 0,
@@ -146,10 +147,10 @@ class Matrix3
      */
     static createRotateY(angle)
     {
-        const radian = angle * Math.PI / 180;
+        Angle.validateInstance(angle);
 
-        const cos = Math.cos(radian);
-        const sin = Math.sin(radian);
+        const cos = Math.cos(angle.radians);
+        const sin = Math.sin(angle.radians);
 
         return new Matrix3([
             cos, 0, -sin,
@@ -163,10 +164,10 @@ class Matrix3
      */
     static createRotateZ(angle)
     {
-        const radian = angle * Math.PI / 180;
+        Angle.validateInstance(angle);
 
-        const cos = Math.cos(radian);
-        const sin = Math.sin(radian);
+        const cos = Math.cos(angle.radians);
+        const sin = Math.sin(angle.radians);
 
         return new Matrix3([
             cos, sin, 0,

@@ -2,6 +2,7 @@
 import { Color } from '../color.js';
 import { Engine } from '../../engine.js';
 import { Shader } from '../shader.js';
+import { TextureAttachment} from '../texture/texture-attachment.js';
 import { UniformBuffer } from '../buffer/uniform-buffer.js';
 
 /**
@@ -11,12 +12,13 @@ class Material
 {
     #name = null;
     #id = null;
+    #textureAttachment = null;
     #shader = null;
     #color = null;
     #colorBlend = null;
     #cullMode = 'none';
     #vertexColors = false;
-    #uvCoordinates = false;
+    #texture = false;
 
     #uniformBuffer = null;
     #bindGroupLayout = null;
@@ -132,22 +134,22 @@ class Material
     }
 
     /**
-     * Configures the material to use uv coordinates.
+     * Configures the material to use a texture.
      */
-    setUseUvCoordinates(config)
+    setUseTexture(config)
     {
         if (typeof config !== 'boolean') {
             throw new TypeError('Value must be of type boolean.');
         }
 
-        this.#uvCoordinates = config;
+        this.#texture = config;
     }
 
     /**
-     * Returns whether a material needs uv coordinates.
+     * Returns whether a material should use a texture attachment.
      */
-    getUseUvCoordinates() {
-        return this.#uvCoordinates;
+    getUseTexture() {
+        return this.#texture;
     }
 
     /**
@@ -164,6 +166,27 @@ class Material
     {
         this.#validateCullMode(cullMode);
         this.#cullMode = cullMode;
+    }
+
+    /**
+     * Gets the texture attachment associated with this material.
+     */
+    getTextureAttachment() {
+        return this.#textureAttachment;
+    }
+
+    /**
+     * Sets the texture attachment for this material.
+     */
+    setTextureAttachment(textureAttachment)
+    {
+        if (!(textureAttachment instanceof TextureAttachment)) {
+            throw new TypeError(
+                'Texture attachment must be a valid TextureAttachment instance.'
+            );
+        }
+
+        this.#textureAttachment = textureAttachment;
     }
 
     /**
@@ -242,6 +265,19 @@ class Material
 
         Engine.validateDevice(device);
 
+        // Only compile texture when texture use is required
+        if (this.#texture) {
+            if (!this.#textureAttachment) {
+                throw new Error(
+                    'Need to set a texture attachment before '
+                    + 'compilation!'
+                );
+            }
+
+            this.#textureAttachment.getTexture().compile(device);
+            this.#textureAttachment.getSampler().compile(device);
+        }
+        
         this.#shader.compile(device);
         this.#uniformBuffer.compile(device);
         this.#createBindGroup(device);
@@ -273,37 +309,57 @@ class Material
 
         this.#compiled = false;
     }
-
-    /**
-     * Abstract method for initializing this material. Must be implemented
-     * by the concrete implementation of this class.
-     */
-    static async init(settings = {}) {
-        throw new Error('Method init not implemented!');
-    }
-
+    
     /**
      * Creates the bind group layout.
      */
     #createBindGroup(device)
     {
-        this.#bindGroupLayout = device.createBindGroupLayout({
-            entries: [{
-                binding: 0,
+        // Bind group layout
+        let bindGroupLayoutEntries = [{
+            binding: 0,
+            visibility: GPUShaderStage.FRAGMENT,
+            buffer: {},
+        }];
+
+        if (this.#texture) {
+            bindGroupLayoutEntries.push({
+                binding: 1,
                 visibility: GPUShaderStage.FRAGMENT,
-                buffer: {},
-            }]
+                sampler: {},
+            }, {
+                binding: 2,
+                visibility: GPUShaderStage.FRAGMENT,
+                texture: {},
+            });
+        }
+
+        this.#bindGroupLayout = device.createBindGroupLayout({
+            entries: bindGroupLayoutEntries
         });
+
+        // Bind group
+        let bindGroupEntries = [{
+            binding: 0,
+            resource: {
+                buffer: this.#uniformBuffer.getUniformBuffer()
+            }
+        }];
+
+        if (this.#texture) {
+            bindGroupEntries.push({
+                binding: 1,
+                resource: this.#textureAttachment.getSampler().getGpuSampler()
+            }, {
+                binding: 2,
+                resource: this.#textureAttachment.getTexture().getGpuTextureView()
+            });
+        }
 
         this.#bindGroup = device.createBindGroup({
             label: this.#name + '-material',
             layout: this.#bindGroupLayout,
-            entries: [{
-                binding: 0,
-                resource: {
-                    buffer: this.#uniformBuffer.getUniformBuffer()
-                }
-            }]
+            entries: bindGroupEntries
         });
     }
 
@@ -361,6 +417,24 @@ class Material
 
     static get COLOR_BLEND() {
         return 'color_blend';
+    }
+
+    // A list of texture modes
+
+    static get TEXTURE_RAW() {
+        return 'texture_raw';
+    }
+
+    static get TEXTURE_TINT() {
+        return 'texture_tint';
+    }
+
+    static get TEXTURE_VERTEX() {
+        return 'texture_vertex';
+    }
+
+    static get TEXTURE_BLEND() {
+        return 'texture_blend';
     }
 }
 

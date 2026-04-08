@@ -3,9 +3,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2026-04-08
+
+### Added
+
+- New methods Color.toIntArray and Color.toRgbIntArray
+- New Texture class to describe WebGPU textures
+- New Sampler class to describe WebGPU samplers
+- New TextureAttachment class to store related Texture and Sampler instances
+- Texture support in Material class
+- New color modes TEXTURE_RAW, TEXTURE_TINT, TEXTURE_BLEND and TEXTURE_VERTEX
+- Support for the TEXTURE_RAW color mode in BasicMaterial and LambertMaterial
+- New Angle class for storing angles in a unit agnostic way
+
+### Changed
+
+- Geometry now uses flat arrays instead of an array of Uv objects to increase performance
+- Math classes are now found in the math directory
+
+### Removed
+
+- Uv class was removed
+
+### Fixed
+
+- Large objects are now supported due to the use of the much bigger Uint32Array for indices
+
 ## [0.2.1] - 2026-03-04
 
-## Fixed
+### Fixed
 
 - Vector3.transformQuaternionOther now not only calculates but also returns the result
 - Quaternion.normalize, Quaternion.inverse and Quaternion.inverseOther no longer return wrong results

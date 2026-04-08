@@ -1,6 +1,6 @@
 
 import { Camera } from './camera.js';
-import { Matrix4 } from '../matrix4.js';
+import { Matrix4 } from '../math/matrix4.js';
 
 /**
  * Represents a perspective camera.
