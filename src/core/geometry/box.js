@@ -9,7 +9,7 @@ import { Vector3 } from '../math/vector3.js';
  */
 class Box extends Geometry
 {
-    constructor(width = 1, height = 1, depth = 1)
+    constructor(width = 1, height = 1, depth = 1, options = {})
     {
         Box.validateDimension(width, 'width');
         Box.validateDimension(height, 'height');
@@ -18,6 +18,24 @@ class Box extends Geometry
         super();
 
         this.#createBox(width, height, depth);
+
+        let mode = Box.UVS_PER_FACE;
+
+        if (options.uvMode) {
+            this.#validateUvMode(options.uvMode);
+            mode = options.uvMode;
+        }
+
+        switch (mode) {
+            case Box.UVS_ATLAS: this.#createBoxUvAtlas();
+                break;
+            case Box.UVS_NONE:
+                break;
+            case Box.UVS_PER_FACE:
+            default: this.#createBoxUvPerFace();
+                break;
+        }
+
         this.calculateVertexNormals();
     }
 
@@ -32,7 +50,7 @@ class Box extends Geometry
             front.clone(),
             front.clone(),
             front.clone(),
-            
+
             // Right face
             right.clone(),
             right.clone(),
@@ -80,7 +98,6 @@ class Box extends Geometry
 
         this.#createBoxVertices(halfWidth, halfHeight, halfDepth);
         this.#createBoxFaces();
-        this.#createBoxUv();
     }
 
     /**
@@ -114,7 +131,7 @@ class Box extends Geometry
             d.clone(), // 1
             b.clone(), // 2
             a.clone(), // 3
-            
+
             // Right face vertices (dhfb)
             d.clone(), // 4
             h.clone(), // 5
@@ -184,45 +201,95 @@ class Box extends Geometry
     }
 
     /**
-     * Creates all the box uv-coordinates.
+     * Creates all the box uv-coordinates with each face looking the same way.
      */
-    #createBoxUv()
+    #createBoxUvPerFace()
     {
-            // Front face UVs
-            this.addUvCoordinate(0, 0); // 0: bottom-left
-            this.addUvCoordinate(1, 0); // 1: bottom-right
-            this.addUvCoordinate(1, 1); // 2: top-right
-            this.addUvCoordinate(0, 1); // 3: top-left
+        for (let i = 0; i < 6; i++) {
+            this.addUvCoordinate(0, 0); // bottom-left
+            this.addUvCoordinate(1, 0); // bottom-right
+            this.addUvCoordinate(1, 1); // top-right
+            this.addUvCoordinate(0, 1); // top-left
+        }
+    }
 
-            // Right face UVs
-            this.addUvCoordinate(0, 0); // 12: bottom-left
-            this.addUvCoordinate(1, 0); // 13: bottom-right
-            this.addUvCoordinate(1, 1); // 14: top-right
-            this.addUvCoordinate(0, 1); // 15: top-left
-            
-            // Back face UVs
-            this.addUvCoordinate(0, 0); // 4: bottom-left
-            this.addUvCoordinate(1, 0); // 5: bottom-right
-            this.addUvCoordinate(1, 1); // 6: top-right
-            this.addUvCoordinate(0, 1); // 7: top-left
-            
-            // Left face UVs
-            this.addUvCoordinate(0, 0); // 8: bottom-left
-            this.addUvCoordinate(1, 0); // 9: bottom-right
-            this.addUvCoordinate(1, 1); // 10: top-right
-            this.addUvCoordinate(0, 1); // 11: top-left
+    /**
+     * Creates all the box uv-coordinates with each face using another part of
+     * a texture atlas.
+     */
+    #createBoxUvAtlas()
+    {
+        // Three columns and two rows in the texture atlas
+        const column = 1 / 3;
+        const row = 1 / 2;
 
-            // Top face UVs
-            this.addUvCoordinate(0, 0); // 16: bottom-left
-            this.addUvCoordinate(1, 0); // 17: bottom-right
-            this.addUvCoordinate(1, 1); // 18: top-right
-            this.addUvCoordinate(0, 1); // 19: top-left
+        // Front face (column 2, row 0)
+        this.addUvCoordinate(2 * column, row); // 0: bottom-left
+        this.addUvCoordinate(3 * column, row); // 1: bottom-right
+        this.addUvCoordinate(3 * column, 0); // 2: top-right
+        this.addUvCoordinate(2 * column, 0); // 3: top-left
 
-            // Bottom face UVs
-            this.addUvCoordinate(0, 0); // 20: bottom-left
-            this.addUvCoordinate(1, 0); // 21: bottom-right
-            this.addUvCoordinate(1, 1); // 22: top-right
-            this.addUvCoordinate(0, 1); // 23: top-left
+        // Right face (column 0, row 0)
+        this.addUvCoordinate(0, row); // 4: bottom-left
+        this.addUvCoordinate(column, row); // 5: bottom-right
+        this.addUvCoordinate(column, 0); // 6: top-right
+        this.addUvCoordinate(0, 0); // 7: top-left
+
+        // Back face (column 2, row 1)
+        this.addUvCoordinate(2 * column, 1); // 8: bottom-left
+        this.addUvCoordinate(3 * column, 1); // 9: bottom-right
+        this.addUvCoordinate(3 * column, row); // 10: top-right
+        this.addUvCoordinate(2 * column, row); // 11: top-left
+
+        // Left face (column 0, row 1)
+        this.addUvCoordinate(0, 1); // 12: bottom-left
+        this.addUvCoordinate(column, 1); // 13: bottom-right
+        this.addUvCoordinate(column, row); // 14: top-right
+        this.addUvCoordinate(0, row); // 15: top-left
+
+        // Top face (column 1, row 0)
+        this.addUvCoordinate(column, row); // 16: bottom-left
+        this.addUvCoordinate(2 * column, row); // 17: bottom-right
+        this.addUvCoordinate(2 * column, 0); // 18: top-right
+        this.addUvCoordinate(column, 0); // 19: top-left
+
+        // Bottom face (column 1, row 1)
+        this.addUvCoordinate(column, 1); // 20: bottom-left
+        this.addUvCoordinate(2 * column, 1); // 21: bottom-right
+        this.addUvCoordinate(2 * column, row); // 22: top-right
+        this.addUvCoordinate(column, row); // 23: top-left
+    }
+
+    /**
+     * Checks if an input value is valid uv mode.
+     */
+    #validateUvMode(uvMode)
+    {
+        const validModes = [
+            Box.UVS_PER_FACE,
+            Box.UVS_ATLAS,
+            Box.UVS_NONE
+        ];
+
+        if (!validModes.includes(uvMode)) {
+            throw new Error(
+                `Invalid box uv mode: ${uvMode}.`
+            );
+        }
+    }
+
+    // Pseudo constants for uv modes
+
+    static get UVS_NONE() {
+        return 'none';
+    }
+
+    static get UVS_ATLAS() {
+        return 'atlas';
+    }
+
+    static get UVS_PER_FACE() {
+        return 'per-face';
     }
 }
 
