@@ -229,6 +229,11 @@ class Engine
         if (camera.needsUpdate()) {
             camera.update(this.#device);
         }
+
+        // Update scene nodes if needed before rendering
+        for (const node of scene.getNodes()) {
+            this.#updateDirtyNodeRecursive(node, camera);
+        }
         
         this.#createRenderPass();
         this.#renderPass.setBindGroup(0, camera.getBindGroup());
@@ -429,6 +434,20 @@ class Engine
     }
 
     /**
+     * Update dirty nodes recursively before rendering.
+     */
+    #updateDirtyNodeRecursive(node, camera)
+    {
+        if (node.needsUpdate()) {
+            node.update(this.#device, camera);
+        }
+
+        for (const child of node.getChildren()) {
+            this.#updateDirtyNodeRecursive(child, camera);
+        }
+    }
+
+    /**
      * Recursively render a node and all its children.
      */
     async #renderNodeRecursive(node, camera, scene)
@@ -451,10 +470,6 @@ class Engine
      */
     async #renderNode(node, camera, scene)
     {
-        if (node.needsUpdate()) {
-            node.update(this.#device, camera);
-        }
-
         const material = node.getMesh().getMaterial();
         const vertices = node.getMesh().getVertexBuffer();
         const indices = node.getMesh().getIndexBuffer();
