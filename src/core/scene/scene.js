@@ -1,11 +1,11 @@
 
-import { AmbientLight } from './light/ambient-light.js';
-import { Color } from './color.js';
-import { DirectionalLight } from './light/directional-light.js';
-import { Engine } from '../engine.js';
+import { AmbientLight } from '../light/ambient-light.js';
+import { Color } from '../color.js';
+import { DirectionalLight } from '../light/directional-light.js';
+import { Engine } from '../../engine.js';
 import { SceneNode } from './scene-node.js';
-import { UniformBuffer } from './buffer/uniform-buffer.js';
-import { StorageBuffer } from './buffer/storage-buffer.js';
+import { UniformBuffer } from '../buffer/uniform-buffer.js';
+import { StorageBuffer } from '../buffer/storage-buffer.js';
 
 /**
  * Manages the camera and objects in a scene.

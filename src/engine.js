@@ -1,7 +1,7 @@
 
 import { Camera } from './core/camera/camera.js';
 import { Color } from './core/color.js';
-import { Scene } from './core/scene.js';
+import { Scene } from './core/scene/scene.js';
 
 /**
  * 3D rendering engine using the WebGPU API and HTML canvas.
