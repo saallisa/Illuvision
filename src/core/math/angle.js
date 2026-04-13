@@ -60,6 +60,78 @@ class Angle
     }
 
     /**
+     * Add another Angle to this angle.
+     */
+    add(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees += angle.degrees;
+    }
+
+    /**
+     * Add another angle in degrees to this angle.
+     */
+    addDegrees(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees += angle;
+    }
+
+    /**
+     * Add another angle in radians to this angle.
+     */
+    addRadians(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees += Angle.radiansToDegrees(angle);
+    }
+
+    /**
+     * Subtract another angle from this angle.
+     */
+    subtract(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees -= angle.degrees;
+    }
+
+    /**
+     * Subtract another angle in degrees from this angle.
+     */
+    subtractDegrees(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees -= angle;
+    }
+
+    /**
+     * Subtract another angle in radians from this angle.
+     */
+    subtractRadians(angle)
+    {
+        Angle.#validateAngle(angle);
+
+        this.#angleInDegrees -= Angle.radiansToDegrees(angle);
+    }
+
+    /**
+     * Scale this angle by a factor.
+     */
+    scale(factor)
+    {
+        if (typeof factor !== 'number' || !isFinite(factor)) {
+            throw new Error('Scaling factor must be a finite number');
+        }
+
+        this.#angleInDegrees *= factor;
+    }
+
+    /**
      * Creates a new instance of Angle from degrees.
      */
     static fromDegrees(degrees) {
