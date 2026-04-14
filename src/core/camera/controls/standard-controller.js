@@ -114,6 +114,8 @@ class StandardController
         this.#canvas = engine.getCanvas();
         this.#canvas.requestPointerLock();
 
+        this.#calculateAngles();
+
         document.addEventListener('mousemove', this.#boundHandlers.mousemove);
     }
 
@@ -136,7 +138,7 @@ class StandardController
     {
         if (!(timer instanceof Timer)) {
             throw new Error('Timer must be a valid timer instance.')
-        };
+        }
 
         // Calculate current forward and right vectors
         this.#calculateCameraDirections();
@@ -270,7 +272,18 @@ class StandardController
         direction.normalize();
 
         this.#yaw = Math.atan2(direction.x, direction.z);
-        this.#pitch = Math.asin(direction.y);
+        this.#pitch = this.#clampPitch(Math.asin(
+            Math.max(-1, Math.min(1, direction.y))
+        ));
+    }
+
+    /**
+     * Clamp pitch values.
+     */
+    #clampPitch(pitch)
+    {
+        const limit = Math.PI / 2 - 0.1;
+        return Math.max(-limit, Math.min(limit, pitch))
     }
 
     /**
@@ -328,7 +341,9 @@ class StandardController
 
         // Update yaw (horizontal rotation) and pitch (vertical rotation)
         this.#yaw -= event.movementX * this.#sensitivity;
-        this.#pitch -= event.movementY * this.#sensitivity;
+        this.#pitch = this.#clampPitch(
+            this.#pitch - event.movementY * this.#sensitivity
+        );
 
         // Update camera target based on new angles
         this.#updateCameraTarget();
