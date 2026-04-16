@@ -23,6 +23,7 @@ class Engine
     #commandEncoder = null;
     #renderPass = null;
     #depthTexture = null;
+    #depthTextureView = null;
     #pipelines = new Map();
 
     // Animation
@@ -364,7 +365,7 @@ class Engine
     {
         this.#commandEncoder = this.#device.createCommandEncoder();
 
-        if (!this.#depthTexture) {
+        if (!this.#depthTextureView) {
             this.#createDepthTextureView();
         }
         
@@ -394,6 +395,11 @@ class Engine
      */
     #createDepthTextureView()
     {
+        if (this.#depthTexture) {
+            this.#depthTexture.destroy();
+            this.#depthTexture = null;
+        }
+
         const depthTextureDesc = {
             size: [this.#width, this.#height, 1],
             dimension: '2d',
@@ -401,8 +407,8 @@ class Engine
             usage: GPUTextureUsage.RENDER_ATTACHMENT 
         };
 
-        const depthTexture = this.#device.createTexture(depthTextureDesc);
-        this.#depthTexture = depthTexture.createView();
+        this.#depthTexture = this.#device.createTexture(depthTextureDesc);
+        this.#depthTextureView = this.#depthTexture.createView();
     }
 
     /**
@@ -411,7 +417,7 @@ class Engine
     #createDepthAttachment()
     {
         return {
-            view: this.#depthTexture,
+            view: this.#depthTextureView,
             depthClearValue: 1,
             depthLoadOp: 'clear',
             depthStoreOp: 'store',
@@ -499,7 +505,10 @@ class Engine
         this.#renderPass.setBindGroup(3, node.getBindGroup());
 
         this.#renderPass.setVertexBuffer(0, vertices.getGpuVertexBuffer());
-        this.#renderPass.setIndexBuffer(indices.getGpuIndexBuffer(), indices.getIndexFormat());
+        this.#renderPass.setIndexBuffer(
+            indices.getGpuIndexBuffer(),
+            indices.getIndexFormat()
+        );
         this.#renderPass.drawIndexed(indices.getIndexCount());
     }
 
