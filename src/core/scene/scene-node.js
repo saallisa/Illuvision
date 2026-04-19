@@ -14,8 +14,20 @@ class SceneNode
     #mesh = null;
     #children = [];
     #parent = null;
+
     #position = null;
     #scale = null;
+    _rotateX = null;
+    _rotateY = null;
+    _rotateZ = null;
+
+    #localModelMatrix = null;
+    #localModelMatrixDirty = true;
+    #modelMatrix = null;
+    #modelMatrixDirty = true;
+    #normalMatrix = null;
+    #normalMatrixDirty = true;
+
     #camera = null;
 
     #uniformBuffer = null;
@@ -76,8 +88,13 @@ class SceneNode
     {
         Vector3.validateInstance(position);
 
-        this.#position = position;
-        this.requireUpdate();
+        if (this.#position.x !== position.x ||
+            this.#position.y !== position.y ||
+            this.#position.z !== position.z)
+        {
+            this.#position = position;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -85,8 +102,10 @@ class SceneNode
      */
     updateX(x)
     {
-        this.#position.x = x;
-        this.requireUpdate();
+        if (this.#position.x !== x) {
+            this.#position.x = x;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -94,8 +113,10 @@ class SceneNode
      */
     updateY(y)
     {
-        this.#position.y = y;
-        this.requireUpdate();
+        if (this.#position.y !== y) {
+            this.#position.y = y;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -103,8 +124,10 @@ class SceneNode
      */
     updateZ(z)
     {
-        this.#position.z = z;
-        this.requireUpdate();
+        if (this.#position.z !== z) {
+            this.#position.z = z;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -128,8 +151,13 @@ class SceneNode
     {
         Vector3.validateInstance(scale);
 
-        this.#scale = scale;
-        this.requireUpdate();
+        if (this.#scale.x !== scale.x ||
+            this.#scale.y !== scale.y ||
+            this.#scale.z !== scale.z)
+        {
+            this.#scale = scale;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -144,8 +172,12 @@ class SceneNode
      */
     set rotateX(angle)
     {
-        this._rotateX = (angle + 360) % 360;
-        this.requireUpdate();
+        const normalizedAngle = (angle + 360) % 360;
+
+        if (this._rotateX !== normalizedAngle) {
+            this._rotateX = (angle + 360) % 360;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -160,8 +192,12 @@ class SceneNode
      */
     set rotateY(angle)
     {
-        this._rotateY = (angle + 360) % 360;
-        this.requireUpdate();
+        const normalizedAngle = (angle + 360) % 360;
+
+        if (this._rotateY !== normalizedAngle) {
+            this._rotateY = (angle + 360) % 360;
+            this.#markLocalModelMatrixDirty();
+        }
     }
 
     /**
@@ -176,10 +212,14 @@ class SceneNode
      */
     set rotateZ(angle)
     {
-        this._rotateZ = (angle + 360) % 360;
-        this.requireUpdate();
-    }
+        const normalizedAngle = (angle + 360) % 360;
 
+        if (this._rotateZ !== normalizedAngle) {
+            this._rotateZ = (angle + 360) % 360;
+            this.#markLocalModelMatrixDirty();
+        }
+    }
+    
     /**
      * Retrieve the uniform buffer.
      */
@@ -253,15 +293,31 @@ class SceneNode
     }
 
     /**
-     * Require an update on next rendering.
+     * Require a model-related update on next rendering.
      */
-    requireUpdate()
+    requireModelUpdate()
     {
         this.#needsUpdate = true;
+        this.#modelMatrixDirty = true;
+        this.#normalMatrixDirty = true;
 
         // Propagate to children since parent transform changed
         for (const child of this.#children) {
-            child.requireUpdate();
+            child.requireModelUpdate();
+        }
+    }
+
+    /**
+     * Require a view-related update on next rendering.
+     */
+    requireViewUpdate()
+    {
+        this.#needsUpdate = true;
+        this.#normalMatrixDirty = true;
+
+        // Propagate to children
+        for (const child of this.#children) {
+            child.requireViewUpdate();
         }
     }
 
@@ -307,7 +363,57 @@ class SceneNode
         this.#bindGroupLayout = null;
         
         this.#compiled = false;
-        this.requireUpdate();
+
+        // Clear all caches
+        this.#localModelMatrix = null;
+        this.#modelMatrix = null;
+        this.#normalMatrix = null;
+
+        // Mark everything dirty
+        this.#localModelMatrixDirty = true;
+        this.#modelMatrixDirty = true;
+        this.#normalMatrixDirty = true;
+        this.#needsUpdate = true;
+    }
+
+    /**
+     * Returns the local model matrix without considering parent
+     * transformations.
+     */
+    getLocalModelMatrix()
+    {
+        if (!this.#localModelMatrix || this.#localModelMatrixDirty) {
+            const position = Matrix4.createTranslation(
+                this.#position.x,
+                this.#position.y,
+                this.#position.z
+            );
+
+            const scale = Matrix4.createScale(
+                this.#scale.x,
+                this.#scale.y,
+                this.#scale.z
+            );
+
+            const rotationX = Matrix4.createRotateX(
+                Angle.fromDegrees(this.rotateX)
+            );
+            const rotationY = Matrix4.createRotateY(
+                Angle.fromDegrees(this.rotateY)
+            );
+            const rotationZ = Matrix4.createRotateZ(
+                Angle.fromDegrees(this.rotateZ)
+            );
+
+            const rotation = rotationX
+                .multiplyOther(rotationY)
+                .multiplyOther(rotationZ);
+
+            this.#localModelMatrix = rotation.multiplyOther(position).multiplyOther(scale);
+            this.#localModelMatrixDirty = false;
+        }
+
+        return this.#localModelMatrix;
     }
 
     /**
@@ -315,48 +421,50 @@ class SceneNode
      */
     getModelMatrix()
     {
-        // Local transformation
-        const position = Matrix4.createTranslation(
-            this.#position.x,
-            this.#position.y,
-            this.#position.z
-        );
-
-        const scale = Matrix4.createScale(
-            this.#scale.x,
-            this.#scale.y,
-            this.#scale.z
-        );
-
-        const rotationX = Matrix4.createRotateX(Angle.fromDegrees(this.rotateX));
-        const rotationY = Matrix4.createRotateY(Angle.fromDegrees(this.rotateY));
-        const rotationZ = Matrix4.createRotateZ(Angle.fromDegrees(this.rotateZ));
-        const rotation = rotationX
-            .multiplyOther(rotationY)
-            .multiplyOther(rotationZ);
-
-        const matrix = rotation.multiplyOther(position).multiplyOther(scale);
-
-        // Parent transformation applied if needed
-        if (this.#parent) {
-            const parentTransform = this.#parent.getModelMatrix();
-            return matrix.multiplyOther(parentTransform);
+        if (!this.#parent) {
+            return this.getLocalModelMatrix();
         }
 
-        return matrix;
+        if (!this.#modelMatrix || this.#modelMatrixDirty) {
+            const localModelMatrix = this.getLocalModelMatrix();
+
+            // Parent transformation applied if needed
+            if (this.#parent) {
+                const parentTransform = this.#parent.getModelMatrix();
+                this.#modelMatrix = localModelMatrix.multiplyOther(
+                    parentTransform
+                );
+                this.#modelMatrixDirty = false;
+            }
+        }
+
+        return this.#modelMatrix;
     }
 
     /**
      * Returns the scene nodes normal matrix.
      */
-    #getNormalMatrix(modelMatrix)
+    getNormalMatrix()
     {
-        // Extract upper 3x3
-        const mat3 = Matrix3.fromMatrix4(modelMatrix);
-        
-        // Inverse-transpose
-        const inverted = Matrix3.invert(mat3);
-        return Matrix3.transpose(inverted);
+        if (!this.#normalMatrix || this.#normalMatrixDirty) {
+            const mat3 = Matrix3.fromMatrix4(this.getModelMatrix());
+            const inverted = Matrix3.invert(mat3);
+
+            this.#normalMatrix = Matrix3.transpose(inverted);
+            this.#normalMatrixDirty = false;
+        }
+
+        return this.#normalMatrix;
+    }
+
+    /**
+     * Marks the model matrix dirty and requires an update.
+     */
+    #markLocalModelMatrixDirty()
+    {
+        this.#localModelMatrixDirty = true;
+        this.#normalMatrixDirty = true;
+        this.#needsUpdate = true;
     }
 
     /**
@@ -367,7 +475,7 @@ class SceneNode
         const modelMatrix = this.getModelMatrix();
         const viewMatrix = this.#camera.getViewMatrix();
         const modelViewMatrix = Matrix4.multiply(modelMatrix, viewMatrix);
-        const normalMatrix = this.#getNormalMatrix(modelMatrix);
+        const normalMatrix = this.getNormalMatrix();
 
         this.#uniformBuffer.setUniform(
             'model-matrix', modelMatrix.toArray(), 'mat4x4<f32>'

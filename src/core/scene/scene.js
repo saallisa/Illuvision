@@ -299,7 +299,7 @@ class Scene
      */
     #updateNodeForCameraChange(node)
     {
-        node.requireUpdate();
+        node.requireViewUpdate();
 
         const children = node.getChildren();
 
