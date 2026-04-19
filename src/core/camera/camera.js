@@ -67,8 +67,13 @@ class Camera
     {
         Vector3.validateInstance(position);
 
-        this.#position = position;
-        this.#markViewDirty();
+        if (this.#position.x !== position.x ||
+            this.#position.y !== position.y ||
+            this.#position.z !== position.z)
+        {
+            this.#position = position;
+            this.#markViewDirty();
+        }
     }
 
     /**
@@ -85,8 +90,13 @@ class Camera
     {
         Vector3.validateInstance(target);
 
-        this.#target = target;
-        this.#markViewDirty();
+        if (this.#target.x !== target.x ||
+            this.#target.y !== target.y ||
+            this.#target.z !== target.z)
+        {
+            this.#target = target;
+            this.#markViewDirty();
+        }
     }
 
     /**
@@ -103,8 +113,13 @@ class Camera
     {
         Vector3.validateInstance(up);
 
-        this.#up = up;
-        this.#markViewDirty();
+        if (this.#up.x !== up.x ||
+            this.#up.y !== up.y ||
+            this.#up.z !== up.z)
+        {
+            this.#up = up;
+            this.#markViewDirty();
+        }
     }
 
     /**
