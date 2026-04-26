@@ -5,9 +5,23 @@ import { Quaternion } from './quaternion.js';
 /**
  * This class provides comprehensive vector operations for three-dimensional
  * graphics programming.
+ *
+ * @class
  */
 class Vector3
 {
+    /** @type {number} */
+    #_x;
+    /** @type {number} */
+    #_y;
+    /** @type {number} */
+    #_z;
+
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     constructor(x = 0, y = 0, z = 0)
     {
         this.x = x;
@@ -17,6 +31,8 @@ class Vector3
 
     /**
      * Modifies this vector by adding another vector to it.
+     *
+     * @param {Vector3} other
      */
     add(other)
     {
@@ -29,6 +45,8 @@ class Vector3
 
     /**
      * Modifies this vector by subtracting another vector from it.
+     *
+     * @param {Vector3} other
      */
     subtract(other)
     {
@@ -41,6 +59,8 @@ class Vector3
 
     /**
      * Modifies this vector by crossing it with another vector.
+     *
+     * @param {Vector3} other
      */
     cross(other)
     {
@@ -57,6 +77,8 @@ class Vector3
 
     /**
      * Returns the length of this vector.
+     *
+     * @returns {number}
      */
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
@@ -64,6 +86,9 @@ class Vector3
 
     /**
      * Calculates the distance between this and another vector.
+     *
+     * @param {Vector3} other
+     * @returns {number}
      */
     distanceTo(other)
     {
@@ -88,6 +113,8 @@ class Vector3
 
     /**
      * Multiply this vector's components by the given scalar.
+     *
+     * @param {number} scalar
      */
     multiplyScalar(scalar)
     {
@@ -100,6 +127,8 @@ class Vector3
 
     /**
      * Transforms this vector by using a 3x3 matrix
+     *
+     * @param {Matrix3} matrix
      */
     transformMatrix3(matrix)
     {
@@ -118,6 +147,8 @@ class Vector3
 
     /**
      * Transforms this vector by using a Quaternion.
+     *
+     * @param {Quaternion} quaternion
      */
     transformQuaternion(quaternion)
     {
@@ -141,6 +172,9 @@ class Vector3
 
     /**
      * Add another vector to this one and return the result as a new vector.
+     *
+     * @param {Vector3} other
+     * @returns {Vector3}
      */
     addOther(other) {
         return Vector3.add(this, other);
@@ -149,6 +183,9 @@ class Vector3
     /**
      * Subtract another vector from this one and return the result as a new
      * vector.
+     *
+     * @param {Vector3} other
+     * @returns {Vector3}
      */
     subtractOther(other) {
         return Vector3.subtract(this, other);
@@ -156,6 +193,9 @@ class Vector3
 
     /**
      * Cross this vector with another and return the result as a new vector.
+     *
+     * @param {Vector3} other
+     * @returns {Vector3}
      */
     crossOther(other) {
         return Vector3.cross(this, other);
@@ -163,6 +203,9 @@ class Vector3
 
     /**
      * Dot this vector with another vector and return the result.
+     *
+     * @param {Vector3} other
+     * @returns {number}
      */
     dot(other) {
         return Vector3.dot(this, other);
@@ -171,6 +214,9 @@ class Vector3
     /**
      * Multiply this vector's components by the given scalar and return the
      * result as a new vector.
+     *
+     * @param {number} scalar
+     * @returns {Vector3}
      */
     multiplyScalarOther(scalar)
     {
@@ -186,6 +232,9 @@ class Vector3
     /**
      * Transforms this vector by using a 3x3 matrix and return the result as
      * a new vector.
+     *
+     * @param {Matrix3} matrix
+     * @returns {Vector3}
      */
     transformMatrix3Other(matrix)
     {
@@ -203,6 +252,9 @@ class Vector3
     /**
      * Transforms this vector by using a Quaternion and return the result as
      * a new vector.
+     *
+     * @param {Quaternion} quaternion
+     * @returns {Vector3}
      */
     transformQuaternionOther(quaternion)
     {
@@ -228,6 +280,10 @@ class Vector3
 
     /**
      * Add two vectors without modifying them.
+     *
+     * @param {Vector3} vectorA
+     * @param {Vector3} vectorB
+     * @returns {Vector3}
      */
     static add(vectorA, vectorB)
     {
@@ -243,6 +299,10 @@ class Vector3
 
     /**
      * Subtracts two vectors without modifying them.
+     *
+     * @param {Vector3} vectorA
+     * @param {Vector3} vectorB
+     * @returns {Vector3}
      */
     static subtract(vectorA, vectorB)
     {
@@ -258,6 +318,10 @@ class Vector3
 
     /**
      * Calculate cross product of two vectors without modifying them.
+     *
+     * @param {Vector3} vectorA
+     * @param {Vector3} vectorB
+     * @returns {Vector3}
      */
     static cross(vectorA, vectorB)
     {
@@ -273,6 +337,10 @@ class Vector3
 
     /**
      * Calculate the dot product of two vectors.
+     *
+     * @param {Vector3} vectorA
+     * @param {Vector3} vectorB
+     * @returns {number}
      */
     static dot(vectorA, vectorB)
     {
@@ -287,7 +355,10 @@ class Vector3
     }
 
     /**
-     * Returns a normalized copy of this vector.
+     * Returns a normalized copy of the given vector.
+     *
+     * @param {Vector3} vector
+     * @returns {Vector3}
      */
     static normalize(vector)
     {
@@ -308,6 +379,10 @@ class Vector3
 
     /**
      * Multiplies a vector with a scalar.
+     *
+     * @param {Vector3} vector
+     * @param {number} scalar
+     * @returns {Vector3}
      */
     static multiplyScalar(vector, scalar)
     {
@@ -319,6 +394,10 @@ class Vector3
 
     /**
      * Calculate the distance between two vectors.
+     *
+     * @param {Vector3} vectorA
+     * @param {Vector3} vectorB
+     * @returns {number}
      */
     static distance(vectorA, vectorB)
     {
@@ -331,6 +410,10 @@ class Vector3
     /**
      * Transforms a vector with a 3x3 matrix and returns the result as a new
      * vector.
+     *
+     * @param {Vector3} vector
+     * @param {Matrix3} matrix
+     * @returns {Vector3}
      */
     static transformMatrix3(vector, matrix)
     {
@@ -342,6 +425,10 @@ class Vector3
     /**
      * Transforms a vector with a quaternion and returns the result as a new
      * vector.
+     *
+     * @param {Vector3} vector
+     * @param {Quaternion} quaternion
+     * @returns {Vector3}
      */
     static transformQuaternion(vector, quaternion)
     {
@@ -352,6 +439,8 @@ class Vector3
 
     /**
      * Convert the vector to an array.
+     *
+     * @returns {number[]}
      */
     toArray()
     {
@@ -364,6 +453,8 @@ class Vector3
 
     /**
      * Creates a copy of this vector.
+     *
+     * @returns {Vector3}
      */
     clone() {
         return new Vector3(this.x, this.y, this.z);
@@ -371,54 +462,70 @@ class Vector3
 
     /**
      * Gets x directly.
+     *
+     * @returns {number}
      */
     get x() {
-        return this._x;
+        return this.#_x;
     }
 
     /**
      * Sets x directly, but with validation.
+     *
+     * @param {number} x
      */
     set x(x)
     {
         Vector3.#validateComponent(x, 'x');
-        this._x = x;
+        this.#_x = x;
     }
 
     /**
      * Gets y directly.
+     *
+     * @returns {number}
      */
     get y() {
-        return this._y;
+        return this.#_y;
     }
 
     /**
      * Sets y directly, but with validation.
+     *
+     * @param {number} y
      */
     set y(y)
     {
         Vector3.#validateComponent(y, 'y');
-        this._y = y;
+        this.#_y = y;
     }
 
     /**
      * Gets z directly.
+     *
+     * @returns {number}
      */
     get z() {
-        return this._z;
+        return this.#_z;
     }
 
     /**
      * Sets z directly, but with validation.
+     *
+     * @param {number} z
      */
     set z(z)
     {
         Vector3.#validateComponent(z, 'z');
-        this._z = z;
+        this.#_z = z;
     }
 
     /**
      * Validates that a single component is a finite number.
+     *
+     * @param {*} value
+     * @param {string} componentName
+     * @throws {TypeError}
      */
     static #validateComponent(value, componentName)
     {
@@ -431,6 +538,9 @@ class Vector3
 
     /**
      * Validates that an object is a Vector3 instance.
+     *
+     * @param {*} value
+     * @throws {TypeError}
      */
     static validateInstance(value)
     {
