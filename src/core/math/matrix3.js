@@ -3,13 +3,18 @@ import { Angle } from './angle.js';
 import { Matrix4 } from './matrix4.js';
 
 /**
- * This class provides comprehensive 3x3 matrix operations for three
- * dimensional graphics programming and transformations.
+ * This class provides comprehensive 3x3 matrix operations for
+ * three-dimensional graphics programming and transformations.
+ *
+ * @class
  */
 class Matrix3
 {
     #elements;
 
+    /**
+     * @param {number[]|null} elements
+     */
     constructor(elements = null)
     {
         if (elements === null) {
@@ -26,6 +31,10 @@ class Matrix3
 
     /**
      * Get element at row and column.
+     *
+     * @param {number} row
+     * @param {number} col
+     * @return {number}
      */
     get(row, col)
     {
@@ -39,6 +48,10 @@ class Matrix3
 
     /**
      * Set element at row and column.
+     *
+     * @param {number} row
+     * @param {number} col
+     * @param {number} value
      */
     set(row, col, value)
     {
@@ -61,13 +74,17 @@ class Matrix3
     /**
      * Transposes this matrix and returns the result as a new Matrix3 instance
      * without changing the original one.
+     *
+     * @returns {Matrix3}
      */
     transpose() {
         return new Matrix3(Matrix3.#transposeArray(this.#elements));
     }
 
     /**
-     * Calculate the determinant of this matrix using the leibnitz formula.
+     * Calculate the determinant of this matrix using the Leibniz formula.
+     *
+     * @returns {number}
      */
     determinant() {
 		return Matrix3.#determinantArray(this.#elements);
@@ -83,6 +100,8 @@ class Matrix3
     /**
      * Inverts this matrix and returns the result as a new Matrix3 instance
      * without changing the original one.
+     *
+     * @returns {Matrix3}
      */
     invert() {
         return new Matrix3(Matrix3.#invertArray(this.#elements));
@@ -90,6 +109,8 @@ class Matrix3
 
     /**
      * Returns the matrix as an array.
+     *
+     * @returns {number[]}
      */
     toArray() {
         return Array.from(this.#elements);
@@ -97,6 +118,8 @@ class Matrix3
 
     /**
      * Returns the matrix as an aligned array.
+     *
+     * @returns {number[]}
      */
     toBufferArray()
     {
@@ -111,6 +134,9 @@ class Matrix3
 
     /**
 	 * Copy the upper 3x3 matrix of the given 4x4 matrix into a new Matrix3.
+     *
+     * @param {Matrix4} matrix
+     * @returns {Matrix3}
 	 */
 	static fromMatrix4(matrix)
     {
@@ -127,6 +153,9 @@ class Matrix3
 
     /**
      * Convenience method for creating a rotation x matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix3}
      */
     static createRotateX(angle)
     {
@@ -144,6 +173,9 @@ class Matrix3
 
     /**
      * Convenience method for creating a rotation y matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix3}
      */
     static createRotateY(angle)
     {
@@ -161,6 +193,9 @@ class Matrix3
 
     /**
      * Convenience method for creating a rotation z matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix3}
      */
     static createRotateZ(angle)
     {
@@ -178,6 +213,9 @@ class Matrix3
 
     /**
      * Transposes a Matrix3 instance.
+     *
+     * @param {Matrix3} matrix
+     * @returns {Matrix3}
      */
     static transpose(matrix)
     {
@@ -188,6 +226,9 @@ class Matrix3
 
     /**
      * Inverts a Matrix3 instance.
+     *
+     * @param {Matrix3} matrix
+     * @returns {Matrix3}
      */
     static invert(matrix)
     {
@@ -198,6 +239,9 @@ class Matrix3
 
     /**
      * Validates that an object is a Matrix3 instance.
+     *
+     * @param {*} value
+     * @throws {TypeError}
      */
     static validateInstance(value)
     {
@@ -208,6 +252,9 @@ class Matrix3
 
     /**
      * Validates the elements array for matrix construction.
+     *
+     * @param {*} elements
+     * @throws {TypeError}
      */
     static #validateElements(elements)
     {
@@ -226,6 +273,10 @@ class Matrix3
 
     /**
      * Validates that a single component is a finite number.
+     *
+     * @param {*} value
+     * @param {string} componentName
+     * @throws {TypeError}
      */
     static #validateComponent(value, componentName)
     {
@@ -238,6 +289,10 @@ class Matrix3
 
     /**
      * Validates row and column indices.
+     *
+     * @param {number} row
+     * @param {number} col
+     * @throws {RangeError}
      */
     static #validateRowCol(row, col)
     {
@@ -249,6 +304,9 @@ class Matrix3
     /**
      * Transposes an array representation of a matrix and returns the result
      * as an array.
+     *
+     * @param {number[]} m
+     * @returns {number[]}
      */
     static #transposeArray(m)
     {
@@ -263,6 +321,9 @@ class Matrix3
 
     /**
      * Calculates the determinant of the array representation of a matrix.
+     *
+     * @param {number[]} m
+     * @returns {number}
      */
     static #determinantArray(m)
     {
@@ -278,6 +339,9 @@ class Matrix3
     /**
      * Inverts an array representation of a matrix and returns the result as
      * a new array.
+     *
+     * @param {number[]} m
+     * @returns {number[]}
      */
     static #invertArray(m)
     {
