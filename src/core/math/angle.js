@@ -2,11 +2,19 @@
 /**
  * A class representing an angle, which can be created from either degrees or
  * radians.
+ *
+ * @class
  */
 class Angle
 {
-    #angleInDegrees = null;
+    /** @type {number} */
+    #angleInDegrees;
 
+    /**
+     * @param {string} unit
+     * @param {number} angle
+     * @throws {Error}
+     */
     constructor(unit, angle)
     {
         switch (unit) {
@@ -22,6 +30,8 @@ class Angle
 
     /**
      * Returns the angle in degrees.
+     *
+     * @returns {number}
      */
     get degrees() {
         return this.#angleInDegrees;
@@ -29,6 +39,8 @@ class Angle
 
     /**
      * Sets the angle in degrees.
+     *
+     * @param {number} degrees
      */
     set degrees(degrees)
     {
@@ -38,6 +50,8 @@ class Angle
 
     /**
      * Sets the angle in radians.
+     *
+     * @param {number} radians
      */
     set radians(radians)
     {
@@ -47,6 +61,8 @@ class Angle
 
     /**
      * Returns the angle in radians.
+     *
+     * @returns {number}
      */
     get radians() {
         return Angle.degreesToRadians(this.#angleInDegrees);
@@ -61,6 +77,8 @@ class Angle
 
     /**
      * Add another Angle to this angle.
+     *
+     * @param {Angle} angle
      */
     add(angle)
     {
@@ -71,6 +89,8 @@ class Angle
 
     /**
      * Add another angle in degrees to this angle.
+     *
+     * @param {number} angle
      */
     addDegrees(angle)
     {
@@ -81,6 +101,8 @@ class Angle
 
     /**
      * Add another angle in radians to this angle.
+     *
+     * @param {number} angle
      */
     addRadians(angle)
     {
@@ -91,6 +113,8 @@ class Angle
 
     /**
      * Subtract another angle from this angle.
+     *
+     * @param {Angle} angle
      */
     subtract(angle)
     {
@@ -101,6 +125,8 @@ class Angle
 
     /**
      * Subtract another angle in degrees from this angle.
+     *
+     * @param {number} angle
      */
     subtractDegrees(angle)
     {
@@ -111,6 +137,8 @@ class Angle
 
     /**
      * Subtract another angle in radians from this angle.
+     *
+     * @param {number} angle
      */
     subtractRadians(angle)
     {
@@ -121,6 +149,9 @@ class Angle
 
     /**
      * Scale this angle by a factor.
+     *
+     * @param {number} factor
+     * @throws {Error}
      */
     scale(factor)
     {
@@ -133,6 +164,9 @@ class Angle
 
     /**
      * Creates a new instance of Angle from degrees.
+     *
+     * @param {number} degrees
+     * @returns {Angle}
      */
     static fromDegrees(degrees) {
         return new Angle(Angle.DEGREES, degrees);
@@ -140,6 +174,9 @@ class Angle
 
     /**
      * Creates a new instance of Angle from radians.
+     *
+     * @param {number} radians
+     * @returns {Angle}
      */
     static fromRadians(radians) {
         return new Angle(Angle.RADIANS, radians);
@@ -147,6 +184,9 @@ class Angle
 
     /**
      * Converts degrees to radians.
+     *
+     * @param {number} degrees
+     * @returns {number}
      */
     static degreesToRadians(degrees) {
         return degrees * (Math.PI / 180);
@@ -154,6 +194,9 @@ class Angle
 
     /**
      * Converts radians to degrees.
+     *
+     * @param {number} radians
+     * @returns {number}
      */
     static radiansToDegrees(radians) {
         return radians * (180 / Math.PI);
@@ -161,6 +204,9 @@ class Angle
 
     /**
      * Normalizes degrees to range 0 to 360.
+     *
+     * @param {number} angle
+     * @returns {number}
      */
     static normalizeDegrees(angle) {
         return ((angle % 360) + 360) % 360;
@@ -168,6 +214,9 @@ class Angle
 
     /**
      * Normalizes radians to range 0 to 2 * Pi.
+     *
+     * @param {number} angle
+     * @returns {number}
      */
     static normalizeRadians(angle)
     {
@@ -177,6 +226,11 @@ class Angle
 
     /**
      * Linearly interpolates between two angles, taking the shortest path.
+     *
+     * @param {Angle} angle1
+     * @param {Angle} angle2
+     * @param {number} t
+     * @returns {Angle}
      */
     static lerp(angle1, angle2, t)
     {
@@ -190,6 +244,11 @@ class Angle
 
     /**
      * Linearly interpolates between two angles in degrees, taking the shortest path.
+     *
+     * @param {number} angle1
+     * @param {number} angle2
+     * @param {number} t
+     * @returns {number}
      */
     static lerpDegrees(angle1, angle2, t)
     {
@@ -202,6 +261,11 @@ class Angle
 
     /**
      * Linearly interpolates between two angles in radians, taking the shortest path.
+     *
+     * @param {number} angle1
+     * @param {number} angle2
+     * @param {number} t
+     * @returns {number}
      */
     static lerpRadians(angle1, angle2, t)
     {
@@ -228,6 +292,8 @@ class Angle
 
     /**
      * Validates that a value is a valid Angle.
+     *
+     * @throws {TypeError}
      */
     static validateInstance(value)
     {
@@ -238,6 +304,8 @@ class Angle
 
     /**
      * Validates that a value is a finite number, which is necessary for angles.
+     *
+     * @throws {Error}
      */
     static #validateAngle(angle)
     {
@@ -248,6 +316,9 @@ class Angle
 
     /**
      * Validates that the interpolation factor t is a number between 0 and 1.
+     *
+     * @param {number} t
+     * @throws {Error|RangeError}
      */
     static #validateTFactor(t)
     {
@@ -264,6 +335,11 @@ class Angle
 
     /**
      * Linearly interpolates between two angles in degrees, taking the shortest path.
+     *
+     * @param {number} angle1
+     * @param {number} angle2
+     * @param {number} t
+     * @returns {number}
      */
     static #lerpDegreesRaw(angle1, angle2, t)
     {
@@ -287,10 +363,16 @@ class Angle
 
     // Fake constants returning valid angle units of measurement
 
+    /**
+     * @return {string}
+     */
     static get RADIANS() {
         return 'radians';
     }
 
+    /**
+     * @return {string}
+     */
     static get DEGREES() {
         return 'degrees';
     }
