@@ -11,9 +11,9 @@ class Angle
     #angleInDegrees;
 
     /**
-     * @param {string} unit
-     * @param {number} angle
-     * @throws {Error}
+     * @param {string} unit The unit of measure of the input angle
+     * @param {number} angle The input angle
+     * @throws {Error} If an invalid unit of measure was provided
      */
     constructor(unit, angle)
     {
@@ -185,8 +185,8 @@ class Angle
     /**
      * Converts degrees to radians.
      *
-     * @param {number} degrees
-     * @returns {number}
+     * @param {number} degrees The angle in degrees
+     * @returns {number} The angle in radians
      */
     static degreesToRadians(degrees) {
         return degrees * (Math.PI / 180);
@@ -195,8 +195,8 @@ class Angle
     /**
      * Converts radians to degrees.
      *
-     * @param {number} radians
-     * @returns {number}
+     * @param {number} radians The angle in radians
+     * @returns {number} The angle in degrees
      */
     static radiansToDegrees(radians) {
         return radians * (180 / Math.PI);
@@ -205,8 +205,8 @@ class Angle
     /**
      * Normalizes degrees to range 0 to 360.
      *
-     * @param {number} angle
-     * @returns {number}
+     * @param {number} angle The raw input angle in degrees
+     * @returns {number} The normalized input angle in degrees
      */
     static normalizeDegrees(angle) {
         return ((angle % 360) + 360) % 360;
@@ -215,8 +215,8 @@ class Angle
     /**
      * Normalizes radians to range 0 to 2 * Pi.
      *
-     * @param {number} angle
-     * @returns {number}
+     * @param {number} angle The raw input angle in radians
+     * @returns {number} The normalized input angle in radians
      */
     static normalizeRadians(angle)
     {
