@@ -4,13 +4,18 @@ import { Matrix3 } from './matrix3.js';
 import { Vector3 } from './vector3.js';
 
 /**
- * This class provides comprehensive 4x4 matrix operations for three
- * dimensional graphics programming and transformations.
+ * This class provides comprehensive 4x4 matrix operations for
+ * three-dimensional graphics programming and transformations.
+ *
+ * @class
  */
 class Matrix4
 {
     #elements;
 
+    /**
+     * @param {number[]|null} elements
+     */
     constructor(elements = null)
     {
         if (elements === null) {
@@ -28,6 +33,10 @@ class Matrix4
 
     /**
      * Get element at row and column.
+     *
+     * @param {number} row
+     * @param {number} col
+     * @returns {number}
      */
     get(row, col)
     {
@@ -41,6 +50,10 @@ class Matrix4
 
     /**
      * Set element at row and column.
+     *
+     * @param {number} row
+     * @param {number} col
+     * @param {number} value
      */
     set(row, col, value)
     {
@@ -55,6 +68,8 @@ class Matrix4
 
     /**
      * Modifies this matrix by multiplying it with another matrix.
+     *
+     * @param {Matrix4} other
      */
     multiply(other)
     {
@@ -68,6 +83,9 @@ class Matrix4
     /**
      * Multiply this matrix with another and return the result as a
      * new matrix.
+     *
+     * @param {Matrix4} other
+     * @returns {Matrix4}
      */
     multiplyOther(other)
     {
@@ -99,6 +117,8 @@ class Matrix4
     /**
      * Transposes this matrix and returns the result as a new Matrix4 instance
      * without changing the original one.
+     *
+     * @returns {Matrix4}
      */
     transpose() {
         return new Matrix4(Matrix4.#transposeArray(this.#elements));
@@ -106,6 +126,8 @@ class Matrix4
 
     /**
      * Calculate the determinant of this matrix using the leibnitz formula.
+     *
+     * @returns {number}
      */
     determinant() {
 		return Matrix4.#determinantArray(this.#elements);
@@ -121,6 +143,8 @@ class Matrix4
     /**
      * Inverts this matrix and returns the result as a new Matrix4 instance
      * without changing the original one.
+     *
+     * @returns {Matrix4}
      */
     invert() {
         return new Matrix4(Matrix4.#invertArray(this.#elements));
@@ -128,6 +152,8 @@ class Matrix4
 
     /**
      * Returns the matrix as an array.
+     *
+     * @returns {number[]}
      */
     toArray() {
         return Array.from(this.#elements);
@@ -135,6 +161,8 @@ class Matrix4
 
     /**
      * Creates a copy of this matrix.
+     *
+     * @returns {Matrix4}
      */
     clone() {
         return new Matrix4(Array.from(this.#elements));
@@ -142,6 +170,10 @@ class Matrix4
 
     /**
      * Multiplies two Matrix4 instances.
+     *
+     * @param {Matrix4} matrixA
+     * @param {Matrix4} matrixB
+     * @returns {Matrix4}
      */
     static multiply(matrixA, matrixB)
     {
@@ -158,6 +190,9 @@ class Matrix4
 
     /**
      * Transposes a Matrix4 instance.
+     *
+     * @param {Matrix4} matrix
+     * @returns {Matrix4}
      */
     static transpose(matrix)
     {
@@ -168,6 +203,9 @@ class Matrix4
 
     /**
      * Inverts a Matrix4 instance.
+     *
+     * @param {Matrix4} matrix
+     * @returns {Matrix4}
      */
     static invert(matrix)
     {
@@ -178,6 +216,11 @@ class Matrix4
 
     /**
      * Convenience method for creating a translation matrix.
+     *
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     * @returns {Matrix4}
      */
     static createTranslation(x, y, z)
     {
@@ -195,6 +238,11 @@ class Matrix4
 
     /**
      * Convenience method for creating a scaling matrix.
+     *
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     * @returns {Matrix4}
      */
     static createScale(x, y, z)
     {
@@ -212,6 +260,9 @@ class Matrix4
 
     /**
      * Convenience method for creating a rotation x matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix4}
      */
     static createRotateX(angle)
     {
@@ -230,6 +281,9 @@ class Matrix4
 
     /**
      * Convenience method for creating a rotation y matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix4}
      */
     static createRotateY(angle)
     {
@@ -248,6 +302,9 @@ class Matrix4
 
     /**
      * Convenience method for creating a rotation z matrix.
+     *
+     * @param {Angle} angle
+     * @returns {Matrix4}
      */
     static createRotateZ(angle)
     {
@@ -266,6 +323,14 @@ class Matrix4
 
     /**
      * Convenience method for creating an orthographic projection matrix.
+     *
+     * @param {number} left
+     * @param {number} right
+     * @param {number} top
+     * @param {number} bottom
+     * @param {number} near
+     * @param {number} far
+     * @returns {Matrix4}
      */
     static createOrthographicProjection(left, right, top, bottom, near, far)
     {
@@ -304,6 +369,12 @@ class Matrix4
 
     /**
      * Convenience method for creating a perspective projection matrix.
+     *
+     * @param {number} fov
+     * @param {number} aspect
+     * @param {number} near
+     * @param {number} far
+     * @returns {Matrix4}
      */
     static createPerspectiveProjection(fov, aspect, near, far)
     {
